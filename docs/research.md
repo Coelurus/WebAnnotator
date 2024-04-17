@@ -8,7 +8,13 @@ Recommended possibility: [Spring boot](https://spring.io/guides/gs/rest-service)
 
 ### Frontend
 
+- [Spring](https://spring.io/blog/2021/12/17/client-side-development-with-spring-boot-applications)
+
 ## Similar programs
+
+- [LabelBox](https://labelbox.com)(images)
+- [iMerit](https://imerit.net/video-annotation-and-labeling-tool/)(video)
+- [CVAT](https://www.cvat.ai)(free)
 
 ## HW technologies
 
