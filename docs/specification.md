@@ -1,6 +1,7 @@
 # Specifikace Ročníkového projektu pro Webový anotátor pro data z kapacitního senzoru
 #### Webová aplikace pro načítání, anotaci a správu dat ze senzorů, vyvinutá v Java Spring Boot. Umožňuje uživatelům načítat data, definovat a aplikovat anotace, exportovat anotovaná data pro AI trénink, a spravovat uživatelské účty. Integrace s AI umožňuje testování anotací.
 #### Autor: Filip Vopálenský
+#### Vedoucí práce: doc. RNDr. Petr Hnětynka, Ph.D.
 #### Verze: 0.1.0.
 #### Dne: 30.5.2024
 
