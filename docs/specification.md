@@ -23,7 +23,7 @@ Tento projekt si tak klade za cíl vytvořit pro uživatele srozumitelnou aplika
 - Java Spring Boot
 - HTML, CSS, JavaScript (pro tvorbu frontendu)
 - Bootstrap (pro CSS)
-- MySQL nebo PostgreSQL (pro metadata)
+- MySQL (pro metadata)
 - Git 
 - Maven
 - FFMPEG (pro samplování dat)
