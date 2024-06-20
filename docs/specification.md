@@ -2,8 +2,15 @@
 #### Webová aplikace pro načítání, anotaci a správu dat ze senzorů, vyvinutá v Java Spring Boot. Umožňuje uživatelům načítat data, definovat a aplikovat anotace, exportovat anotovaná data pro AI trénink, a spravovat uživatelské účty. Integrace s AI umožňuje testování anotací.
 #### Autor: Filip Vopálenský
 #### Vedoucí práce: doc. RNDr. Petr Hnětynka, Ph.D.
-#### Verze: 0.1.0.
-#### Dne: 30.5.2024
+#### Verze: 1.0.0
+#### Dne: 14.6.2024
+
+## Tabulka revizí
+
+| Jméno            | Datum     | Důvod změny                     | Verze |
+| ---------------- | --------- | ------------------------------- | ----- |
+| Filip Vopálenský | 30.5.2024 | Počáteční text                  | 0.1.0 |
+| Filip Vopálenský | 14.6.2024 | Upřesnění detailů funkcionality | 1.0.0 |
 
 ## 1. Základní informace
 
@@ -61,7 +68,55 @@ Program bude složen z několika  modulů:
 7. Správa uživatelů
 
 ### 2.3 Motivační příklad užití
-Uživatel načte data ze senzoru, definuje anotace, anotuje data, a následně exportuje anotovaná data pro trénink AI modelu.
+1. **Požadavky a předpoklady**
+   1. Uživatel má platný účet.
+   2. Na serveru běží aplikace a je dostupná přes webový prohlížeč.
+   3. Uživatel má právo na načítání a anotování dat.
+        - Pro krok *2. Vytvoření nového projektu:* je třeba uživatele s právy admina.
+   4. AI systém je dostupný a správně nakonfigurovaný pro komunikaci s aplikací.
+
+2. **Hlavní tok**
+   1. **Přihlášení do systému:**
+      - Uživatel otevře webový prohlížeč a přejde na přihlašovací stránku aplikace.
+      - Zadá své přihlašovací údaje (uživatelské jméno a heslo) a klikne na tlačítko "Přihlásit se".
+      - Systém ověří přihlašovací údaje a v případě úspěchu uživatele přesměruje na hlavní dashboard.
+     
+   2. **Vytvoření nového projektu:**
+      - Uživatel na hlavním dashboardu klikne na tlačítko "Nový projekt".
+      - Systém zobrazí formulář pro vytvoření projektu.
+      - Uživatel vyplní povinná pole formuláře:
+        - Název projektu
+        - Nahrání log souboru ze senzoru
+        - Nahrání snímků z kamery
+      - Uživatel může volitelně vyplnit další pole:
+        - Deadline
+        - Priorita
+        - Přiřazení k týmu nebo zaměstnanci
+        - Klíčová slova / štítky
+      - Uživatel klikne na tlačítko "Vytvořit projekt".
+      - Systém validuje formulář a data, v případě úspěchu uloží data a informuje uživatele o úspěšném vytvoření projektu.
+
+   3. **Anotace dat:**
+      - Uživatel vybere nově vytvořený projekt z seznamu projektů.
+      - Systém zobrazí grafický editor pro anotaci dat.
+      - Uživatel může v editoru provádět následující akce:
+        - Procházet jednotlivé snímky v logu.
+        - Označovat snímky různými štítky.
+        - Vytvářet nové štítky.
+        - Upravovat existující anotace.
+        - Ukládat průběžné změny.
+      - Uživatel může kdykoliv kliknout na tlačítko "Uložit a opustit" pro uložení změn a návrat na hlavní dashboard.
+
+   4. **Učení AI:**
+      - Uživatel může kliknout na tlačítko "Naučit AI".
+      - Systém pošle anotovaná data AI systému, aby se na nich naučil vztahy mezi anotacemi a daty.
+
+   5. **Testování anotací AI:**
+      - Uživatel může kliknout na tlačítko "Otestovat s AI".
+      - Systém pošle anotovaná data AI systému a obdrží výsledky testu.
+      - Systém zobrazí výsledky testu, kde zvýrazní správně a nesprávně anotované snímky.
+      - V případě, že AI anotovala data správně, systém označí projekt jako "Prochází testy".
+
 
 ### 2.4 Prostředí aplikace
 Aplikace poběží na serveru s Java Spring Boot, přičemž uživatelské rozhraní bude přístupné přes webový prohlížeč. Bude potřeba databáze MySQL pro ukládání dat o uživatelích a metadat o logovaných datech.
@@ -100,8 +155,37 @@ Aplikace poběží na serveru s Java Spring Boot, přičemž uživatelské rozhr
         - Příslušnost k určitému projektu
         - Čas vzniku
 - Použití externích API pro trénink a testování AI.
-  - ***Bude upřesněno***
-    - V jakém formátu se budou anotovaná data posílat a v jakém se bude vracet odpověď
+  - Data budou uložena ve formátu JSON.
+  - Jeden JSON soubor vždy reprezentuje jeden projekt.
+  - Soubor reprezentuje slovník:
+    - Klíče jsou časové známky, pro které senzor provedl měření.
+    - Hodnota je slovník sestávající z dat dvou typů:
+      - Klíče a hodnoty převzaté z měření senzorem
+        - Klíče jsou následující:
+          - Running
+          - fTx
+          - Pos x
+          - Pos y
+          - Pos z
+          - CIC S
+          - CIC W
+          - CIC N
+          - CIC E
+          - CIC C
+          - SD S
+          - SD W
+          - SD N
+          - SD E
+          - SD C
+          - Touch
+          - Tap
+          - DblTap
+          - AirWheel
+          - Gesture
+        - Hodnota je buď `String` či null
+      - Uložená data o anotacích
+        - Klíč je `"anotace"`
+        - Hodnota je pole Stringů se jmény anotací přidělených danému měření
 
 ### 3.4 Komunikační rozhraní
 - REST API pro komunikaci mezi frontendem a backendem.
@@ -241,6 +325,8 @@ Aplikace poběží na serveru s Java Spring Boot, přičemž uživatelské rozhr
     - Správa uživatelů
     - Správa týmů
     - Vše co má Zaměstnanec
+  - Grafický editor pro anotaci:
+    ![Anotace GUI](annotate-ui.jpg)
 
 ## 6. Ostatní (mimofunkční) požadavky
 
