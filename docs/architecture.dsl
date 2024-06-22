@@ -1,124 +1,143 @@
 workspace {
 
     model {
-        user = person "Uživatel" {
-            description "Uživatel aplikace pro anotaci dat"
+        user = person "User" {
+            description "User of the data annotation application"
         }
         admin = person "Admin" {
-            description "Administrátor aplikace"
+            description "Administrator of the application"
         }
     
         aiSystem = softwareSystem "AI" {
-            description "Externí aplikace provozující AI, jež se učí na datech poskytovaných anotátorem"
+            description "External application running AI, which learns from data provided by the annotator"
             tags "External"
             
         }
         
-        sensorDataSystem = softwareSystem "Systém pro sběr dat" {
-            description "Externí systém pro sběr dat ze senzoru a kamery"
+        sensorDataSystem = softwareSystem "Data Collection System" {
+            description "External system for collecting data from sensors and cameras"
             tags "External"
             #technology "Python, OpenCV, FFMPEG"
 
         }
 
-        database = softwareSystem "Databáze" {
-            description "Ukládá uživatelská data a metadata o logovaných datech"
+        database = softwareSystem "Database" {
+            description "Stores user data and metadata about logged data"
+            tags "Database"
             #technology "MySQL"
         }
 
-        disc = softwareSystem "Pevný disk" {
-            description "Úložiště pro data ze senzorů a kamery"
+        disc = softwareSystem "Hard Disk" {
+            tags "Drive"
+            description "Storage for sensor and camera data"
         }
 
         
         
 
-        annotatorSystem = softwareSystem "Webový Anotátor" {
-            description "Webová aplikace pro načítání, anotaci a správu dat ze senzorů"
+        annotatorSystem = softwareSystem "Web Annotator" {
+            description "Web application for loading, annotating, and managing sensor data"
 
             
 
-            webApp = container "Webová aplikace" {
-                description "Frontend aplikace poskytující uživatelské rozhraní"
+            webApp = container "Web Application" {
+                user -> this "Uses"
+                admin -> this "Admins"
+
+                description "Frontend application providing the user interface"
                 technology "HTML, CSS, JavaScript, Bootstrap"
 
                 loginFrontend = component "Login Frontend" {
-                    description "Obrazovka pro přihlášení uživatele"
+                    description "User login screen"
 
-                    user -> this "Přihlašuje se do aplikace"
-                    admin -> this "Přihlašuje se do aplikace"
+                    user -> this "Logs into the application"
+                    admin -> this "Logs into the application"
                 }
 
-                usersManagerFronted = component "Users Manager Frontend" {
+                usersManagerFrontend = component "Users Manager Frontend" {
                     description "Manage users and teams"
 
-                    admin -> this "Spravuje uživatele a týmy"
-
+                    admin -> this "Manages users and teams"
                 } 
 
                 annotatorFrontend = component "Annotator Frontend" {
-                    description "Obrazovka pro anotování projektů"
+                    description "Project annotation screen"
 
-                    user -> this "Anotuje data"
-                    admin -> this "Anotuje data"
+                    user -> this "Annotates data"
+                    admin -> this "Annotates data"
                 }
-                
-                user -> this "Používá"
-                admin -> this "Spravuje"
+
             }
 
-            backendApp = container "Backend aplikace" {
-                description "Backendová aplikace pro zpracování dat"
+            backendApp = container "Backend Application" {
+                description "Backend application for data processing"
                 technology "Java Spring Boot"
 
+                webApp -> this "Sends API requests"
+                this -> webApp "Returns responses"
+
                 api = component "API"{
-                    description "Core pro vyřízení požadavků"
+                    description "Core for handling requests"
 
-                    loginFrontend -> this "Posílá žádost na ověření přihlašovacích údajů uživatele"
-                    this -> loginFrontend "Vrací informaci o úspěchu"
+                    webApp -> this "Sends API requests"
+                    this -> webApp "Returns responses"
 
-                    annotatorFrontend -> this "Posílá žádost na data k projektu"
-                    this -> annotatorFrontend "Vrací data o projektu"
+                    loginFrontend -> this "Sends a request to verify user login details"
+                    this -> loginFrontend "Returns success information"
+
+                    annotatorFrontend -> this "Sends a request for project data"
+                    this -> annotatorFrontend "Returns project data"
+
+                    usersManagerFrontend -> this "Sends a request to modify user"
+                    this -> usersManagerFrontend "Return success information"
+                    usersManagerFrontend -> this "Sends a request to get users data"
+                    this -> usersManagerFrontend "Returns users data"
                 }
 
-                dataLoader = component "Data manager" {
-                    description "Spravuje data o projektech"
+                dataLoader = component "Data Manager" {
+                    description "Manages project data"
 
-                    api -> this "Dotaz na data a informace k projektu"
-                    this -> api "Projektová data"
-                    this -> database "Dotaz na metadata o projektu"
-                    this -> disc "Dotaz na data k projektu"
+                    api -> this "Request for project data and information"
+                    this -> api "Returns project data"
+                    this -> database "Request for project metadata"
+                    this -> disc "Request for project data"
                 }
 
-                loginValidator = component "Login resolver" {
-                    description "Komponente starající se o ověření platnosti přihlašovacích údajů"
+                loginValidator = component "Login Resolver" {
+                    description "Component responsible for verifying the validity of login details"
 
-                    api -> this "Dotaz na ověření přihlašovacích údajů"
-                    this -> api "Informace o platnosti údajů"
-                    this -> database "Dotaz na uživatele"
+                    api -> this "Request to verify login details"
+                    this -> api "Returns information on the validity of login"
+                    this -> database "Request for user"
                 }
 
-                usersManager = component "Users manager" {
-                    description "Komponenta spravující uživatele"
+                usersManager = component "Users Manager" {
+                    description "Component managing users"
 
-                    api -> this "Požadavek na upravení uživatele"
-                    this -> api "Informace o úspěchu"
+                    api -> this "Request to modify user"
+                    this -> api "Returns success information"
+
+                    this -> database "Modify user"
                 }
 
-                teamsManager = component "Teams manager" {
-                    description "Komponenta spravující týmy"
+                teamsManager = component "Teams Manager" {
+                    description "Component managing teams"
 
-                    api -> this "Požadavek na upravení týmů"
-                    this -> api "Informace o úspěchu"
+                    api -> this "Request to modify teams"
+                    this -> api "Success information"
+                    this -> database "Modify team"
                 }
                
                 # AI
-                this -> aiSystem "Posílá data k učení" "JSON"
-                this -> aiSystem "Posílá data k tesování" "JSON"
-                aiSystem -> this "Posílá výsledky testů" "JSON"
+                this -> aiSystem "Sends data for training" "JSON"
+                this -> aiSystem "Sends data for testing" "JSON"
+                aiSystem -> this "Sends test results" "JSON"
                 
-                #Senzor
-                this -> sensorDataSystem "Načítá data"
+                # Sensor
+                this -> sensorDataSystem "Loads data"
+
+                # Actors
+                
             }
 
 
@@ -129,25 +148,24 @@ workspace {
     }
 
     views {
-        systemContext annotatorSystem {
-            include *
-            autolayout lr
-        }
 
         container annotatorSystem {
             include *
-            autolayout lr
+            #autolayout lr
         }
 
         component backendApp {
             include *
-            autoLayout lr
+            #autoLayout lr
         }
 
         component webApp {
             include *
-            autoLayout lr
+            # autoLayout lr
         }
+
+    
+    
 
         theme default
         
@@ -156,6 +174,14 @@ workspace {
                 background #aaaaaa
                 color #ffffff
                 shape RoundedBox
+            }
+
+            element "Database"{
+                shape cylinder
+            }
+
+            element "Drive"{
+                shape Folder
             }
         }
     }
