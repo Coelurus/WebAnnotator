@@ -3,9 +3,11 @@ workspace {
     model {
         user = person "User" {
             description "User of the data annotation application"
+            tags "person"
         }
         admin = person "Admin" {
             description "Administrator of the application"
+            tags "person"
         }
     
         aiSystem = softwareSystem "AI" {
@@ -17,7 +19,8 @@ workspace {
         sensorDataSystem = softwareSystem "Data Collection System" {
             description "External system for collecting data from sensors and cameras"
             tags "External"
-            #technology "Python, OpenCV, FFMPEG"
+            
+            admin -> this "Captures data from sensor"
 
         }
 
@@ -27,9 +30,9 @@ workspace {
             #technology "MySQL"
         }
 
-        disc = softwareSystem "Hard Disk" {
+        disc = softwareSystem "Hard Drive" {
             tags "Drive"
-            description "Storage for sensor and camera data"
+            description "Storage for sensor and camera data and annotation data for projects"
         }
 
         
@@ -48,23 +51,42 @@ workspace {
                 technology "HTML, CSS, JavaScript, Bootstrap"
 
                 loginFrontend = component "Login Frontend" {
-                    description "User login screen"
+                    description "Screen for user to log in or reset his password"
+                    tags "Screen"
 
                     user -> this "Logs into the application"
                     admin -> this "Logs into the application"
                 }
 
                 usersManagerFrontend = component "Users Manager Frontend" {
-                    description "Manage users and teams"
+                    description "Screen for admin to perform CRUD operations on users and teams in system"
+                    tags "Screen"
 
                     admin -> this "Manages users and teams"
                 } 
 
                 annotatorFrontend = component "Annotator Frontend" {
-                    description "Project annotation screen"
+                    description "Screen with annotation graphic editor to edit and save annotations for projects"
+                    tags "Screen"
 
                     user -> this "Annotates data"
-                    admin -> this "Annotates data"
+                    #admin -> this "Annotates data"
+                }
+
+                fileSystemFrontend = component "File System Frontend"{
+                    description "Screen to allow user to browse and filter his projects"
+                    tags "Screen"
+
+                    user -> this "Browse project files"
+                    #admin -> this "Browse project files"
+                }
+
+                projectCreationFrontend = component "Project Creation Frontend"{
+                    description "Loads and stores sensor and camera data and metadata for newly created project"
+                    tags "Screen"
+
+                    admin -> this "Creates new project"
+                    this -> sensorDataSystem "Loads sensor and camera data"
                 }
 
             }
@@ -74,77 +96,71 @@ workspace {
                 technology "Java Spring Boot"
 
                 webApp -> this "Sends API requests"
-                this -> webApp "Returns responses"
 
-                api = component "API"{
-                    description "Core for handling requests"
+                api = component "API gateway"{
+                    description "Core for handling and redirecting requests and returning responses"
 
                     webApp -> this "Sends API requests"
-                    this -> webApp "Returns responses"
 
-                    loginFrontend -> this "Sends a request to verify user login details"
-                    this -> loginFrontend "Returns success information"
+                    loginFrontend -> this "Request to verify user login details"
 
-                    annotatorFrontend -> this "Sends a request for project data"
-                    this -> annotatorFrontend "Returns project data"
+                    annotatorFrontend -> this "Request to CRUD project data / send data to AI"
 
-                    usersManagerFrontend -> this "Sends a request to modify user"
-                    this -> usersManagerFrontend "Return success information"
-                    usersManagerFrontend -> this "Sends a request to get users data"
-                    this -> usersManagerFrontend "Returns users data"
+                    usersManagerFrontend -> this "Request to CRUD users data"
+
+                    fileSystemFrontend -> this "Request for project files file system structure"
+
+                    projectCreationFrontend -> this "Request to create new project and save corresponding data"
                 }
 
                 dataLoader = component "Data Manager" {
-                    description "Manages project data"
+                    description "Manages loading sensor and camera data and synchronizing it with corresponding annotation data file"
 
-                    api -> this "Request for project data and information"
-                    this -> api "Returns project data"
+                    api -> this "Request for CRUD on edit data"
                     this -> database "Request for project metadata"
-                    this -> disc "Request for project data"
+                    this -> disc "CRUD on project data"
                 }
 
                 loginValidator = component "Login Resolver" {
-                    description "Component responsible for verifying the validity of login details"
+                    description "Component responsible for authentication and authorization"
 
                     api -> this "Request to verify login details"
-                    this -> api "Returns information on the validity of login"
                     this -> database "Request for user"
                 }
 
-                usersManager = component "Users Manager" {
-                    description "Component managing users"
+                usersManager = component "Users Administrator" {
+                    description "Component responsible for CRUD operations on users"
 
-                    api -> this "Request to modify user"
-                    this -> api "Returns success information"
-
+                    api -> this "Request for CRUD on users data"
                     this -> database "Modify user"
                 }
 
-                teamsManager = component "Teams Manager" {
-                    description "Component managing teams"
+                teamsManager = component "Teams Administrator" {
+                    description "Component responsible for CRUD operations on teams"
 
-                    api -> this "Request to modify teams"
-                    this -> api "Success information"
+                    api -> this "Request for CRUD on teams data"
                     this -> database "Modify team"
                 }
-               
-                # AI
-                this -> aiSystem "Sends data for training" "JSON"
-                this -> aiSystem "Sends data for testing" "JSON"
-                aiSystem -> this "Sends test results" "JSON"
-                
-                # Sensor
-                this -> sensorDataSystem "Loads data"
 
-                # Actors
-                
+                fileSystemManager = component "File System Manager"{
+                    description "Manages browsing and retrieving in project files structure"
+
+                    api -> this "Request for file system structure and metadata"
+                    this -> disc "Load files structure"
+                    this -> database "Request for projects metadata"
+                }
+
+                aiManager = component "AI communicator"{
+                    description "Resolves communication with external AI system and feeding it with training / testing data"
+                    
+                    api -> this "Request for AI data training / testing"
+                    this -> aiSystem "Sends data for training / Sends data for testing"
+                    aiSystem -> this "Sends test results"
+                    this -> disc "CRUD on project data"
+
+                }             
             }
-
-
         }
-        
-        
-
     }
 
     views {
@@ -163,13 +179,13 @@ workspace {
             include *
             # autoLayout lr
         }
-
     
     
 
         theme default
         
         styles {
+
             element "External" {
                 background #aaaaaa
                 color #ffffff
@@ -182,6 +198,18 @@ workspace {
 
             element "Drive"{
                 shape Folder
+            }
+
+            element "Person"{
+                shape Person
+                background #1010CE
+                color #ffffff
+            }
+
+            element "Screen"{
+                shape WebBrowser
+                background #1C66F0
+                color #ffffff
             }
         }
     }
