@@ -1,9 +1,15 @@
+import os
 import cv2
+import time
+import pyperclip
+import pyautogui
 from pynput import mouse
 
 recording = False
 out = None
 running = True
+
+TEMP_SAVE_PATH = "/scripts/out/"
 
 
 def on_click(x, y, button, pressed):
@@ -12,9 +18,19 @@ def on_click(x, y, button, pressed):
     if button == mouse.Button.left and pressed:
         recording = not recording
         if recording:
+            time.sleep(1)
+            pyperclip.copy(os.getcwd())
+
+            pyautogui.press("home")
+            pyautogui.hotkey("ctrl", "v")
+            pyautogui.write(TEMP_SAVE_PATH)
+            pyautogui.press("enter")
+
             print("Recording started")
             fourcc = cv2.VideoWriter_fourcc(*"XVID")
-            out = cv2.VideoWriter("output.avi", fourcc, 20.0, (640, 480))
+            out = cv2.VideoWriter(
+                ".\\scripts\\out\\video.avi", fourcc, 20.0, (640, 480)
+            )
         else:
             print("Recording stopped")
             out.release()
@@ -54,7 +70,29 @@ def record_video():
     cv2.destroyAllWindows()
 
 
+def is_float(string):
+    try:
+        float(string)
+        return True
+    except ValueError:
+        return False
+
+
+def get_timestamps():
+    timestamps = set()
+    for file in os.listdir("." + TEMP_SAVE_PATH):
+        if file.endswith(".log"):
+            with open("." + TEMP_SAVE_PATH + file) as my_file:
+                for line in my_file:
+                    line_fragments = line.split("\t")
+                    if len(line_fragments) == 0 or not is_float(line_fragments[0]):
+                        continue
+                    timestamps.add(float(line_fragments[0]))
+                return timestamps
+
+
 if __name__ == "__main__":
+    """
     listener = mouse.Listener(on_click=on_click)
     listener.start()
 
@@ -62,3 +100,7 @@ if __name__ == "__main__":
 
     listener.stop()
     listener.join()
+    """
+
+    timestamps = get_timestamps()
+    print(timestamps)
