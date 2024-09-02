@@ -30,8 +30,8 @@
         <h1>Demo</h1>
         <nav class="nav nav-tabs">
             <a class="nav-link active" data-bs-toggle="tab" data-bs-target="#message" href="#">Message</a>
-            <a class="nav-link" data-bs-toggle="tab" data-bs-target="#stream" href="#">Stream</a>
             <a class="nav-link" data-bs-toggle="tab" data-bs-target="#test" href="#">Test</a>
+            <a class="nav-link" data-bs-toggle="tab" data-bs-target="#upload" href="#">Upload</a>
         </nav>
     </header>
 
@@ -48,18 +48,27 @@
 
                 </div>
             </div>
-            <div class="tab-pane fade" id="stream" role="tabpanel">
-                <div class="container">
-                    <div id="load" hx-sse="connect:/stream">
-                        <div id="loadInner" hx-sse="swap:message"></div>
-                    </div>
-                </div>
-            </div>
             <div class="tab-pane fade" id="test" role="tabpanel">
                 <div class="container">
                     <div id="hello"></div>
                     <div id="world"></div>
                     <button class="btn btn-primary" hx-get="/test" hx-swap="none">Fetch</button>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="upload" role="tabpanel">
+                <div class="container">
+                    <form method="post" enctype="multipart/form-data" action="/uploadfile">
+                        <table>
+                            <tr>
+                                <td>File to upload:</td>
+                                <td><input type="file" name="file" /></td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td><input type="submit" value="Upload" /></td>
+                            </tr>
+                        </table>
+                    </form>
                 </div>
             </div>
         </div>
