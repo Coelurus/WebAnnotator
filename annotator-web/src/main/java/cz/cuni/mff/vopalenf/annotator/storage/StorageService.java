@@ -1,13 +1,14 @@
-package cz.cuni.mff.vopalenf.annotator.controllers;
+package cz.cuni.mff.vopalenf.annotator.storage;
 
 import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.file.Path;
 import java.util.stream.Stream;
+
 import org.springframework.core.io.Resource;
 
 
-public interface StorageController {
+public interface StorageService {
     void store(MultipartFile file);
 
     Stream<Path> loadAll();

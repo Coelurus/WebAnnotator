@@ -20,16 +20,10 @@ public class GreetingController {
         return "Kiki";
     }
 
-    @GetMapping(path = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<String> stream() {
-        return Flux.interval(Duration.ofSeconds(5)).map(
-                value -> value + ":" + System.currentTimeMillis()
-        );
-    }
-
     @GetMapping(path = "/test")
     public String test() {
         return "<div id=\"hello\" hx-swap-oob=\"true\">Hello</div>\n"
                 + "<div id=\"world\" hx-swap-oob=\"true\">World</div>";
     }
+
 }
