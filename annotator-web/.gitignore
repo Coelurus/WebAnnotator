@@ -34,3 +34,4 @@ build/
 
 ### Test Data ###
 src/main/resources/sensor-data/*
+file_system/*
