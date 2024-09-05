@@ -10,7 +10,6 @@ import cz.cuni.mff.vopalenf.annotator.storage.repositories.TeamRepository;
 import cz.cuni.mff.vopalenf.annotator.storage.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -21,26 +20,26 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.nio.file.Path;
 import java.time.LocalDate;
-import java.util.List;
 
 @RestController
 public class FileSystemController {
 
     private final StorageService storageService;
+    private final TeamRepository teamRepository;
+    private final UserRepository userRepository;
+    private final ProjectRepository projectRepository;
 
     @Autowired
-    private TeamRepository teamRepository;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private ProjectRepository projectRepository;
-
-    @Autowired
-    public FileSystemController(StorageService storageService) {
+    public FileSystemController(TeamRepository teamRepository,
+                                UserRepository userRepository,
+                                ProjectRepository projectRepository,
+                                StorageService storageService) {
+        this.teamRepository = teamRepository;
+        this.userRepository = userRepository;
+        this.projectRepository = projectRepository;
         this.storageService = storageService;
     }
+
 
     @GetMapping("/files")
     public Path[] files() {
@@ -60,17 +59,14 @@ public class FileSystemController {
             @RequestParam("deadline") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate deadline,
             @RequestParam("priority") Integer priority,
             @RequestParam("team_id") Integer teamId,
-            @RequestParam("file") MultipartFile file,
-            RedirectAttributes redirectAttributes) {
+            @RequestParam("file") MultipartFile file) {
 
         Team team = teamRepository.findById(Long.valueOf(teamId))
                 .orElseThrow(() -> new IllegalArgumentException("Invalid team ID: " + teamId));
 
-        Project project = new Project(projectName, file.getName(), deadline, priority, team);
+        Project project = new Project(projectName, file.getOriginalFilename(), deadline, priority, team);
         projectRepository.save(project);
         storageService.store(file);
-        System.out.println("WUT?");
-
         return new ModelAndView("redirect:/");
     }
 }

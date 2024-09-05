@@ -1,4 +1,6 @@
 .*
 !.gitignore
+!annotator-web/.gitignore
+annotator-web/file_system/*
 out/
 gs-rest-service/
