@@ -33,6 +33,6 @@ build/
 .vscode/
 
 ### Test Data ###
-src/main/resources/sensor-data/*
+Core/src/main/resources/sensor-data/*
 file_system/*
 /file_system/
