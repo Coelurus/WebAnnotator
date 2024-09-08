@@ -1,5 +1,7 @@
-package cz.cuni.mff.vopalenf.annotator.entities;
+package cz.cuni.mff.vopalenf.persistence.entities;
 
+
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "users")

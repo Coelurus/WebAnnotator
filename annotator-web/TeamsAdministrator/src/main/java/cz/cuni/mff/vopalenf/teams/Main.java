@@ -1,4 +1,4 @@
-package cz.cuni.mff.vopalenf.annotator;
+package cz.cuni.mff.vopalenf.teams;
 
 // TODO: Implement teams module
 public class Main {

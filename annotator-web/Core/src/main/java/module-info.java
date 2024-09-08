@@ -7,4 +7,8 @@ module Core {
     requires spring.webmvc;
     requires jakarta.persistence;
     requires spring.core;
+    requires TeamsAdministrator;
+    requires spring.data.jpa;
+    requires Persistence;
+
 }

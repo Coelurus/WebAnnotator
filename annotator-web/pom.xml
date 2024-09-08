@@ -22,6 +22,7 @@
         <module>UsersAdministrator</module>
         <module>DataManager</module>
         <module>Core</module>
+        <module>Persistence</module>
     </modules>
     <properties>
         <java.version>21</java.version>

@@ -1,8 +1,10 @@
 package cz.cuni.mff.vopalenf.annotator.controllers;
 
-import cz.cuni.mff.vopalenf.annotator.storage.entities.Project;
-import cz.cuni.mff.vopalenf.annotator.storage.repositories.ProjectRepository;
-import cz.cuni.mff.vopalenf.annotator.repositories.UserRepository;
+import cz.cuni.mff.vopalenf.persistence.entities.Project;
+import cz.cuni.mff.vopalenf.persistence.entities.Team;
+import cz.cuni.mff.vopalenf.persistence.repositories.ProjectRepository;
+import cz.cuni.mff.vopalenf.persistence.repositories.TeamRepository;
+import cz.cuni.mff.vopalenf.persistence.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
