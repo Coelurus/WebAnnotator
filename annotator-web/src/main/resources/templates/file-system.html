@@ -1,0 +1,29 @@
+<form id="filters" hx-get="/projects/filter" hx-target="#project-table-body" hx-trigger="change">
+    <label for="priority-filter">Filter by Priority:</label>
+    <select name="priority" id="priority-filter">
+        <option value="">All</option>
+        <option value="1">High</option>
+        <option value="2">Medium</option>
+        <option value="3">Low</option>
+    </select>
+
+    <label for="teamFilter">Filter by Team:</label>
+    <select name="team" id="teamFilter">
+        <option value="">All</option>
+        <th:block th:each="team : ${teams}">
+            <option th:value="${team}" th:text="${team.getName()}"></option>
+        </th:block>
+    </select>
+</form>
+<table>
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Deadline</th>
+        <th>Priority</th>
+        <th>Team Assigned</th>
+    </tr>
+    </thead>
+    <tbody id="project-table-body" th:replace="~{fragments/project-table :: project-table}"></tbody>
+
+</table>

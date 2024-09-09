@@ -40,4 +40,11 @@ public class ScreenController {
 
         return "upload";
     }
+
+    @GetMapping("/load-file-system")
+    public String loadFileSystem(Model model) {
+        model.addAttribute("projects", projectRepository.findAll());
+        model.addAttribute("teams", teamRepository.findAll());
+        return "file-system";
+    }
 }
