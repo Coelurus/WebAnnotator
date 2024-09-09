@@ -1,4 +1,4 @@
-package cz.cuni.mff.vopalenf.annotator.file_system;
+package cz.cuni.mff.vopalenf.datamanager;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -18,12 +18,14 @@ import java.util.Objects;
 public class DataLoader {
     private final String DATA_IDENTIFIER = "DATA";
     private final int DATA_IDENTIFIER_IDX = 2;
+
     /**
      * Loads names of all log files from resources/sensor-data.
      * Just for dev purposes.
+     *
      * @return array of Paths of all log files
      */
-    public Path[] loadFromResources(){
+    public Path[] loadFromResources() {
         try {
             URL logDirURL = DataLoader.class.getClassLoader().getResource("sensor-data");
             if (logDirURL == null) {
@@ -43,17 +45,18 @@ public class DataLoader {
             return filePaths.toArray(new Path[0]);
         } catch (URISyntaxException e) {
             throw new RuntimeException("Problem with parsing URI");
-        } catch (IOException e){
+        } catch (IOException e) {
             throw new RuntimeException("Problem with loading files from directory");
         }
     }
 
     /**
      * Loads all data capturing from one log file.
+     *
      * @param filePath Path to a log file containing data from sensor from one capturing
      * @return Array of <code>LogData</code> containing information about every captured moment
      */
-    public LogData[] loadLogFile(Path filePath){
+    public LogData[] loadLogFile(Path filePath) {
         List<LogData> logDataList = new ArrayList<>();
 
         try (BufferedReader reader = Files.newBufferedReader(filePath)) {

@@ -1,4 +1,4 @@
-package cz.cuni.mff.vopalenf.annotator.file_system;
+package cz.cuni.mff.vopalenf.datamanager;
 
 public class LogData {
 

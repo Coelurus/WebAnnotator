@@ -1,4 +1,4 @@
-package cz.cuni.mff.vopalenf.annotator.storage;
+package cz.cuni.mff.vopalenf.filesystemmanager.exceptions;
 
 public class StorageFileNotFoundException extends StorageException {
 

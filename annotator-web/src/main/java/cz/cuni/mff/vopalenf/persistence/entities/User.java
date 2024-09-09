@@ -1,4 +1,4 @@
-package cz.cuni.mff.vopalenf.annotator.storage.entities;
+package cz.cuni.mff.vopalenf.persistence.entities;
 
 import jakarta.persistence.*;
 

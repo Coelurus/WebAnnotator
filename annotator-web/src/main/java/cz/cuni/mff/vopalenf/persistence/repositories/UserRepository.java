@@ -1,6 +1,6 @@
-package cz.cuni.mff.vopalenf.annotator.storage.repositories;
+package cz.cuni.mff.vopalenf.persistence.repositories;
 
-import cz.cuni.mff.vopalenf.annotator.storage.entities.User;
+import cz.cuni.mff.vopalenf.persistence.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -1,4 +1,4 @@
-package cz.cuni.mff.vopalenf.annotator.storage.entities;
+package cz.cuni.mff.vopalenf.persistence.entities;
 
 import jakarta.persistence.*;
 
@@ -39,4 +39,27 @@ public class Project {
         this.team = team;
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public String getProjectName() {
+        return projectName;
+    }
+
+    public String getLogFileName() {
+        return logFileName;
+    }
+
+    public LocalDate getDeadline() {
+        return deadline;
+    }
+
+    public Integer getPriority() {
+        return priority;
+    }
+
+    public Team getTeam() {
+        return team;
+    }
 }

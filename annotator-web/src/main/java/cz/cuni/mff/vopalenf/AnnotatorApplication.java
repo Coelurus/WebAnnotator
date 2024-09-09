@@ -1,6 +1,6 @@
-package cz.cuni.mff.vopalenf.annotator;
+package cz.cuni.mff.vopalenf;
 
-import cz.cuni.mff.vopalenf.annotator.storage.StorageProperties;
+import cz.cuni.mff.vopalenf.filesystemmanager.storage.StorageProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
