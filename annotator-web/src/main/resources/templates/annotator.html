@@ -6,6 +6,19 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title th:text="'Annotator - ' + ${id}">Annotator</title>
+    <script type="importmap">
+        {
+            "imports": {
+                "bootstrap": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.esm.min.js",
+                "@popperjs/core": "https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/esm/popper.js",
+                "htmx": "https://unpkg.com/htmx.org@1.9.2/dist/htmx.min.js"
+            }
+        }
+    </script>
+    <script type="module">
+        import 'bootstrap';
+        import 'htmx';
+    </script>
 </head>
 <body>
 <div class="main-content">
@@ -36,30 +49,25 @@
         </div>
     </div>
 
+    <style>
+        .container-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            gap: 10px;
+        }
+    </style>
+
     <div class="container-grid">
-        <div>
-            <img src="https://via.placeholder.com/200" alt="annotation preview"/>
-            <p>Annotation 1</p>
-        </div>
-        <div>
-            <img src="https://via.placeholder.com/200" alt="annotation preview"/>
-            <p>Annotation 2</p>
-        </div>
-        <div>
-            <img src="https://via.placeholder.com/200" alt="annotation preview"/>
-            <p>Annotation 3</p>
-        </div>
-        <div>
-            <img src="https://via.placeholder.com/200" alt="annotation preview"/>
-            <p>Annotation 4</p>
-        </div>
-        <div>
-            <img src="https://via.placeholder.com/200" alt="annotation preview"/>
-            <p>Annotation 5</p>
-        </div>
-        <div>
-            <img src="https://via.placeholder.com/200" alt="annotation preview"/>
-            <p>Annotation 6</p>
+        <div th:each="frameNum : ${#numbers.sequence(1, 200)}">
+            <img src="https://via.placeholder.com/200" alt="annotation preview"
+                 th:id="'image-' + ${frameNum}"
+                 th:hx-get="'/projects/' + ${id} + '/frames/' + ${frameNum}"
+                 th:hx-target="'#image-' + ${frameNum}"
+                 hx-trigger="load"
+                 hx-swap="outerHTML"
+                 width="200px"
+                 height="200px"/>
         </div>
     </div>
 

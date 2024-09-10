@@ -47,4 +47,11 @@ public class ScreenController {
         model.addAttribute("teams", teamRepository.findAll());
         return "file-system";
     }
+
+    @GetMapping("/project-form")
+    public String getProjectForm(Model model) {
+        model.addAttribute("teams", teamRepository.findAll());
+        return "project-form";
+    }
+
 }
