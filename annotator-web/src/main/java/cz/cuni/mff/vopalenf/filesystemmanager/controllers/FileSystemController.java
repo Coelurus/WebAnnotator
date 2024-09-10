@@ -63,20 +63,21 @@ public class FileSystemController {
         return "file-system";
     }
 
-    @GetMapping("/projects/filter")
+    @GetMapping("/filter")
     public String filterProjects(
-            @RequestParam(required = false) Integer priority,
-            @RequestParam(required = false) Team team,
+            @RequestParam(name = "priority", required = false) Integer priority,
+            @RequestParam(name = "teamName", required = false) String teamName,
             Model model
     ) {
         List<Project> projects = projectRepository.findAll();
-        System.out.println("HELP");
-        // Apply filters
+
         if (priority != null) {
             projects = projects.stream()
                     .filter(project -> Objects.equals(project.getPriority(), priority))
                     .collect(Collectors.toList());
         }
+
+        Team team = teamRepository.findByName(teamName).orElse(null);
 
         if (team != null) {
             projects = projects.stream()

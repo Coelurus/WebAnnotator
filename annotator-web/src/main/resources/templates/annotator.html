@@ -5,26 +5,32 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Annotator</title>
+    <title th:text="'Annotator - ' + ${id}">Annotator</title>
 </head>
 <body>
 <div class="main-content">
     <div class="header-buttons">
         <div>
-            <select>
-                <option>Annotation Mode</option>
-                <option>Mode 1</option>
-                <option>Mode 2</option>
-            </select>
-            <input type="number" placeholder="Frame Speed"/>
+            <label>
+                <select>
+                    <option>Annotation Mode</option>
+                    <option>Mode 1</option>
+                    <option>Mode 2</option>
+                </select>
+            </label>
+            <label>
+                <input type="number" placeholder="Frame Speed"/>
+            </label>
             <button>New Annotation</button>
         </div>
         <div>
-            <select>
-                <option>Filter Annotations</option>
-                <option>Filter 1</option>
-                <option>Filter 2</option>
-            </select>
+            <label>
+                <select>
+                    <option>Filter Annotations</option>
+                    <option>Filter 1</option>
+                    <option>Filter 2</option>
+                </select>
+            </label>
             <label><input type="checkbox"/> Show Annotations</label>
             <label><input type="checkbox"/> Show AI</label>
         </div>

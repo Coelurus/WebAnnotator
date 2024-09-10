@@ -1,4 +1,4 @@
-<form id="filters" hx-get="/projects/filter" hx-target="#project-table-body" hx-trigger="change">
+<form id="filters" hx-get="/filter" hx-trigger="change" hx-target="#projects-table tbody">
     <label for="priority-filter">Filter by Priority:</label>
     <select name="priority" id="priority-filter">
         <option value="">All</option>
@@ -8,14 +8,14 @@
     </select>
 
     <label for="teamFilter">Filter by Team:</label>
-    <select name="team" id="teamFilter">
+    <select name="teamName" id="teamFilter">
         <option value="">All</option>
         <th:block th:each="team : ${teams}">
-            <option th:value="${team}" th:text="${team.getName()}"></option>
+            <option th:value="${team.getName()}" th:text="${team.getName()}"></option>
         </th:block>
     </select>
 </form>
-<table>
+<table id="projects-table">
     <thead>
     <tr>
         <th>Name</th>

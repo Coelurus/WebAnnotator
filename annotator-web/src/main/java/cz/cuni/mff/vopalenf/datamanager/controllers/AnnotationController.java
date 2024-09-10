@@ -1,13 +1,16 @@
 package cz.cuni.mff.vopalenf.datamanager.controllers;
 
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PathVariable;
 
-@RestController
+@Controller
 public class AnnotationController {
 
-    @GetMapping("/annotation")
-    public String annotationScreen() {
+    @GetMapping("/annotator/{id}")
+    public String annotationScreen(@PathVariable Long id, Model model) {
+        model.addAttribute("id", id);
         return "annotator";
     }
 }
