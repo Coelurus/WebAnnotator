@@ -9,8 +9,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 @EnableConfigurationProperties(StorageProperties.class)
 public class AnnotatorApplication {
 
-    public static void main(String[] args) {
-        SpringApplication.run(AnnotatorApplication.class, args);
-    }
+	public static void main(String[] args) {
+		SpringApplication.run(AnnotatorApplication.class, args);
+	}
 
 }

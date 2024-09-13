@@ -31,7 +31,6 @@
     <nav class="nav nav-tabs">
         <a class="nav-link active" data-bs-toggle="tab" data-bs-target="#upload" href="#">Upload</a>
         <a class="nav-link" data-bs-toggle="tab" data-bs-target="#file-system" href="#">File System</a>
-        <a class="nav-link" data-bs-toggle="tab" data-bs-target="#annotator" href="#">Annotator</a>
     </nav>
 </header>
 
@@ -41,6 +40,7 @@
             <div class="container" hx-trigger="load" hx-get="/project-form"></div>
         </div>
         <div class="tab-pane fade" id="file-system" role="tabpanel">
+            <div class="container" hx-trigger="load" hx-get="/load-file-system"></div>
         </div>
     </div>
 </main>

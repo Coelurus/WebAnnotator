@@ -1,8 +1,8 @@
-package cz.cuni.mff.vopalenf.filesystemmanager.controllers;
+package cz.cuni.mff.vopalenf.filesystemmanager;
 
 import cz.cuni.mff.vopalenf.constants.Constants;
-import cz.cuni.mff.vopalenf.persistence.entities.Project;
 import cz.cuni.mff.vopalenf.filesystemmanager.storage.StorageService;
+import cz.cuni.mff.vopalenf.persistence.entities.Project;
 import cz.cuni.mff.vopalenf.persistence.entities.Team;
 import cz.cuni.mff.vopalenf.persistence.repositories.ProjectRepository;
 import cz.cuni.mff.vopalenf.persistence.repositories.TeamRepository;

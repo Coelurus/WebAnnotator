@@ -1,4 +1,4 @@
-package cz.cuni.mff.vopalenf.filesystemmanager.configuration;
+package cz.cuni.mff.vopalenf.filesystemmanager;
 
 import cz.cuni.mff.vopalenf.constants.Constants;
 import org.springframework.context.annotation.Configuration;

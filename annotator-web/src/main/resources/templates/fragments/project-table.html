@@ -1,15 +1,15 @@
 <th:block th:fragment="project-table">
-    <th:block th:each="project : ${projects}">
-        <tr>
-            <td>
-                <a class="annotator-link"
-                   th:href="${'/annotator/' + project.getId()}"
-                   th:text="${project.getProjectName()}">
-                </a>
-            </td>
-            <td th:text="${project.getDeadline()}"></td>
-            <td th:text="${project.getPriority()}"></td>
-            <td th:text="${project.getTeam().getName()}"></td>
-        </tr>
-    </th:block>
+  <th:block th:each="project : ${projects}">
+    <tr>
+      <td>
+        <a class="annotator-link"
+           th:href="${'/annotator/' + project.getId()}"
+           th:text="${project.getProjectName()}">
+        </a>
+      </td>
+      <td th:text="${project.getDeadline()}"></td>
+      <td th:text="${project.getPriority()}"></td>
+      <td th:text="${project.getTeam().getName()}"></td>
+    </tr>
+  </th:block>
 </th:block>
