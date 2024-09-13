@@ -11,10 +11,23 @@
     <groupId>cz.cuni.mff.vopalenf</groupId>
     <artifactId>annotator</artifactId>
     <version>0.0.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
     <name>annotator</name>
     <description>Individual Software Project for annotating sensor data</description>
+    <modules>
+        <module>LoginResolver</module>
+        <module>AICommunicator</module>
+        <module>FileSystemManager</module>
+        <module>TeamsAdministrator</module>
+        <module>UsersAdministrator</module>
+        <module>DataManager</module>
+        <module>Core</module>
+        <module>Persistence</module>
+    </modules>
     <properties>
         <java.version>21</java.version>
+        <maven.compiler.source>22</maven.compiler.source>
+        <maven.compiler.target>22</maven.compiler.target>
     </properties>
     <dependencies>
         <dependency>
