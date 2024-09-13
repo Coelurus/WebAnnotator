@@ -24,6 +24,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+/**
+ * Takes care of working with log files and image files from camera.
+ */
 @Controller
 public class FileSystemController {
 
@@ -70,16 +73,14 @@ public class FileSystemController {
         return "redirect:/";
     }
 
-    @GetMapping("/projects")
-    public String getProjects(Model model) {
-        List<Project> projects = projectRepository.findAll();
-        List<Team> teams = teamRepository.findAll();
-
-        model.addAttribute("projects", projects);
-        model.addAttribute("teams", teams);
-        return "file-system";
-    }
-
+    /**
+     * Filter out projects from project board
+     *
+     * @param priority Level of priority for the projects to be shown
+     * @param teamName Name of team for projects to be shown
+     * @param model    Holder for attributes
+     * @return Fragment of a page to swapped into currently shown file
+     */
     @GetMapping("/filter")
     public String filterProjects(
             @RequestParam(name = "priority", required = false) Integer priority,
@@ -106,6 +107,13 @@ public class FileSystemController {
         return "fragments/project-table :: project-table";
     }
 
+    /**
+     * Get a frame from concrete position from concrete project
+     *
+     * @param id       ID of project to load frame from
+     * @param position Position of a frame from project
+     * @return Image HTML tag with found frame
+     */
     @GetMapping("/projects/{id}/frames/{position}")
     @ResponseBody
     public String getFrame(@PathVariable Long id, @PathVariable int position) {

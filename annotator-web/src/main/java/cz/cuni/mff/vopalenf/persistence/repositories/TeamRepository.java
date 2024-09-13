@@ -6,8 +6,11 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
+/**
+ * Stores all teams.
+ */
 @Repository
 public interface TeamRepository extends JpaRepository<Team, Long> {
-    
+
     Optional<Team> findByName(String name);
 }

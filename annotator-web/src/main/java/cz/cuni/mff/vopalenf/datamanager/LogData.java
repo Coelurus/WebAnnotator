@@ -1,5 +1,8 @@
 package cz.cuni.mff.vopalenf.datamanager;
 
+/**
+ * Information about position of a hand in a moment of time.
+ */
 public class LogData {
 
     private final Double time;

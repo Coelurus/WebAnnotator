@@ -17,6 +17,9 @@ import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+/**
+ * Implementation of service to store data from sensor and camera.
+ */
 @Service
 public class StorageServiceImpl implements StorageService {
 
@@ -86,23 +89,4 @@ public class StorageServiceImpl implements StorageService {
         }
     }
 
-    @Override
-    public Stream<Path> loadAll() {
-        return null;
-    }
-
-    @Override
-    public Path load(String filename) {
-        return null;
-    }
-
-    @Override
-    public Resource loadAsResource(String filename) {
-        return null;
-    }
-
-    @Override
-    public void deleteAll() {
-
-    }
 }
