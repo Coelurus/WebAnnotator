@@ -1,17 +1,21 @@
-<form id="filters" hx-get="/filter" hx-trigger="change" hx-target="#projects-table tbody">
+<form id="filters" hx-get="/filter" hx-trigger="change"
+      hx-target="#projects-table tbody">
     <label for="priority-filter">Filter by Priority:</label>
+
     <select name="priority" id="priority-filter">
         <option value="">All</option>
-        <option value="1">High</option>
-        <option value="2">Medium</option>
-        <option value="3">Low</option>
+        <th:block th:each="priority : ${priorities}">
+            <option th:value="${priority.getValue()}"
+                    th:text="${priority.toString()}"></option>
+        </th:block>
     </select>
 
     <label for="teamFilter">Filter by Team:</label>
     <select name="teamName" id="teamFilter">
         <option value="">All</option>
         <th:block th:each="team : ${teams}">
-            <option th:value="${team.getName()}" th:text="${team.getName()}"></option>
+            <option th:value="${team.getName()}"
+                    th:text="${team.getName()}"></option>
         </th:block>
     </select>
 </form>
@@ -24,6 +28,7 @@
         <th>Team Assigned</th>
     </tr>
     </thead>
-    <tbody id="project-table-body" th:replace="~{fragments/project-table :: project-table}"></tbody>
+    <tbody id="project-table-body"
+           th:replace="~{fragments/project-table :: project-table}"></tbody>
 
 </table>

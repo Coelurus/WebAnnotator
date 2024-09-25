@@ -1,8 +1,7 @@
 package cz.cuni.mff.vopalenf.filesystemmanager.storage;
 
-import cz.cuni.mff.vopalenf.filesystemmanager.exceptions.StorageException;
+import cz.cuni.mff.vopalenf.filesystemmanager.exception.StorageException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -13,7 +12,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
-import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 

@@ -14,7 +14,15 @@
         </tr>
         <tr>
             <td>Priority:</td>
-            <td><input type="number" name="priority"></td>
+            <td>
+                <select name="priority" required>
+                    <option value="">Select a priority</option>
+                    <th:block th:each="priority : ${priorities}">
+                        <option th:value="${priority.getValue()}"
+                                th:text="${priority.toString()}"></option>
+                    </th:block>
+                </select>
+            </td>
         </tr>
         <tr>
             <td>Team:</td>
@@ -22,7 +30,8 @@
                 <select name="team_id" required>
                     <option value="">Select a team</option>
                     <th:block th:each="team : ${teams}">
-                        <option th:value="${team.getId()}" th:text="${team.getName()}"></option>
+                        <option th:value="${team.getId()}"
+                                th:text="${team.getName()}"></option>
                     </th:block>
                 </select>
             </td>

@@ -1,4 +1,4 @@
-package cz.cuni.mff.vopalenf.filesystemmanager.exceptions;
+package cz.cuni.mff.vopalenf.filesystemmanager.exception;
 
 /**
  * Exception denoting problem with locating file
