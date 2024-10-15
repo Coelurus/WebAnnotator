@@ -1,12 +1,14 @@
 package cz.cuni.mff.vopalenf.persistence.entities;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.time.LocalDate;
 
 /**
  * Defines class representing one project that users will have to annotate.
  */
+@Data
 @Entity
 @Table(name = "projects")
 public class Project {
@@ -59,29 +61,5 @@ public class Project {
         this.deadline = deadline;
         this.priority = priority;
         this.team = team;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getProjectName() {
-        return projectName;
-    }
-
-    public String getLogFileName() {
-        return logFileName;
-    }
-
-    public LocalDate getDeadline() {
-        return deadline;
-    }
-
-    public Integer getPriority() {
-        return priority;
-    }
-
-    public Team getTeam() {
-        return team;
     }
 }

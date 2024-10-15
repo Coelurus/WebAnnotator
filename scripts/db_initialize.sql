@@ -37,7 +37,7 @@ CREATE TABLE tags (
 INSERT INTO users (first_name, last_name, user_name, password_hash, team_id) VALUES
 ('John', 'Doe', 'johndoe', 'hashedpassword1', 1),
 ('Jane', 'Smith', 'janesmith', 'hashedpassword2', 2),
-('Alice', 'Johnson', 'alicej', 'hashedpassword3', 3);
+('Alice', 'Johnson', 'alicej', 'hashedpassword3', 2);
 
 INSERT INTO teams (name, leader_id) VALUES
 ('Fast', 1),

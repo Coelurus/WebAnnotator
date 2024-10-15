@@ -1,7 +1,9 @@
 package cz.cuni.mff.vopalenf.persistence.entities;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
+@Data
 @Entity
 @Table(name = "users")
 public class User {

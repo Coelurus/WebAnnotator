@@ -1,0 +1,52 @@
+import * as React from "react";
+import * as ReactDOM from "react-dom/client";
+import {
+  createBrowserRouter,
+  RouterProvider,
+} from "react-router-dom";
+
+import Root from "./routes/root";
+import ErrorPage from "./error-page";
+import Projects from "./routes/listing/projects";
+import Users from "./routes/listing/users";
+import Teams from "./routes/listing/teams";
+import ProjectForm from "./routes/project/project-form";
+
+import './index.css'
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Root />,
+    errorElement: <ErrorPage />,
+    children: [
+      {
+        path: "projects",
+        children: [
+          {
+            path: "all",
+            element: <Projects />,
+          },
+          {
+            path: "create",
+            element: <ProjectForm />
+          },
+        ]
+      },
+      {
+        path: "users",
+        element: <Users />
+      },
+      {
+        path: "teams",
+        element: <Teams />
+      },
+    ]
+  },
+]);
+
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  <React.StrictMode>
+    <RouterProvider router={router} />
+  </React.StrictMode>
+);

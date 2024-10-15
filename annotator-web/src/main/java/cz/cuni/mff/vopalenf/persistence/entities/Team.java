@@ -1,7 +1,9 @@
 package cz.cuni.mff.vopalenf.persistence.entities;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
+@Data
 @Entity
 @Table(name = "teams")
 public class Team {
@@ -32,13 +34,5 @@ public class Team {
 
     public Team(String name) {
         this.name = name;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
     }
 }
