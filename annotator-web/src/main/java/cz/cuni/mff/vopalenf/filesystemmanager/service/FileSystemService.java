@@ -3,7 +3,6 @@ package cz.cuni.mff.vopalenf.filesystemmanager.service;
 import cz.cuni.mff.vopalenf.constants.Constants;
 import cz.cuni.mff.vopalenf.persistence.entities.Project;
 import cz.cuni.mff.vopalenf.persistence.repositories.ProjectRepository;
-import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -15,13 +14,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.util.*;
-
-import static org.apache.tomcat.util.http.fileupload.IOUtils.*;
 
 @Service
 public class FileSystemService {

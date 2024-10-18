@@ -1,10 +1,6 @@
 package cz.cuni.mff.vopalenf.filesystemmanager.storage;
 
-import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.nio.file.Path;
-import java.util.stream.Stream;
 
 /**
  * Service for storing, loading and deleting file system data.

@@ -1,11 +1,8 @@
 package cz.cuni.mff.vopalenf.datamanager.controller;
 
-import cz.cuni.mff.vopalenf.constants.Constants;
 import cz.cuni.mff.vopalenf.datamanager.service.ProjectService;
 import cz.cuni.mff.vopalenf.persistence.entities.Annotation;
-import cz.cuni.mff.vopalenf.persistence.entities.Project;
 import cz.cuni.mff.vopalenf.persistence.entities.ProjectPriority;
-import cz.cuni.mff.vopalenf.persistence.entities.Team;
 import cz.cuni.mff.vopalenf.persistence.response.ProjectResponse;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
@@ -15,7 +12,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Objects;
 
 @RestController
 @RequestMapping("/api")
@@ -68,7 +64,7 @@ public class ProjectController {
         return projectService.annotateProjectFrame(projectId, frameId);
     }
 
-    @GetMapping( name = "/projects/{projectId}/annotations",
+    @GetMapping(value = "/projects/{projectId}/annotations",
         produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<Annotation>> getAllAnnotations (@PathVariable Long projectId) {
         return projectService.getAllAnnotations(projectId);

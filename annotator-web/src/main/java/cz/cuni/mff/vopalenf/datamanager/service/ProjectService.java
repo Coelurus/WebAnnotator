@@ -13,9 +13,7 @@ import cz.cuni.mff.vopalenf.persistence.response.ProjectResponse;
 import cz.cuni.mff.vopalenf.persistence.view.Views;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.multipart.MultipartFile;
-import org.webjars.NotFoundException;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -51,7 +49,8 @@ public class ProjectService {
 
     public ResponseEntity<ProjectResponse> getProject(Long projectId) {
         return ResponseEntity.ok(new ProjectResponse(
-                projectRepository.findById(projectId).orElseThrow(() -> new NotFoundException("NOT FOUND")),
+                //TODO: implement own exception handling
+                projectRepository.findById(projectId).orElseThrow(() -> new RuntimeException("NOT FOUND")),
                 Views.ShowTeamsInUsers.class));
     }
 
