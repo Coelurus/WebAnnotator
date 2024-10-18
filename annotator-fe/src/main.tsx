@@ -11,8 +11,7 @@ import Projects from "./routes/listing/projects";
 import Users from "./routes/listing/users";
 import Teams from "./routes/listing/teams";
 import ProjectForm from "./routes/project/project-form";
-
-import './index.css'
+import Project, {loader as projectLoader} from "./routes/project/project";
 
 const router = createBrowserRouter([
   {
@@ -24,12 +23,17 @@ const router = createBrowserRouter([
         path: "projects",
         children: [
           {
+            path: ":projectId",
+            element: <Project />,
+            loader: projectLoader
+          },
+          {
             path: "all",
             element: <Projects />,
           },
           {
             path: "create",
-            element: <ProjectForm />
+            element: <ProjectForm />,
           },
         ]
       },

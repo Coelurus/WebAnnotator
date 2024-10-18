@@ -28,3 +28,17 @@ export async function fetchPriorities(): Promise<PriorityResponse[]> {
         return [];
     }
 }
+
+export async function fetchProject(id: number): Promise<ProjectResponse | null> {
+    try {
+        const response = await fetch('/api/projects/' + id);
+        if(!response.ok) {
+            throw new Error('Network response was not ok.')
+        }
+        const data = await response.json();
+        return mapProjectResponse(data);
+    } catch (error) {        
+        console.error('Error fetching project:', error);
+        return null;
+    }
+}

@@ -1,6 +1,20 @@
 import { PriorityResponse, ProjectResponse, TeamResponse, UserResponse } from "../model/responses";
 
-export function mapProjectResponse(data: any[]): ProjectResponse[] {
+export function mapProjectResponse(project: any): ProjectResponse {
+    return {
+        id: project.id,
+        projectName: project.project_name,
+        logFileName: project.log_file_name,
+        deadline: project.dead_line,
+        priority: project.priority,
+        team: {
+            id: project.team.id,
+            name: project.team.name,
+        },
+    };
+}
+
+export function mapProjectResponses(data: any[]): ProjectResponse[] {
     return data.map((project) => ({
         id: project.id,
         projectName: project.project_name,

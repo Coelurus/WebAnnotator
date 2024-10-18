@@ -1,10 +1,20 @@
 import os
-import cv2
 import time
-import pyperclip
-import pyautogui
-from pynput import mouse
 from zipfile import ZipFile, ZIP_DEFLATED
+
+# pip install pynput
+from pynput import mouse
+
+# pip install PyAutoGUI
+import pyautogui
+
+# pip install pyperclip
+import pyperclip
+
+# pip install opencv-python
+import cv2
+
+### pip install pynput PyAutoGUI pyperclip opencv-python
 
 recording = False
 out = None

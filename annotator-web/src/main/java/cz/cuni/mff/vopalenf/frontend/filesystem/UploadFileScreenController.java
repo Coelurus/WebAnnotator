@@ -77,34 +77,5 @@ public class UploadFileScreenController {
     }
 
 
-    /**
-     * Resolves creating new project and saving file to a filesystem and creating new record in db.
-     *
-     * @param projectName Name of the new project
-     * @param deadline    Date till which the project should be finished.
-     * @param priority    A need to finish this project.
-     * @param teamId      Identifier of team to which the project is assigned to.
-     * @param file        Compressed zip file containing log file and camera shots.
-     * @return Redirection to a main menu.
-     */
-    @PostMapping("/uploadfile")
-    public String manageFileUpload(
-            @RequestParam("project_name") String projectName,
-            @RequestParam("deadline") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate deadline,
-            @RequestParam("priority") Integer priority,
-            @RequestParam("team_id") Integer teamId,
-            @RequestParam("file") MultipartFile file) {
-
-        Team team = teamRepository.findById(Long.valueOf(teamId))
-                .orElseThrow(() -> new IllegalArgumentException("Invalid team ID: " + teamId));
-
-        String compressedFileName = file.getOriginalFilename();
-        String shortenedFileName = Objects.requireNonNull(compressedFileName)
-                .substring(0, compressedFileName.indexOf(Constants.ARCHIVE_EXTENSION));
-        Project project = new Project(projectName, shortenedFileName, deadline, priority, team);
-        projectRepository.save(project);
-        storageService.store(file);
-        return "redirect:/";
-    }
 
 }

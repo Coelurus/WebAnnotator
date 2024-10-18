@@ -32,6 +32,13 @@ CREATE TABLE tags (
     name VARCHAR(255) NOT NULL
 );
 
+CREATE TABLE annotations (
+    id  BIGSERIAL PRIMARY KEY,
+    project_id BIGINT NOT NULL,
+    frame_id BIGINT NOT NULL,
+    label VARCHAR(255) NOT NULL
+);
+
 
 
 INSERT INTO users (first_name, last_name, user_name, password_hash, team_id) VALUES

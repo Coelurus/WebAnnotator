@@ -30,7 +30,6 @@ public class AnnotationScreenController {
      * @param id    ID of project to be annotated
      * @param model Holder for attributes
      * @return Redirection to template
-     */
     @GetMapping("/{id}/page/{page}")
     public String getImagesForPage(@PathVariable Long id, @PathVariable int page, Model model) {
         int imagesOnPage = 684;
@@ -48,4 +47,5 @@ public class AnnotationScreenController {
 
         return "annotator";
     }
+     */
 }

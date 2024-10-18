@@ -35,3 +35,9 @@ export interface ProjectResponse {
 export interface PriorityResponse {
     name: string;
 }
+
+
+export interface Annotation {
+
+    frameId: number;
+}

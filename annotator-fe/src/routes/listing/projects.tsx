@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
+import { Link } from "react-router-dom";
 
 import { ProjectResponse } from '../../persistence/model/responses';
-import { mapProjectResponse } from '../../persistence/mapper/mapper';
+import { mapProjectResponses } from '../../persistence/mapper/mapper';
 
 
 
@@ -11,7 +12,7 @@ export default function Projects() {
     useEffect(() => {
         fetch('/api/projects')
           .then((response) => response.json())
-          .then((data) => setProjects(mapProjectResponse(data)))
+          .then((data) => setProjects(mapProjectResponses(data)))
           .catch((error) => console.error('Error fetching projects:', error));
       }, []);      
 
@@ -32,13 +33,17 @@ export default function Projects() {
             <tbody>
               {projects.map((project) => (
                 <tr key={project.id}>
-                  <td>{project.id}</td>
-                  <td>{project.projectName}</td>
-                  <td>{project.logFileName}</td>
-                  <td>{project.deadline}</td>
-                  <td>{project.priority}</td>
-                  <td>{project.team.name}</td>
-                </tr>
+                    <td>{project.id}</td>
+                    <td>
+                      <Link to={"/projects/" + project.id}>
+                        {project.projectName}
+                      </Link>
+                    </td>
+                    <td>{project.logFileName}</td>
+                    <td>{project.deadline}</td>
+                    <td>{project.priority}</td>
+                    <td>{project.team.name}</td>
+                  </tr>
               ))}
             </tbody>
           </table>

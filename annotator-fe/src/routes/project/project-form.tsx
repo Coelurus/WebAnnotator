@@ -16,7 +16,7 @@ export default function ProjectForm() {
     }, []);   
 
     return (
-        <form method="post" action="/uploadfile">
+        <form method="post" action="/api/upload" encType="multipart/form-data">
             <table>
                 <tbody>
                     <tr>
