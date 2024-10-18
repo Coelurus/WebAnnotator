@@ -1,0 +1,360 @@
+openapi: 3.0.3
+info:
+  title: Annotator
+  description: Gesture annotator for capacity sensor data
+  version: 1.0.0
+tags:
+  - name: projects
+    description: Where annotating happens
+  - name: frame
+    description: Images from video
+  - name: annotate
+    description: Mark frames with label
+  - name: human resources
+    description: Users and teams
+
+paths:
+  /teams:
+    get:
+      tags:
+        - human resources
+      summary: Get all teams in system
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Team"
+  /users:
+    get:
+      tags:
+        - human resources
+      summary: Get all users in system
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+
+  /projects:
+    get:
+      tags:
+        - projects
+      summary: Get all projects in system
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Project"
+
+  /projects/{id}:
+    get:
+      tags:
+        - projects
+      summary: Get project by id
+      parameters:
+        - name: id
+          in: path
+          description: ID of project to be fetched
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 5
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Project"
+        "400":
+          description: Invalid ID supplied
+        "404":
+          description: Project not found
+
+  /projects/upload:
+    post:
+      tags:
+        - projects
+      summary: Upload new project
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProjectRequest"
+      responses:
+        "200":
+          description: successful operation
+
+  /projects/{projectId}/annotate/{frameId}:
+    post:
+      tags:
+        - annotate
+      summary: Annotate frame in project
+      parameters:
+        - name: projectId
+          in: path
+          description: ID of project whose frame to annotate
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 3
+        - name: frameId
+          in: path
+          description: ID of frame in project to annotate
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 354
+      responses:
+        "200":
+          description: successful operation
+
+  /projects/{projectId}/annotations:
+    get:
+      tags:
+        - annotate
+      summary: Get all annotations in project
+      parameters:
+        - name: projectId
+          in: path
+          description: ID of project whose annotations to load
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 3
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Annotation"
+
+  /priorities:
+    get:
+      tags:
+        - projects
+      summary: Get all assignable priorities
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                  example: HIGH
+
+  /projects/{id}/frame/count:
+    get:
+      tags:
+        - frame
+      summary: Get count of frames in project
+      parameters:
+        - name: id
+          in: path
+          description: ID of project whose frames to count
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 3
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Counter"
+
+  /projects/{id}/frame/{position}:
+    get:
+      summary: Get frame from project at position
+      tags:
+        - frame
+      parameters:
+        - name: id
+          in: path
+          description: ID of project whose frame to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 3
+        - name: position
+          in: path
+          description: order of frame in project to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 354
+      responses:
+        "200":
+          description: successful operation
+          content:
+            image/jpg:
+              schema:
+                type: string
+                format: binary
+                example: frame_608_msec.jpg
+
+components:
+  schemas:
+    ShortTeam:
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 3
+        name:
+          type: string
+          example: Fasteam
+
+    ShortUser:
+      required:
+        - id
+        - firstName
+        - lastName
+        - username
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 4
+        firstName:
+          type: string
+          example: Milan
+        lastName:
+          type: string
+          example: Kořínek
+        username:
+          type: string
+          example: lankoren
+
+    Team:
+      allOf:
+        - $ref: "#/components/schemas/ShortTeam"
+        - type: object
+          required:
+            - leader
+          properties:
+            leader:
+              $ref: "#/components/schemas/ShortUser"
+
+    User:
+      allOf:
+        - $ref: "#/components/schemas/ShortUser"
+        - type: object
+          required:
+            - team
+          properties:
+            team:
+              $ref: "#/components/schemas/ShortTeam"
+
+    Project:
+      required:
+        - id
+        - projectName
+        - logFileName
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 5
+        projectName:
+          type: string
+          example: wawing_37
+        logFileName:
+          type: string
+          example: gestic_20240925_083111
+        deadline:
+          type: string
+          format: date-time
+          example: 2024-11-15
+        priority:
+          type: string
+          enum: [HIGH, MEDIUM, LOW]
+          example: HIGH
+        team:
+          $ref: "#/components/schemas/ShortTeam"
+
+    ProjectRequest:
+      properties:
+        projectName:
+          type: string
+          example: "circling_789"
+        deadline:
+          type: string
+          format: date-time
+          example: 2024-11-15
+        priority:
+          $ref: "#/components/schemas/Priority"
+        teamId:
+          type: integer
+          format: int64
+          example: 3
+        file:
+          type: string
+          format: binary
+          description: ZIP file containing logs and frames
+          example: gestic_20240925_093532.zip
+
+    Annotation:
+      required:
+        - id
+        - projectId
+        - frameId
+        - label
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 56
+        projectId:
+          type: integer
+          format: int64
+          example: 2
+        frameId:
+          type: integer
+          format: int64
+          example: 758
+        label:
+          type: string
+          example: LeftRightWawe
+
+    Priority:
+      type: string
+      enum:
+        - HIGH
+        - MEDIUM
+        - LOW
+
+    Counter:
+      properties:
+        count:
+          type: integer
+          format: int64
+          example: 2538
