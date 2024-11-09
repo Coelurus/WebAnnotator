@@ -4,3 +4,5 @@
 annotator-web/file_system/*
 out/
 gs-rest-service/
+file_system/*
+database/*
