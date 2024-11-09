@@ -3,10 +3,12 @@ package cz.cuni.mff.vopalenf.datamanager.service;
 import cz.cuni.mff.vopalenf.constants.Constants;
 import cz.cuni.mff.vopalenf.filesystemmanager.storage.StorageService;
 import cz.cuni.mff.vopalenf.persistence.entities.Annotation;
+import cz.cuni.mff.vopalenf.persistence.entities.Label;
 import cz.cuni.mff.vopalenf.persistence.entities.Project;
 import cz.cuni.mff.vopalenf.persistence.entities.ProjectPriority;
 import cz.cuni.mff.vopalenf.persistence.entities.Team;
 import cz.cuni.mff.vopalenf.persistence.repositories.AnnotationRepository;
+import cz.cuni.mff.vopalenf.persistence.repositories.LabelRepository;
 import cz.cuni.mff.vopalenf.persistence.repositories.ProjectRepository;
 import cz.cuni.mff.vopalenf.persistence.repositories.TeamRepository;
 import cz.cuni.mff.vopalenf.persistence.response.ProjectResponse;
@@ -27,17 +29,20 @@ public class ProjectService {
     private final TeamRepository teamRepository;
     private final StorageService storageService;
     private final AnnotationRepository annotationRepository;
+    private final LabelRepository labelRepository;
 
     private static final String DEFAULT = "default";
 
     public ProjectService(ProjectRepository projectRepository,
                           TeamRepository teamRepository,
                           StorageService storageService,
-                          AnnotationRepository annotationRepository) {
+                          AnnotationRepository annotationRepository,
+                          LabelRepository labelRepository) {
         this.projectRepository = projectRepository;
         this.teamRepository = teamRepository;
         this.storageService = storageService;
         this.annotationRepository = annotationRepository;
+        this.labelRepository = labelRepository;
     }
 
     public ResponseEntity<List<ProjectResponse>> getAllProjects() {
@@ -58,7 +63,7 @@ public class ProjectService {
         return ResponseEntity.ok(Arrays.stream(ProjectPriority.class.getEnumConstants()).toList());
     }
 
-    public String manageFileUpload(String projectName,LocalDate deadline,
+    public ResponseEntity<String> manageFileUpload(String projectName,LocalDate deadline,
             String priority, Integer teamId, MultipartFile file) {
 
         Team team = teamRepository.findById(Long.valueOf(teamId))
@@ -72,7 +77,7 @@ public class ProjectService {
         projectRepository.save(project);
         storageService.store(file);
         // TODO: better resolving of success also on frontend
-        return "OK";
+        return ResponseEntity.ok("OK");
     }
 
     public ResponseEntity<Void> annotateProjectFrame(Long projectId, Long frameId) {
@@ -86,5 +91,9 @@ public class ProjectService {
 
     public ResponseEntity<List<Annotation>> getAllAnnotations (Long projectId) {
         return ResponseEntity.ok(annotationRepository.findByProjectId(projectId));
+    }
+
+    public ResponseEntity<List<Label>> getAllLabels() {
+        return ResponseEntity.ok(labelRepository.findAll());
     }
 }

@@ -3,9 +3,11 @@ package cz.cuni.mff.vopalenf.persistence.entities;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "annotations")
 public class Annotation {
@@ -22,10 +24,6 @@ public class Annotation {
 
     @Column(name = "label")
     private String label;
-
-    public Annotation() {
-
-    }
 
     public Annotation(Long projectId, Long frameId, String label) {
         this.projectId = projectId;

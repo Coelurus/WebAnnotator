@@ -32,3 +32,7 @@ Recommended possibility: [Spring boot](https://spring.io/guides/gs/rest-service)
 - Since frontend has to be quite powerful to allow choosing multiple images to annotate etc. 
 - I believe it would be easier to migrate to JS React instead of using Thymeleaf.
 - Also it allows us to use REST approach which is very popular at the moment.
+
+#### Annotating view
+- https://www.npmjs.com/package/react-selecto - is for rectangular choices - not our case
+- has to be custom made

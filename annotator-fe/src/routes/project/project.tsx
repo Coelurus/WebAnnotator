@@ -2,46 +2,55 @@ import { useEffect, useState } from "react";
 import { Form, LoaderFunction, useLoaderData } from "react-router-dom";
 import { fetchProject } from "../../persistence/fetcher/fetcher";
 import { ProjectResponse } from "../../persistence/model/responses";
-import { Annotation } from "../../persistence/model/responses";
+import { Annotation, Label } from "../../persistence/model/responses";
 import "../../styles/galery.css";
-export const loader: LoaderFunction = async({ params }) => {
+export const loader: LoaderFunction = async ({ params }) => {
     const project = await fetchProject(Number(params.projectId));
-    return project ;
-  }
+    return project;
+}
 
 export default function Project() {
     const [pageNum, setPageNum] = useState<number>(0);
     const [frameCount, setFrameCount] = useState<number>(0);
-    const [selectedFrames, setSelectedFrames] = useState<number[]>([]); 
+    const [selectedFrames, setSelectedFrames] = useState<number[]>([]);
     const project = useLoaderData() as ProjectResponse;
     const imagesPerPage = 100;
+    const [labels, setLabels] = useState<Label[]>([]);
+    const [currentLabel, setCurrentLabel] = useState<Label>();
 
-    
+
     useEffect(() => {
-        fetch('/api/projects/'+ project.id + '/frame/count')
+        fetch('/api/projects/' + project.id + '/frame/count')
             .then((response) => response.json())
             .then((data) => setFrameCount(data.count))
             .catch((error) => console.error('Error fetching frame count:', error));
 
 
         fetch(`/api/projects/${project.id}/annotations`)
-            .then((response) => {           
+            .then((response) => {
                 return response.json();
             })
-            .then((data: Annotation[]) => {                
+            .then((data: Annotation[]) => {
                 const annotatedFrames = data.map(annotation => annotation.frameId);
                 setSelectedFrames(annotatedFrames);
             })
             .catch((error) => console.error('Error fetching annotations:', error));
-    
+
     }, [project.id]);
-    
+
+    useEffect(() => {
+        fetch(`/api/labels`)
+            .then((response) => response.json())
+            .then((data) => setLabels(data))
+            .catch((error) => console.error('Error fetching labels:', error));
+    }, []);
+
     const nextPage = () => {
         if ((pageNum + 1) * imagesPerPage < frameCount) {
             setPageNum(pageNum + 1);
         }
     };
-    
+
     const prevPage = () => {
         if (pageNum > 0) {
             setPageNum(pageNum - 1);
@@ -58,20 +67,29 @@ export default function Project() {
 
         fetch(`/api/projects/${project.id}/annotate/${frameId}`, {
             method: 'POST',
-        })  ;
+        });
     }
 
     const startPosition = pageNum * imagesPerPage + 1;
-    const endPosition = Math.min(startPosition + imagesPerPage - 1, frameCount); 
+    const endPosition = Math.min(startPosition + imagesPerPage - 1, frameCount);
 
     const imagePositions = Array.from(
-        { length: endPosition - startPosition + 1 }, 
+        { length: endPosition - startPosition + 1 },
         (_, i) => startPosition + i
     );
 
     return (
         <div>
             <h1>{project ? project.projectName : 'No project found'}</h1>
+
+            <select name="label" id="label-select">
+                {labels.map((label) => (
+                    <option value={label.label} key={"label_" + label.label}>
+                        {label.label}
+                    </option>
+                ))}
+            </select>
+
             <div className="image-grid">
                 {imagePositions.map(position => (
                     <img
@@ -79,7 +97,7 @@ export default function Project() {
                         src={`/api/projects/${project.id}/frame/${position}`}
                         alt={`Frame ${position}`}
                         className={`image ${selectedFrames.includes(position) ? 'selected' : ''}`} // Add selected class
-                        onClick={() => handleImageClick(position)} 
+                        onClick={() => handleImageClick(position)}
                     />
                 ))}
             </div>

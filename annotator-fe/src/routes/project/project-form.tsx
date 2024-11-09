@@ -8,15 +8,15 @@ export default function ProjectForm() {
     const [teams, setTeams] = useState<TeamResponse[]>([]);
     useEffect(() => {
         fetchTeams().then(setTeams);
-    }, []);    
+    }, []);
 
     const [priorities, setPriorities] = useState<PriorityResponse[]>([]);
     useEffect(() => {
         fetchPriorities().then(setPriorities);
-    }, []);   
+    }, []);
 
     return (
-        <form method="post" action="/api/upload" encType="multipart/form-data">
+        <form method="post" action="/api/projects/upload" encType="multipart/form-data">
             <table>
                 <tbody>
                     <tr>
@@ -25,7 +25,7 @@ export default function ProjectForm() {
                     </tr>
                     <tr>
                         <td>File to upload:</td>
-                        <td><input type="file" name="file"/></td>
+                        <td><input type="file" name="file" /></td>
                     </tr>
                     <tr>
                         <td>Deadline:</td>
@@ -59,7 +59,7 @@ export default function ProjectForm() {
                     </tr>
                     <tr>
                         <td></td>
-                        <td><input type="submit" value="Upload"/></td>
+                        <td><input type="submit" value="Upload" /></td>
                     </tr>
                 </tbody>
             </table>

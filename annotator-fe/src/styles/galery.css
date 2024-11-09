@@ -8,13 +8,12 @@
     width: 50px;
     height: 50px;
     object-fit: cover;
-    cursor: pointer; 
-    transition: background-color 0.3s ease; 
-    border: 5px solid rgba(0,0,0,0);
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    border: 5px solid rgba(0, 0, 0, 0);
 }
 
 .image.selected {
-    background-color: rgba(255, 0, 0, 0.2);
     border: 5px solid red;
 }
 

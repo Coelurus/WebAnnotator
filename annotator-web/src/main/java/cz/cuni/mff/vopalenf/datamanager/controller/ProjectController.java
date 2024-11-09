@@ -2,6 +2,7 @@ package cz.cuni.mff.vopalenf.datamanager.controller;
 
 import cz.cuni.mff.vopalenf.datamanager.service.ProjectService;
 import cz.cuni.mff.vopalenf.persistence.entities.Annotation;
+import cz.cuni.mff.vopalenf.persistence.entities.Label;
 import cz.cuni.mff.vopalenf.persistence.entities.ProjectPriority;
 import cz.cuni.mff.vopalenf.persistence.response.ProjectResponse;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -38,6 +39,11 @@ public class ProjectController {
         return projectService.getAllProjectPriorities();
     }
 
+    @GetMapping("/labels")
+    public ResponseEntity<List<Label>> getAllLabels() {
+        return projectService.getAllLabels();
+    }
+
 
     /**
      * Resolves creating new project and saving file to a filesystem and creating new record in db.
@@ -49,8 +55,8 @@ public class ProjectController {
      * @param file        Compressed zip file containing log file and camera shots.
      * @return Redirection to a main menu.
      */
-    @PostMapping("/upload")
-    public String manageFileUpload(
+    @PostMapping("/projects/upload")
+    public ResponseEntity<String> manageFileUpload(
             @RequestParam("project_name") String projectName,
             @RequestParam("deadline") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate deadline,
             @RequestParam("priority") String priority,

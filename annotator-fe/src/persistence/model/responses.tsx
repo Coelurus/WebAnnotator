@@ -38,6 +38,10 @@ export interface PriorityResponse {
 
 
 export interface Annotation {
-
     frameId: number;
+}
+
+export interface Label {
+    id: number;
+    label: string;
 }

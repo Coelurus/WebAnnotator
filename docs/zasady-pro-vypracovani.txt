@@ -1,0 +1,3 @@
+Cílem práce je implementovat webovou aplikace pro anotaci dat z kapacitního senzoru získávaných za pomoci MGC3130 Hillstar Development Kitu. 
+Práce bude obsahovat skript pro automatický sběr dat z aplikace obsluhující senzor, klientské prostředí umožňující uživateli správu souborového systému obsahujícího nahraná data a jejich anotování a na pozadí server spravující požadavky na veškerou práci s daty a komunikující s externí AI učící se na těchto datech.
+Serverová část aplikace bude implementována v Javě, klientská část v JavaScriptu a skript pro sběr v Pythonu.

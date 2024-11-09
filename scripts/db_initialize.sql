@@ -39,6 +39,12 @@ CREATE TABLE annotations (
     label VARCHAR(255) NOT NULL
 );
 
+CREATE TABLE labels(
+    id BIGSERIAL PRIMARY KEY,
+    label VARCHAR(255) NOT NULL,
+    color VARCHAR(255) NOT NULL
+);
+
 
 
 INSERT INTO users (first_name, last_name, user_name, password_hash, team_id) VALUES
@@ -57,7 +63,11 @@ INSERT INTO projects (project_name, log_file_name, deadline, priority, team_id) 
 
 INSERT INTO tags (name) VALUES
 ('wawe'),
-('spin'); 
+('spin');
+
+INSERT INTO labels (label, color) VALUES
+('left right wawe', 'red'),
+('clock wise spin', 'blue');
 
 INSERT INTO projecttag (project_id, tag_id) VALUES
 (1, 1),
