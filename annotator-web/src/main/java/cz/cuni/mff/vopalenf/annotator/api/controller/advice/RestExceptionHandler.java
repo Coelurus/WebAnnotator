@@ -2,7 +2,10 @@ package cz.cuni.mff.vopalenf.annotator.api.controller.advice;
 
 import cz.cuni.mff.vopalenf.annotator.api.model.ErrorResponse;
 import cz.cuni.mff.vopalenf.annotator.api.model.ErrorResponseItem;
+import cz.cuni.mff.vopalenf.annotator.exception.api.APIException;
+import cz.cuni.mff.vopalenf.annotator.exception.api.BadRequestException;
 import cz.cuni.mff.vopalenf.annotator.exception.api.NotFoundException;
+import cz.cuni.mff.vopalenf.annotator.exception.api.UnprocessableContentException;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,13 +14,58 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.Collections;
 
+/**
+ * Class handling catching exceptions from BE and transforming them into response REST-like object
+ */
 @RestControllerAdvice
 public class RestExceptionHandler {
 
+    /**
+     * Handler for NotFoundException
+     *
+     * @param e Thrown exception
+     * @return Error response with information about exception
+     */
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ErrorResponse> handleNotFoundException(NotFoundException e) {
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .status(HttpStatus.NOT_FOUND.value())
+        ErrorResponse errorResponse = handleException(e, HttpStatus.NOT_FOUND);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+    }
+
+    /**
+     * Handler for BadRequestException
+     *
+     * @param e Thrown exception
+     * @return Error response with information about exception
+     */
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<ErrorResponse> handleBadRequestException(BadRequestException e) {
+        ErrorResponse errorResponse = handleException(e, HttpStatus.BAD_REQUEST);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
+
+    /**
+     * Handler for UnprocessableContentException
+     *
+     * @param e Thrown exception
+     * @return Error response with information about exception
+     */
+    @ExceptionHandler(UnprocessableContentException.class)
+    public ResponseEntity<ErrorResponse> handleUnprocessableContentException(UnprocessableContentException e) {
+        ErrorResponse errorResponse = handleException(e, HttpStatus.UNPROCESSABLE_ENTITY);
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(errorResponse);
+    }
+
+    /**
+     * Handles creating ErrorResponse object
+     *
+     * @param e      Caught exception thrown in project
+     * @param status Http status of response
+     * @return Error response containing information about exception
+     */
+    private ErrorResponse handleException(APIException e, HttpStatus status) {
+        return ErrorResponse.builder()
+                .status(status.value())
                 .errors(Collections.singletonList(
                         ErrorResponseItem.builder()
                                 .error(e.getCode().name())
@@ -27,6 +75,5 @@ public class RestExceptionHandler {
                 ))
                 .stackTrace(ExceptionUtils.getStackTrace(e))
                 .build();
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
 }

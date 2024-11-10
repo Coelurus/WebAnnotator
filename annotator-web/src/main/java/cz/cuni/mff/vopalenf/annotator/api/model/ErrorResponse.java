@@ -8,6 +8,9 @@ import lombok.Value;
 
 import java.util.List;
 
+/**
+ * Response object returned by server when exception is thrown
+ */
 @Builder(toBuilder = true)
 @Value
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
