@@ -1,11 +1,26 @@
 package cz.cuni.mff.vopalenf.annotator.dao.model;
 
-import jakarta.persistence.*;
-import lombok.Data;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
+@Builder(toBuilder = true)
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "teams")
+@Getter
+@Setter
 public class TeamEntity {
 
     /**
@@ -28,9 +43,6 @@ public class TeamEntity {
     @ManyToOne
     @JoinColumn(name = "leader_id", nullable = false)
     private UserEntity leader;
-
-    public TeamEntity() {
-    }
 
     public TeamEntity(String name) {
         this.name = name;

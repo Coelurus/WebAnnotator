@@ -1,14 +1,19 @@
 package cz.cuni.mff.vopalenf.annotator.api.controller;
 
-import cz.cuni.mff.vopalenf.annotator.service.ProjectService;
+import cz.cuni.mff.vopalenf.annotator.api.model.Project;
 import cz.cuni.mff.vopalenf.annotator.dao.model.AnnotationEntity;
 import cz.cuni.mff.vopalenf.annotator.dao.model.LabelEntity;
 import cz.cuni.mff.vopalenf.annotator.enums.ProjectPriority;
-import cz.cuni.mff.vopalenf.annotator.api.model.ProjectResponse;
+import cz.cuni.mff.vopalenf.annotator.service.ProjectService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
@@ -25,12 +30,12 @@ public class ProjectController {
     }
 
     @GetMapping("/projects")
-    public ResponseEntity<List<ProjectResponse>> getAllProjects() {
+    public ResponseEntity<List<Project>> getAllProjects() {
         return projectService.getAllProjects();
     }
 
     @GetMapping("/projects/{id}")
-    public ResponseEntity<ProjectResponse> getProjectById(@PathVariable Long id) {
+    public ResponseEntity<Project> getProjectById(@PathVariable Long id) {
         return projectService.getProject(id);
     }
 
@@ -66,13 +71,13 @@ public class ProjectController {
     }
 
     @PostMapping("/projects/{projectId}/annotate/{frameId}")
-    public ResponseEntity<Void> annotateProjectFrame( @PathVariable Long projectId, @PathVariable Long frameId) {
+    public ResponseEntity<Void> annotateProjectFrame(@PathVariable Long projectId, @PathVariable Long frameId) {
         return projectService.annotateProjectFrame(projectId, frameId);
     }
 
     @GetMapping(value = "/projects/{projectId}/annotations",
-        produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<AnnotationEntity>> getAllAnnotations (@PathVariable Long projectId) {
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<AnnotationEntity>> getAllAnnotations(@PathVariable Long projectId) {
         return projectService.getAllAnnotations(projectId);
     }
 

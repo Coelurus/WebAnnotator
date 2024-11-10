@@ -1,4 +1,45 @@
 package cz.cuni.mff.vopalenf.annotator.mapper;
 
+import cz.cuni.mff.vopalenf.annotator.api.model.Team;
+import cz.cuni.mff.vopalenf.annotator.api.model.User;
+import cz.cuni.mff.vopalenf.annotator.dao.model.UserEntity;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+@Component
 public class UserMapper {
+
+    private final ModelMapper modelMapper;
+
+    @Autowired
+    public UserMapper(ModelMapper modelMapper) {
+        this.modelMapper = modelMapper;
+    }
+
+    public User mapUser(UserEntity userEntity) {
+        return mapUser(userEntity, null);
+    }
+
+    public User mapUser(UserEntity userEntity, Team team) {
+        if (userEntity == null) {
+            return null;
+        }
+
+        return User.builder()
+                .id(userEntity.getId())
+                .firstName(userEntity.getFirstName())
+                .lastName(userEntity.getLastName())
+                .userName(userEntity.getUsername())
+                .team(team)
+                .build();
+    }
+
+    public UserEntity mapUserEntity(User user) {
+        if (user == null) {
+            return null;
+        }
+
+        return modelMapper.map(user, UserEntity.UserEntityBuilder.class).build();
+    }
 }

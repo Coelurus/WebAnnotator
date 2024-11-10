@@ -1,16 +1,19 @@
 package cz.cuni.mff.vopalenf.annotator.service;
 
+import cz.cuni.mff.vopalenf.annotator.api.model.Project;
 import cz.cuni.mff.vopalenf.annotator.constants.Constants;
-import cz.cuni.mff.vopalenf.annotator.dao.model.*;
-import cz.cuni.mff.vopalenf.annotator.enums.ProjectPriority;
-import cz.cuni.mff.vopalenf.annotator.storage.StorageManager;
+import cz.cuni.mff.vopalenf.annotator.dao.model.AnnotationEntity;
+import cz.cuni.mff.vopalenf.annotator.dao.model.LabelEntity;
 import cz.cuni.mff.vopalenf.annotator.dao.model.ProjectEntity;
+import cz.cuni.mff.vopalenf.annotator.dao.model.TeamEntity;
 import cz.cuni.mff.vopalenf.annotator.dao.repository.AnnotationRepository;
 import cz.cuni.mff.vopalenf.annotator.dao.repository.LabelRepository;
 import cz.cuni.mff.vopalenf.annotator.dao.repository.ProjectRepository;
 import cz.cuni.mff.vopalenf.annotator.dao.repository.TeamRepository;
-import cz.cuni.mff.vopalenf.annotator.api.model.ProjectResponse;
-import cz.cuni.mff.vopalenf.annotator.api.view.Views;
+import cz.cuni.mff.vopalenf.annotator.enums.ProjectPriority;
+import cz.cuni.mff.vopalenf.annotator.mapper.ProjectMapper;
+import cz.cuni.mff.vopalenf.annotator.mapper.TeamMapper;
+import cz.cuni.mff.vopalenf.annotator.storage.StorageManager;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,46 +26,71 @@ import java.util.Objects;
 @Service
 public class ProjectService {
 
+    private static final String DEFAULT = "default";
+
     private final ProjectRepository projectRepository;
+
     private final TeamRepository teamRepository;
-    private final StorageManager storageManager;
+
     private final AnnotationRepository annotationRepository;
+
     private final LabelRepository labelRepository;
 
-    private static final String DEFAULT = "default";
+    private final ProjectMapper projectMapper;
+
+    private final TeamMapper teamMapper;
+
+    private final StorageManager storageManager;
 
     public ProjectService(ProjectRepository projectRepository,
                           TeamRepository teamRepository,
-                          StorageManager storageManager,
                           AnnotationRepository annotationRepository,
-                          LabelRepository labelRepository) {
+                          LabelRepository labelRepository,
+                          StorageManager storageManager,
+                          ProjectMapper projectMapper,
+                          TeamMapper teamMapper) {
         this.projectRepository = projectRepository;
         this.teamRepository = teamRepository;
         this.storageManager = storageManager;
         this.annotationRepository = annotationRepository;
         this.labelRepository = labelRepository;
+        this.projectMapper = projectMapper;
+        this.teamMapper = teamMapper;
     }
 
-    public ResponseEntity<List<ProjectResponse>> getAllProjects() {
+    public ResponseEntity<List<Project>> getAllProjects() {
         return ResponseEntity.ok(projectRepository.findAll().stream()
-                .map(projectEntity -> new ProjectResponse(projectEntity, Views.ShowTeamsInUsers.class))
+                .map(projectEntity -> projectMapper.mapProject(
+                        projectEntity,
+                        teamMapper.mapTeam(
+                                projectEntity.getTeam(),
+                                null
+                        )
+                ))
                 .toList()
         );
     }
 
-    public ResponseEntity<ProjectResponse> getProject(Long projectId) {
-        return ResponseEntity.ok(new ProjectResponse(
-                //TODO: implement own exception handling
-                projectRepository.findById(projectId).orElseThrow(() -> new RuntimeException("NOT FOUND")),
-                Views.ShowTeamsInUsers.class));
+    public ResponseEntity<Project> getProject(Long projectId) {
+        //TODO: implement own exception handling
+
+        ProjectEntity foundProject = projectRepository.findById(projectId)
+                .orElseThrow(() -> new RuntimeException("NOT FOUND"));
+
+        return ResponseEntity.ok(projectMapper.mapProject(
+                foundProject,
+                teamMapper.mapTeam(
+                        foundProject.getTeam()
+                )
+        ));
     }
 
     public ResponseEntity<List<ProjectPriority>> getAllProjectPriorities() {
         return ResponseEntity.ok(Arrays.stream(ProjectPriority.class.getEnumConstants()).toList());
     }
 
-    public ResponseEntity<String> manageFileUpload(String projectName,LocalDate deadline,
-            String priority, Integer teamId, MultipartFile file) {
+    public ResponseEntity<String> manageFileUpload(String projectName, LocalDate deadline,
+                                                   String priority, Integer teamId, MultipartFile file) {
 
         TeamEntity teamEntity = teamRepository.findById(Long.valueOf(teamId))
                 .orElseThrow(() -> new IllegalArgumentException("Invalid team ID: " + teamId));
@@ -87,7 +115,7 @@ public class ProjectService {
         return ResponseEntity.ok().build();
     }
 
-    public ResponseEntity<List<AnnotationEntity>> getAllAnnotations (Long projectId) {
+    public ResponseEntity<List<AnnotationEntity>> getAllAnnotations(Long projectId) {
         return ResponseEntity.ok(annotationRepository.findByProjectId(projectId));
     }
 

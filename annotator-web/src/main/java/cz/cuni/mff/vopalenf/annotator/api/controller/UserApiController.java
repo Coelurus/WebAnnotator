@@ -1,7 +1,7 @@
 package cz.cuni.mff.vopalenf.annotator.api.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import cz.cuni.mff.vopalenf.annotator.api.model.UserResponse;
+import cz.cuni.mff.vopalenf.annotator.api.model.User;
 import cz.cuni.mff.vopalenf.annotator.api.view.Views;
 import cz.cuni.mff.vopalenf.annotator.service.UserService;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +23,7 @@ public class UserApiController {
 
     @JsonView({Views.ShowTeamsInUsers.class})
     @GetMapping("/users")
-    public ResponseEntity<List<UserResponse>> getUsers(){
+    public ResponseEntity<List<User>> getUsers() {
         return userService.getAllUsers();
     }
 

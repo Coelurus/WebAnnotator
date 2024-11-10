@@ -1,8 +1,10 @@
 package cz.cuni.mff.vopalenf.annotator.service;
 
+import cz.cuni.mff.vopalenf.annotator.api.model.Team;
 import cz.cuni.mff.vopalenf.annotator.dao.repository.TeamRepository;
-import cz.cuni.mff.vopalenf.annotator.api.model.TeamResponse;
-import cz.cuni.mff.vopalenf.annotator.api.view.Views;
+import cz.cuni.mff.vopalenf.annotator.mapper.TeamMapper;
+import cz.cuni.mff.vopalenf.annotator.mapper.UserMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -13,14 +15,28 @@ public class TeamService {
 
     private final TeamRepository teamRepository;
 
-    public TeamService(TeamRepository teamRepository) {
+    private final UserMapper userMapper;
+
+    private final TeamMapper teamMapper;
+
+    @Autowired
+    public TeamService(TeamRepository teamRepository,
+                       UserMapper userMapper,
+                       TeamMapper teamMapper) {
         this.teamRepository = teamRepository;
+        this.userMapper = userMapper;
+        this.teamMapper = teamMapper;
     }
 
-    public ResponseEntity<List<TeamResponse>> getAllTeams() {
+    public ResponseEntity<List<Team>> getAllTeams() {
         return ResponseEntity.ok(
                 teamRepository.findAll().stream()
-                        .map(team -> new TeamResponse(team, Views.ShowUsersInTeams.class))
+                        .map(teamEntity -> teamMapper.mapTeam(
+                                teamEntity,
+                                userMapper.mapUser(
+                                        teamEntity.getLeader()
+                                )
+                        ))
                         .toList()
         );
     }
