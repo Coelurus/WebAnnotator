@@ -11,9 +11,10 @@ import cz.cuni.mff.vopalenf.annotator.dao.repository.LabelRepository;
 import cz.cuni.mff.vopalenf.annotator.dao.repository.ProjectRepository;
 import cz.cuni.mff.vopalenf.annotator.dao.repository.TeamRepository;
 import cz.cuni.mff.vopalenf.annotator.enums.ProjectPriority;
+import cz.cuni.mff.vopalenf.annotator.exception.api.NotFoundException;
+import cz.cuni.mff.vopalenf.annotator.manager.storage.StorageManager;
 import cz.cuni.mff.vopalenf.annotator.mapper.ProjectMapper;
 import cz.cuni.mff.vopalenf.annotator.mapper.TeamMapper;
-import cz.cuni.mff.vopalenf.annotator.storage.StorageManager;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -72,10 +73,8 @@ public class ProjectService {
     }
 
     public ResponseEntity<Project> getProject(Long projectId) {
-        //TODO: implement own exception handling
-
         ProjectEntity foundProject = projectRepository.findById(projectId)
-                .orElseThrow(() -> new RuntimeException("NOT FOUND"));
+                .orElseThrow(() -> new NotFoundException("PROJECT ID NOT FOUND", "getProject"));
 
         return ResponseEntity.ok(projectMapper.mapProject(
                 foundProject,

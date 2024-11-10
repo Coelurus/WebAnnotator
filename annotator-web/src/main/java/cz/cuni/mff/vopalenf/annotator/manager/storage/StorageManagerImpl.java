@@ -1,7 +1,7 @@
-package cz.cuni.mff.vopalenf.annotator.storage;
+package cz.cuni.mff.vopalenf.annotator.manager.storage;
 
-import cz.cuni.mff.vopalenf.annotator.exception.StorageException;
 import cz.cuni.mff.vopalenf.annotator.config.StorageConfig;
+import cz.cuni.mff.vopalenf.annotator.exception.StorageException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;

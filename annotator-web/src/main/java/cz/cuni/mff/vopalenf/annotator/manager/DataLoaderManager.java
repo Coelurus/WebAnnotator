@@ -1,4 +1,4 @@
-package cz.cuni.mff.vopalenf.annotator.service;
+package cz.cuni.mff.vopalenf.annotator.manager;
 
 import cz.cuni.mff.vopalenf.annotator.api.model.LogData;
 
@@ -17,7 +17,7 @@ import java.util.Objects;
 /**
  * Class to file manage and load log data from sensor.
  */
-public class DataLoaderService {
+public class DataLoaderManager {
     private final String DATA_IDENTIFIER = "DATA";
     private final int DATA_IDENTIFIER_IDX = 2;
 
@@ -29,7 +29,7 @@ public class DataLoaderService {
      */
     public Path[] loadFromResources() {
         try {
-            URL logDirURL = DataLoaderService.class.getClassLoader().getResource("sensor-data");
+            URL logDirURL = DataLoaderManager.class.getClassLoader().getResource("sensor-data");
             if (logDirURL == null) {
                 throw new RuntimeException("Resource directory 'sensor-data' not found.");
             }

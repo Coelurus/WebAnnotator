@@ -1,4 +1,4 @@
-package cz.cuni.mff.vopalenf.annotator.storage;
+package cz.cuni.mff.vopalenf.annotator.manager.storage;
 
 import org.springframework.web.multipart.MultipartFile;
 
@@ -12,5 +12,5 @@ public interface StorageManager {
      * @param file File to be saved
      */
     void store(MultipartFile file);
-    
+
 }

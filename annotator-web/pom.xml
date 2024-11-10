@@ -20,6 +20,7 @@
         <modelmapper.version>3.2.0</modelmapper.version>
         <jakarta-validation.version>3.1.0</jakarta-validation.version>
         <lombok.version>1.18.34</lombok.version>
+        <commons-lang3.version>3.14.0</commons-lang3.version>
     </properties>
 
     <dependencies>
@@ -67,6 +68,13 @@
             <artifactId>jakarta.validation-api</artifactId>
             <version>${jakarta-validation.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>${commons-lang3.version}</version>
+        </dependency>
+
     </dependencies>
 
     <build>
