@@ -75,6 +75,14 @@ public class ProjectController {
         return projectService.annotateProjectFrame(projectId, frameId);
     }
 
+    @PostMapping("/projects/{projectId}/annotate/{startFrameId}/{endFrameId}")
+    public ResponseEntity<Void> annotateProjectFramesInRange(
+            @PathVariable Long projectId,
+            @PathVariable Long startFrameId,
+            @PathVariable Long endFrameId) {
+        return projectService.annotateProjectFramesInRange(projectId, startFrameId, endFrameId);
+    }
+
     @GetMapping(value = "/projects/{projectId}/annotations",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<AnnotationEntity>> getAllAnnotations(@PathVariable Long projectId) {
