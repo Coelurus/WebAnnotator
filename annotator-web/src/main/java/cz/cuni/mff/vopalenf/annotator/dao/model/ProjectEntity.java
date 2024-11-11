@@ -1,7 +1,10 @@
 package cz.cuni.mff.vopalenf.annotator.dao.model;
 
+import cz.cuni.mff.vopalenf.annotator.enums.Priority;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -57,8 +60,9 @@ public class ProjectEntity {
     /**
      * Information about how important it is to finish this project
      */
-    @Column(name = "priority")
-    private Integer priority;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "priority", columnDefinition = "enum")
+    private Priority priority;
 
     /**
      * Team to which the project was assigned
@@ -67,7 +71,7 @@ public class ProjectEntity {
     @JoinColumn(name = "team_id", nullable = false)
     private TeamEntity team;
 
-    public ProjectEntity(String projectName, String logFileName, LocalDate deadline, Integer priority, TeamEntity team) {
+    public ProjectEntity(String projectName, String logFileName, LocalDate deadline, Priority priority, TeamEntity team) {
         this.projectName = projectName;
         this.logFileName = logFileName;
         this.deadline = deadline;

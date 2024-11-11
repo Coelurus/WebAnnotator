@@ -10,7 +10,7 @@ import cz.cuni.mff.vopalenf.annotator.dao.repository.AnnotationRepository;
 import cz.cuni.mff.vopalenf.annotator.dao.repository.LabelRepository;
 import cz.cuni.mff.vopalenf.annotator.dao.repository.ProjectRepository;
 import cz.cuni.mff.vopalenf.annotator.dao.repository.TeamRepository;
-import cz.cuni.mff.vopalenf.annotator.enums.ProjectPriority;
+import cz.cuni.mff.vopalenf.annotator.enums.Priority;
 import cz.cuni.mff.vopalenf.annotator.exception.api.NotFoundException;
 import cz.cuni.mff.vopalenf.annotator.manager.storage.StorageManager;
 import cz.cuni.mff.vopalenf.annotator.mapper.ProjectMapper;
@@ -84,8 +84,8 @@ public class ProjectService {
         ));
     }
 
-    public ResponseEntity<List<ProjectPriority>> getAllProjectPriorities() {
-        return ResponseEntity.ok(Arrays.stream(ProjectPriority.class.getEnumConstants()).toList());
+    public ResponseEntity<List<Priority>> getAllProjectPriorities() {
+        return ResponseEntity.ok(Arrays.stream(Priority.class.getEnumConstants()).toList());
     }
 
     public ResponseEntity<String> manageFileUpload(String projectName, LocalDate deadline,
@@ -97,11 +97,11 @@ public class ProjectService {
         String compressedFileName = file.getOriginalFilename();
         String shortenedFileName = Objects.requireNonNull(compressedFileName)
                 .substring(0, compressedFileName.indexOf(Constants.ARCHIVE_EXTENSION));
-        // TODO: fix priorities ... make functional enum
-        ProjectEntity projectEntity = new ProjectEntity(projectName, shortenedFileName, deadline, 1, teamEntity);
+
+        ProjectEntity projectEntity = new ProjectEntity(projectName, shortenedFileName, deadline, Priority.fromName(priority), teamEntity);
         projectRepository.save(projectEntity);
         storageManager.store(file);
-        // TODO: better resolving of success also on frontend
+        
         return ResponseEntity.ok("OK");
     }
 

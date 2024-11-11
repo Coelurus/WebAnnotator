@@ -3,7 +3,7 @@ package cz.cuni.mff.vopalenf.annotator.api.controller;
 import cz.cuni.mff.vopalenf.annotator.api.model.Project;
 import cz.cuni.mff.vopalenf.annotator.dao.model.AnnotationEntity;
 import cz.cuni.mff.vopalenf.annotator.dao.model.LabelEntity;
-import cz.cuni.mff.vopalenf.annotator.enums.ProjectPriority;
+import cz.cuni.mff.vopalenf.annotator.enums.Priority;
 import cz.cuni.mff.vopalenf.annotator.service.ProjectService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
@@ -40,7 +40,7 @@ public class ProjectController {
     }
 
     @GetMapping("/priorities")
-    public ResponseEntity<List<ProjectPriority>> getAllProjectPriorities() {
+    public ResponseEntity<List<Priority>> getAllProjectPriorities() {
         return projectService.getAllProjectPriorities();
     }
 
