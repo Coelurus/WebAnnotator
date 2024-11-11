@@ -15,6 +15,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * Dao object representing user of the app
+ */
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor

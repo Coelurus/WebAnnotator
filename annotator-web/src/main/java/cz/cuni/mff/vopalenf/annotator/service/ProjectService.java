@@ -98,10 +98,16 @@ public class ProjectService {
         String shortenedFileName = Objects.requireNonNull(compressedFileName)
                 .substring(0, compressedFileName.indexOf(Constants.ARCHIVE_EXTENSION));
 
-        ProjectEntity projectEntity = new ProjectEntity(projectName, shortenedFileName, deadline, Priority.fromName(priority), teamEntity);
+        ProjectEntity projectEntity = ProjectEntity.builder()
+                .projectName(projectName)
+                .logFileName(shortenedFileName)
+                .deadline(deadline)
+                .priority(Priority.fromName(priority))
+                .team(teamEntity)
+                .build();
         projectRepository.save(projectEntity);
         storageManager.store(file);
-        
+
         return ResponseEntity.ok("OK");
     }
 
@@ -109,7 +115,13 @@ public class ProjectService {
         if (annotationRepository.existsByProjectIdAndFrameIdAndLabel(projectId, frameId, DEFAULT)) {
             annotationRepository.deleteByProjectIdAndFrameIdAndLabel(projectId, frameId, DEFAULT);
         } else {
-            annotationRepository.save(new AnnotationEntity(projectId, frameId, DEFAULT));
+            annotationRepository.save(
+                    AnnotationEntity.builder()
+                            .projectId(projectId)
+                            .frameId(frameId)
+                            .label(DEFAULT)
+                            .build()
+            );
         }
         return ResponseEntity.ok().build();
     }

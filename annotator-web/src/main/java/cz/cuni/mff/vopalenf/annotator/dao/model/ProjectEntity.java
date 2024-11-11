@@ -70,12 +70,5 @@ public class ProjectEntity {
     @ManyToOne
     @JoinColumn(name = "team_id", nullable = false)
     private TeamEntity team;
-
-    public ProjectEntity(String projectName, String logFileName, LocalDate deadline, Priority priority, TeamEntity team) {
-        this.projectName = projectName;
-        this.logFileName = logFileName;
-        this.deadline = deadline;
-        this.priority = priority;
-        this.team = team;
-    }
+    
 }

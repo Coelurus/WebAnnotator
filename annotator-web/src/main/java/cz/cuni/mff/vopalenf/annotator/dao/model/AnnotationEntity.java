@@ -33,10 +33,4 @@ public class AnnotationEntity {
 
     @Column(name = "label")
     private String label;
-
-    public AnnotationEntity(Long projectId, Long frameId, String label) {
-        this.projectId = projectId;
-        this.frameId = frameId;
-        this.label = label;
-    }
 }

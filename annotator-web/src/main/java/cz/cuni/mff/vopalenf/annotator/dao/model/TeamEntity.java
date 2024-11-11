@@ -14,6 +14,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * Dao object representing team of users inside the app
+ */
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
@@ -43,8 +46,4 @@ public class TeamEntity {
     @ManyToOne
     @JoinColumn(name = "leader_id", nullable = false)
     private UserEntity leader;
-
-    public TeamEntity(String name) {
-        this.name = name;
-    }
 }
