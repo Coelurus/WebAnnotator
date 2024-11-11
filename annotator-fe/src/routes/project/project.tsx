@@ -12,6 +12,8 @@ export const loader: LoaderFunction = async ({ params }) => {
 export default function Project() {
     const [pageNum, setPageNum] = useState<number>(0);
     const [frameCount, setFrameCount] = useState<number>(0);
+    const [startIndex, setStartIndex] = useState<number>(-1);
+    const [endIndex, setEndIndex] = useState<number>(-1);
     const [selectedFrames, setSelectedFrames] = useState<number[]>([]);
     const project = useLoaderData() as ProjectResponse;
     const imagesPerPage = 100;
@@ -57,6 +59,38 @@ export default function Project() {
         }
     };
 
+    const handleMouseDown = (frameId: number) => {
+        setStartIndex(frameId);
+
+        console.log("Down at ", frameId);
+        
+    
+        setSelectedFrames([...selectedFrames, frameId]);
+    };
+
+    const handleMouseUp = (frameId: number) => {
+        console.log("Up at ", frameId);
+        setEndIndex(frameId);
+
+        setStartIndex(-1);
+
+        fetch(`/api/projects/${project.id}/annotate/${startIndex}/${frameId}`, {
+            method: 'POST',
+        });
+      };
+
+    
+    const handleMouseOver = (frameId: number) => {
+        const framesToAdd: number[] = [];
+        for (let index = startIndex; index <= frameId; index++) {
+            if (startIndex != -1 && !selectedFrames.includes(index)) {
+                framesToAdd.push(index);
+            }
+        }
+        setSelectedFrames(selectedFrames => [...selectedFrames, ...framesToAdd]);                
+    };
+
+
     const handleImageClick = (frameId: number) => {
         if (selectedFrames.includes(frameId)) {
             setSelectedFrames(selectedFrames.filter(id => id !== frameId));
@@ -68,6 +102,10 @@ export default function Project() {
         fetch(`/api/projects/${project.id}/annotate/${frameId}`, {
             method: 'POST',
         });
+    }
+
+    const preventDragHandler = (e: Event) => {
+        e.preventDefault();
     }
 
     const startPosition = pageNum * imagesPerPage + 1;
@@ -84,7 +122,8 @@ export default function Project() {
 
             <select name="label" id="label-select">
                 {labels.map((label) => (
-                    <option value={label.label} key={"label_" + label.label}>
+                    <option value={label.label} key={"label_" + label.label}
+                            label-id={label.id} label-name={label.label}> 
                         {label.label}
                     </option>
                 ))}
@@ -97,7 +136,12 @@ export default function Project() {
                         src={`/api/projects/${project.id}/frame/${position}`}
                         alt={`Frame ${position}`}
                         className={`image ${selectedFrames.includes(position) ? 'selected' : ''}`} // Add selected class
-                        onClick={() => handleImageClick(position)}
+                       // onClick={() => handleImageClick(position)}
+                        onMouseDown={() => handleMouseDown(position)}
+                        onMouseUp={() => handleMouseUp(position)}
+                        onMouseOver={() => handleMouseOver(position)}
+                        onDragStart={() => preventDragHandler}
+                        draggable="false"
                     />
                 ))}
             </div>

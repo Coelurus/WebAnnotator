@@ -124,7 +124,7 @@ public class ProjectService {
             throw new NotFoundException("PROJECT ID NOT FOUND", "annotateProjectFrame");
         }
         //TODO: somehow get frame count and check whether frameId is valid
-        annotateFrameInProject(projectId, frameId);
+        annotateFrameInProject(projectId, frameId, false);
         return ResponseEntity.ok().build();
     }
 
@@ -141,7 +141,7 @@ public class ProjectService {
             throw new NotFoundException("PROJECT ID NOT FOUND", "annotateProjectFrame");
         }
         for (Long frameIdx = startFrameId; frameIdx <= endFrameId; frameIdx++) {
-            annotateFrameInProject(projectId, frameIdx);
+            annotateFrameInProject(projectId, frameIdx, true);
         }
         return ResponseEntity.ok().build();
     }
@@ -152,9 +152,9 @@ public class ProjectService {
      * @param projectId id of project where to find frame to annotate
      * @param frameId   id of frame to annotate in project
      */
-    private void annotateFrameInProject(Long projectId, Long frameId) {
+    private void annotateFrameInProject(Long projectId, Long frameId, boolean forceAnnotate) {
         boolean annotationAlreadyExists
-                = annotationRepository.existsByProjectIdAndFrameIdAndLabel(projectId, frameId, DEFAULT);
+                = annotationRepository.existsByProjectIdAndFrameIdAndLabel(projectId, frameId, DEFAULT) && !forceAnnotate;
         if (annotationAlreadyExists) {
             annotationRepository.deleteByProjectIdAndFrameIdAndLabel(projectId, frameId, DEFAULT);
         } else {
