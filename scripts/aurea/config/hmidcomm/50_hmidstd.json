@@ -1,0 +1,151 @@
+[
+    {
+        "cond": { "type": "serial", "vid": "04D8", "pid": "000A" },
+        "values": {
+            "DisplayName": {
+                "type": "format",
+                "format": "GestIC at %1 (%2)",
+                "args": [
+                    { "type": "dynamic", "ref": "PortDescription" },
+                    { "type": "dynamic", "ref": "PortName" }
+                ]
+            }
+        },
+        "layers": {
+            "gestic": {
+                "type": "com.microchip.libHMIDComm.GestICProtocolLayer",
+                "parent": "bridge",
+                "options": {
+                    "Bridge": { "type": "layer", "ref": "bridge" }
+                }
+            },
+            "bridge": {
+                "type": "com.microchip.libHMIDComm.HillstarBridgeLayer",
+                "parent": "async"
+            },
+            "async": {
+                "type": "com.microchip.libHMIDComm.AuAsyncMessageLayer",
+                "parent": "feff"
+            },
+            "feff": {
+                "type": "com.microchip.libHMIDComm.GestIC_FEFF_ProtocolLayer",
+                "parent": "serial"
+            },
+            "serial": {
+                "type": "com.microchip.libHMIDComm.AuStandardSerialLayer",
+                "options": {
+                    "DevicePath": { "type": "dynamic", "ref": "DevicePath" },
+                    "baudRate": 115200,
+                    "dataBits": "Data8",
+                    "stopBits": "OneStop",
+                    "parity": "NoParity"
+                }
+            }
+        }
+    },
+    {
+        "cond": { "type": "hid", "vid": "04D8", "pid": "09D3", "interface": 1 },
+        "values": { "DisplayName": "3DTouchPad" },
+        "layers": {
+            "hidproto": {
+                "type": "com.microchip.libHMIDComm.3DTouchpadProtocolLayer",
+                "parent": "gestic_dispatch/0"
+            },
+            "gestic": {
+                "type": "com.microchip.libHMIDComm.GestICProtocolLayer",
+                "parent": "gestic_dispatch/1",
+                "options": {
+                    "API": { "type": "layer", "ref": "hidproto" },
+                    "Bridge": { "type": "layer", "ref": "hidproto" }
+                }
+            },
+            "gestic_dispatch": {
+                "type": "com.microchip.libHMIDComm.GestICHmidEmbeddingDispatchLayer",
+                "parent": "async"
+            },
+            "async": {
+                "type": "com.microchip.libHMIDComm.AuAsyncMessageLayer",
+                "parent": "3DTPEmbedding"
+            },
+            "3DTPEmbedding": {
+                "type": "com.microchip.libHMIDComm.Embedding3DTouchpadProtocolLayer",
+                "parent": "hidcom"
+            },
+            "hidcom": {
+                "type": "com.microchip.libHMIDComm.AuStandardHidLayer",
+                "options": {
+                    "DevicePath": { "type": "dynamic", "ref": "DevicePath" },
+                    "ReportId": 4,
+                    "ReportSize": 64
+                }
+            }
+        }
+    },
+    {
+        "cond": { "type": "hid", "vid": "04D8", "pid": "09D4" },
+        "values": { "DisplayName": "3DTouchPad Bootloader" },
+        "layers": {
+            "blproto": {
+                "type": "com.microchip.libHMIDComm.BL3DTPProtocolLayer",
+                "parent": "async"
+            },
+            "async": {
+                "type": "com.microchip.libHMIDComm.AuAsyncMessageLayer",
+                "parent": "3DTPEmbedding"
+            },
+            "3DTPEmbedding": {
+                "type": "com.microchip.libHMIDComm.Embedding3DTouchpadProtocolLayer",
+                "parent": "hidcom"
+            },
+            "hidcom": {
+                "type": "com.microchip.libHMIDComm.AuStandardHidLayer",
+                "options": {
+                    "DevicePath": { "type": "dynamic", "ref": "DevicePath" },
+                    "ReportId": 4,
+                    "ReportSize": 64
+                }
+            }
+        }
+    },
+    {
+        "cond": { "type": "hid", "vid": "04D8", "pid": "09D5", "interface": 1 },
+        "values": { "DisplayName": "MTCH6303" },
+        "layers": {
+            "hidproto": {
+                "type": "com.microchip.libHMIDComm.Mtch630xProtocolLayer",
+                "parent": "gestic_dispatch/0",
+                "options": {
+                    "DevicePath": { "type": "dynamic", "ref": "DevicePath" }
+                }
+            },
+            "gestic": {
+                "type": "com.microchip.libHMIDComm.GestICProtocolLayer",
+                "parent": "gestic_dispatch/1",
+                "options": {
+                    "API": { "type": "layer", "ref": "hidproto" },
+                    "Bridge": { "type": "layer", "ref": "hidproto" }
+                }
+            },
+            "gestic_dispatch": {
+                "type": "com.microchip.libHMIDComm.GestICHmidEmbeddingDispatchLayer",
+                "parent": "async"
+            },
+            "async": {
+                "type": "com.microchip.libHMIDComm.AuAsyncMessageLayer",
+                "parent": "hidembedding"
+            },
+            "hidembedding": {
+                "type": "com.microchip.libHMIDComm.HmidEmbeddingProtocolLayer",
+                "parent": "hidcom"
+            },
+            "hidcom": {
+                "type": "com.microchip.libHMIDComm.AuStandardHidLayer",
+                "options": {
+                    "DevicePath": { "type": "dynamic", "ref": "DevicePath" },
+                    "ReportId": 5,
+                    "ReportSize": 64
+                }
+            }
+        }
+    }
+]
