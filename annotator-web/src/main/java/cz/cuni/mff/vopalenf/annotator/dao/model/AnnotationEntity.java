@@ -31,6 +31,6 @@ public class AnnotationEntity {
     @Column(name = "frame_id")
     private Long frameId;
 
-    @Column(name = "label")
-    private String label;
+    @Column(name = "label_id")
+    private Long labelId;
 }

@@ -51,7 +51,7 @@ public class ProjectController {
 
 
     /**
-     * Resolves creating new project and saving file to a filesystem and creating new record in db.
+     * Controls creating new project and saving file to a filesystem and creating new record in db.
      *
      * @param projectName Name of the new project
      * @param deadline    Date till which the project should be finished.
@@ -70,17 +70,39 @@ public class ProjectController {
         return projectService.manageFileUpload(projectName, deadline, priority, teamId, file);
     }
 
-    @PostMapping("/projects/{projectId}/annotate/{frameId}")
-    public ResponseEntity<Void> annotateProjectFrame(@PathVariable Long projectId, @PathVariable Long frameId) {
-        return projectService.annotateProjectFrame(projectId, frameId);
+    @PostMapping("/projects/{projectId}/annotate/{frameId}/label/{labelId}")
+    public ResponseEntity<Void> annotateProjectFrame(
+            @PathVariable Long projectId,
+            @PathVariable Long frameId,
+            @PathVariable Long labelId) {
+        return projectService.annotateProjectFrame(projectId, frameId, labelId);
     }
 
-    @PostMapping("/projects/{projectId}/annotate/{startFrameId}/{endFrameId}")
+    /**
+     * Controls annotating range of frames in project with label
+     *
+     * @param projectId    ID of project to annotate
+     * @param startFrameId ID of a first frame to annotate
+     * @param endFrameId   ID of a last frame to annotate
+     * @param labelId      ID of a label being used to annotate
+     * @return Response status about success of request
+     */
+    @PostMapping("/projects/{projectId}/annotate/{startFrameId}/{endFrameId}/label/{labelId}")
     public ResponseEntity<Void> annotateProjectFramesInRange(
             @PathVariable Long projectId,
             @PathVariable Long startFrameId,
-            @PathVariable Long endFrameId) {
-        return projectService.annotateProjectFramesInRange(projectId, startFrameId, endFrameId);
+            @PathVariable Long endFrameId,
+            @PathVariable Long labelId) {
+        return projectService.annotateProjectFramesInRange(projectId, startFrameId, endFrameId, labelId);
+    }
+
+    @PostMapping("/projects/{projectId}/erase/{startFrameId}/{endFrameId}")
+    public ResponseEntity<Void> eraseAnnotationsInRange(
+            @PathVariable Long projectId,
+            @PathVariable Long startFrameId,
+            @PathVariable Long endFrameId
+    ) {
+        return projectService.eraseAnnotationsInRange(projectId, startFrameId, endFrameId);
     }
 
     @GetMapping(value = "/projects/{projectId}/annotations",

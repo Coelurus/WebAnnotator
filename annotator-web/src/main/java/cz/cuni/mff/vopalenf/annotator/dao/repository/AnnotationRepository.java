@@ -10,8 +10,12 @@ import java.util.List;
 @Repository
 public interface AnnotationRepository extends JpaRepository<AnnotationEntity, Long> {
     List<AnnotationEntity> findByProjectId(Long projectId);
-    Boolean existsByProjectIdAndFrameIdAndLabel(Long projectId, Long frameId, String label);
-    @Transactional
-    Integer deleteByProjectIdAndFrameIdAndLabel(Long projectId, Long frameId, String label);
 
+    Boolean existsByProjectIdAndFrameIdAndLabelId(Long projectId, Long frameId, Long labelId);
+
+    @Transactional
+    void deleteByProjectIdAndFrameIdAndLabelId(Long projectId, Long frameId, Long labelId);
+
+    @Transactional
+    void deleteAllByProjectIdAndFrameId(Long projectId, Long frameId);
 }

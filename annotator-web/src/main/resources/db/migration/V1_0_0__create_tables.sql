@@ -23,9 +23,9 @@ CREATE TABLE IF NOT EXISTS project_tag
 CREATE TABLE IF NOT EXISTS annotations
 (
     id         BIGINT AUTO_INCREMENT PRIMARY KEY,
-    project_id BIGINT       NOT NULL,
-    frame_id   BIGINT       NOT NULL,
-    label      VARCHAR(255) NOT NULL
+    project_id BIGINT NOT NULL,
+    frame_id   BIGINT NOT NULL,
+    label_id   BIGINT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS labels
