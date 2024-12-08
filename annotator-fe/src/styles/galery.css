@@ -14,7 +14,9 @@
 }
 
 .image.selected {
-    border: 5px solid red;
+    border-color: red;
+    border-width: 5px;
+    border-style: solid;
 }
 
 .pagination-buttons {

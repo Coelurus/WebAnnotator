@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { Form, LoaderFunction, useLoaderData } from "react-router-dom";
 import { fetchProject } from "../../persistence/fetcher/fetcher";
 import { ProjectResponse } from "../../persistence/model/responses";
@@ -14,7 +14,7 @@ export default function Project() {
     const [frameCount, setFrameCount] = useState<number>(0);
     const [startIndex, setStartIndex] = useState<number>(-1);
     const [endIndex, setEndIndex] = useState<number>(-1);
-    const [selectedFrames, setSelectedFrames] = useState<number[]>([]);
+    const [selectedFrames, setSelectedFrames] = useState<Annotation[]>([]);
     const project = useLoaderData() as ProjectResponse;
     const imagesPerPage = 100;
     const [labels, setLabels] = useState<Label[]>([]);
@@ -33,8 +33,8 @@ export default function Project() {
                 return response.json();
             })
             .then((data: Annotation[]) => {
-                const annotatedFrames = data.map(annotation => annotation.frameId);
-                setSelectedFrames(annotatedFrames);
+                //const annotatedFrames = data.map(annotation => annotation.frameId);
+                setSelectedFrames(data);
             })
             .catch((error) => console.error('Error fetching annotations:', error));
 
@@ -43,9 +43,12 @@ export default function Project() {
     useEffect(() => {
         fetch(`/api/labels`)
             .then((response) => response.json())
-            .then((data) => setLabels(data))
+            .then((data) => {
+                setLabels(data);
+                setCurrentLabel(data[0]);
+            })
             .catch((error) => console.error('Error fetching labels:', error));
-    }, []);
+        }, []);
 
     const nextPage = () => {
         if ((pageNum + 1) * imagesPerPage < frameCount) {
@@ -60,12 +63,14 @@ export default function Project() {
     };
 
     const handleMouseDown = (frameId: number) => {
-        setStartIndex(frameId);
+        console.log(currentLabel?.color);
+        
+        if (currentLabel){
+            setStartIndex(frameId);
+            setSelectedFrames([...selectedFrames, {frameId, labelId: currentLabel.id}]);
+        }
 
         console.log("Down at ", frameId);
-        
-    
-        setSelectedFrames([...selectedFrames, frameId]);
     };
 
     const handleMouseUp = (frameId: number) => {
@@ -74,23 +79,25 @@ export default function Project() {
 
         setStartIndex(-1);
 
-        fetch(`/api/projects/${project.id}/annotate/${startIndex}/${frameId}`, {
+        fetch(`/api/projects/${project.id}/annotate/${startIndex}/${frameId}/label/${currentLabel?.id}`, {
             method: 'POST',
         });
       };
 
     
     const handleMouseOver = (frameId: number) => {
-        const framesToAdd: number[] = [];
-        for (let index = startIndex; index <= frameId; index++) {
-            if (startIndex != -1 && !selectedFrames.includes(index)) {
-                framesToAdd.push(index);
+        if(currentLabel) {
+            const framesToAdd: Annotation[] = [];
+            for (let index = startIndex; index <= frameId; index++) {
+                if (startIndex != -1 && !selectedFrames.some(frame => frame.frameId === index)) {
+                    framesToAdd.push({ frameId: index, labelId: currentLabel.id });
+                }
             }
+            setSelectedFrames(selectedFrames => [...selectedFrames, ...framesToAdd]);                
         }
-        setSelectedFrames(selectedFrames => [...selectedFrames, ...framesToAdd]);                
     };
 
-
+    /*
     const handleImageClick = (frameId: number) => {
         if (selectedFrames.includes(frameId)) {
             setSelectedFrames(selectedFrames.filter(id => id !== frameId));
@@ -102,6 +109,20 @@ export default function Project() {
         fetch(`/api/projects/${project.id}/annotate/${frameId}`, {
             method: 'POST',
         });
+    }
+    */
+
+    const handleLabelChange = (event: ChangeEvent<HTMLSelectElement>) => {
+        const selectedLabelId = Number(event.target.selectedOptions[0].getAttribute("label-id"));
+        const selectedLabelName = event.target.selectedOptions[0].getAttribute("label-name");
+        const selectedLabelColor = event.target.selectedOptions[0].getAttribute("label-color");
+        if (selectedLabelName && selectedLabelColor) {
+            setCurrentLabel({
+                id: selectedLabelId,
+                label: selectedLabelName,
+                color: selectedLabelColor
+            });
+        }
     }
 
     const preventDragHandler = (e: Event) => {
@@ -116,14 +137,33 @@ export default function Project() {
         (_, i) => startPosition + i
     );
 
+    const selectedImageStyle = (index: number) => {
+        const frame = selectedFrames.find(frame => frame.frameId === index);
+        return {
+            
+            borderColor: frame ? labels[frame.labelId].color : '',
+            borderWidth: "5px",
+            borderStyle: "solid"
+        }
+    };
+
     return (
         <div>
             <h1>{project ? project.projectName : 'No project found'}</h1>
 
-            <select name="label" id="label-select">
+            <select 
+                name="label" 
+                id="label-select"
+                onChange={handleLabelChange}
+            >
                 {labels.map((label) => (
-                    <option value={label.label} key={"label_" + label.label}
-                            label-id={label.id} label-name={label.label}> 
+                    <option 
+                        value={label.label} 
+                        key={"label_" + label.label}
+                        label-id={label.id} 
+                        label-name={label.label}
+                        label-color={label.color}
+                    > 
                         {label.label}
                     </option>
                 ))}
@@ -135,7 +175,8 @@ export default function Project() {
                         key={position}
                         src={`/api/projects/${project.id}/frame/${position}`}
                         alt={`Frame ${position}`}
-                        className={`image ${selectedFrames.includes(position) ? 'selected' : ''}`} // Add selected class
+                        className={`image`} // Add selected class
+                        style={selectedImageStyle(position)}
                        // onClick={() => handleImageClick(position)}
                         onMouseDown={() => handleMouseDown(position)}
                         onMouseUp={() => handleMouseUp(position)}
