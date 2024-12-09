@@ -12,6 +12,8 @@ import Users from "./routes/listing/users";
 import Teams from "./routes/listing/teams";
 import ProjectForm from "./routes/project/project-form";
 import Project, {loader as projectLoader} from "./routes/project/project";
+import LoginPage from "./routes/security/log-in";
+import SignupPage from "./routes/security/sign-up";
 
 const router = createBrowserRouter([
   {
@@ -45,6 +47,14 @@ const router = createBrowserRouter([
         path: "teams",
         element: <Teams />
       },
+      {
+        path: "login",
+        element: <LoginPage />
+      },
+      {
+        path: "signup",
+        element: <SignupPage />
+      }
     ]
   },
 ]);
