@@ -1,4 +1,4 @@
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState, useRef, useLayoutEffect } from "react";
 import { Form, LoaderFunction, useLoaderData } from "react-router-dom";
 import { fetchProject } from "../../persistence/fetcher/fetcher";
 import { ProjectResponse } from "../../persistence/model/responses";
@@ -10,16 +10,46 @@ export const loader: LoaderFunction = async ({ params }) => {
 }
 
 export default function Project() {
+    const UNDEFINED = -1;
+    const LEFT_BUTTON = 0;
+    const RIGHT_BUTTON = 2;
+    const DEFAULT_IMAGE_SIZE = 50;
+
     const [pageNum, setPageNum] = useState<number>(0);
     const [frameCount, setFrameCount] = useState<number>(0);
-    const [startIndex, setStartIndex] = useState<number>(-1);
-    const [endIndex, setEndIndex] = useState<number>(-1);
+    const [startIndex, setStartIndex] = useState<number>(UNDEFINED);
+    const [endIndex, setEndIndex] = useState<number>(UNDEFINED);
     const [selectedFrames, setSelectedFrames] = useState<Annotation[]>([]);
     const project = useLoaderData() as ProjectResponse;
-    const imagesPerPage = 100;
+    const [imagesPerPage, setImagesPerPage] = useState<number>(100);
     const [labels, setLabels] = useState<Label[]>([]);
     const [currentLabel, setCurrentLabel] = useState<Label>();
+    const [pressedButton, setPressedButton] = useState<number>(UNDEFINED);
 
+    const [imageSize, setImageSize] = useState<number>(DEFAULT_IMAGE_SIZE);
+    const gridRef = useRef<HTMLDivElement>(null);
+
+    const handleSliderChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setImageSize(Number(event.target.value));
+    };
+
+    useLayoutEffect(() => {
+        const updateImagesPerPage = () => {
+            if (gridRef.current) {
+                const gridWidth = gridRef.current.clientWidth;
+                const gridHeight = gridRef.current.clientHeight;
+                const columns = Math.floor(gridWidth / imageSize);
+                const rows = Math.floor(gridHeight / imageSize);
+                setImagesPerPage(columns * rows);
+                console.log(gridWidth, gridHeight);
+                
+            }
+        };
+
+        updateImagesPerPage();
+        window.addEventListener("resize", updateImagesPerPage);
+        return () => window.removeEventListener("resize", updateImagesPerPage);
+    }, [imageSize]);
 
     useEffect(() => {
         fetch('/api/projects/' + project.id + '/frame/count')
@@ -62,55 +92,63 @@ export default function Project() {
         }
     };
 
-    const handleMouseDown = (frameId: number) => {
-        console.log(currentLabel?.color);
-        
-        if (currentLabel){
-            setStartIndex(frameId);
-            setSelectedFrames([...selectedFrames, {frameId, labelId: currentLabel.id}]);
-        }
-
-        console.log("Down at ", frameId);
+    const handleMouseDown = (event: React.MouseEvent, frameId: number) => {
+        setPressedButton(event.nativeEvent.button);
+        setStartIndex(frameId);
     };
 
-    const handleMouseUp = (frameId: number) => {
-        console.log("Up at ", frameId);
-        setEndIndex(frameId);
+    const handleMouseUp = () => {
+        if(startIndex === UNDEFINED){
+            return;
+        }
 
-        setStartIndex(-1);
+        if(!currentLabel) {
+            //TODO - add better alerting...
+            alert("Label not chosen...");
+            return;
+        }
 
-        fetch(`/api/projects/${project.id}/annotate/${startIndex}/${frameId}/label/${currentLabel?.id}`, {
-            method: 'POST',
-        });
-      };
+        var lowerIndex: number;
+        var higherIndex: number;
+        if( startIndex > endIndex ){
+            lowerIndex = endIndex;
+            higherIndex = startIndex;
+        } else {
+            lowerIndex = startIndex;
+            higherIndex = endIndex;
+        }
 
-    
-    const handleMouseOver = (frameId: number) => {
-        if(currentLabel) {
+        if(pressedButton === RIGHT_BUTTON) {
+            fetch(`/api/projects/${project.id}/erase/${lowerIndex}/${higherIndex}`, {
+                method: 'POST',
+            });
+
+            const withoutErased = selectedFrames.filter(annotation => annotation.frameId < lowerIndex || annotation.frameId > higherIndex);
+            setSelectedFrames(withoutErased);
+        }
+        
+        if(currentLabel && pressedButton === LEFT_BUTTON) {
+            fetch(`/api/projects/${project.id}/annotate/${lowerIndex}/${higherIndex}/label/${currentLabel?.id}`, {
+                method: 'POST',
+            });
+
             const framesToAdd: Annotation[] = [];
-            for (let index = startIndex; index <= frameId; index++) {
-                if (startIndex != -1 && !selectedFrames.some(frame => frame.frameId === index)) {
+            for (let index = lowerIndex; index <= higherIndex; index++) {
+                if (lowerIndex != UNDEFINED && !selectedFrames.some(frame => frame.frameId === index)) {
                     framesToAdd.push({ frameId: index, labelId: currentLabel.id });
                 }
             }
             setSelectedFrames(selectedFrames => [...selectedFrames, ...framesToAdd]);                
         }
+
+        setStartIndex(UNDEFINED);
+        setEndIndex(UNDEFINED);
+      };
+
+    
+    const handleMouseOver = (frameId: number) => {
+        setEndIndex(frameId);
     };
-
-    /*
-    const handleImageClick = (frameId: number) => {
-        if (selectedFrames.includes(frameId)) {
-            setSelectedFrames(selectedFrames.filter(id => id !== frameId));
-        }
-        else {
-            setSelectedFrames([...selectedFrames, frameId]);
-        }
-
-        fetch(`/api/projects/${project.id}/annotate/${frameId}`, {
-            method: 'POST',
-        });
-    }
-    */
 
     const handleLabelChange = (event: ChangeEvent<HTMLSelectElement>) => {
         const selectedLabelId = Number(event.target.selectedOptions[0].getAttribute("label-id"));
@@ -129,6 +167,27 @@ export default function Project() {
         e.preventDefault();
     }
 
+    const handleAddLabel = () => {
+        const element = document.getElementById('new-label-text-input') as HTMLInputElement;
+
+        if (element) {
+            fetch(`/api/labels/${element.value}`, {
+                method: 'POST',
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    setLabels([...labels, data]);
+                    setCurrentLabel(data);
+                })
+                .catch((error: Error) => {
+                    alert('Error creating label: ' + element.value + '\nLabel name already exists.')
+                });;
+        } else {
+            alert("Issue occurred");
+        }
+        
+    }
+
     const startPosition = pageNum * imagesPerPage + 1;
     const endPosition = Math.min(startPosition + imagesPerPage - 1, frameCount);
 
@@ -140,7 +199,8 @@ export default function Project() {
     const selectedImageStyle = (index: number) => {
         const frame = selectedFrames.find(frame => frame.frameId === index);
         return {
-            
+            width: `${imageSize}px`,
+            height: `${imageSize}px`,
             borderColor: frame ? labels[frame.labelId].color : '',
             borderWidth: "5px",
             borderStyle: "solid"
@@ -148,12 +208,28 @@ export default function Project() {
     };
 
     return (
-        <div>
+        <div 
+            onMouseUp={() => handleMouseUp()}
+            onContextMenu={(event) => {event.preventDefault();}}
+        >
             <h1>{project ? project.projectName : 'No project found'}</h1>
+
+            <div className="slider-container">
+                <label htmlFor="image-size-slider">Image Size: {imageSize}px</label>
+                <input
+                    type="range"
+                    id="image-size-slider"
+                    min="30"
+                    max="200"
+                    value={imageSize}
+                    onChange={handleSliderChange}
+                />
+            </div>
 
             <select 
                 name="label" 
                 id="label-select"
+                value={currentLabel?.label || ''}
                 onChange={handleLabelChange}
             >
                 {labels.map((label) => (
@@ -169,7 +245,14 @@ export default function Project() {
                 ))}
             </select>
 
-            <div className="image-grid">
+            <input type="text" id="new-label-text-input" placeholder="New label"></input>
+            <button onClick={() => handleAddLabel()}>Add label</button>
+
+            <div 
+                className="image-grid"
+                ref={gridRef}
+                
+            >
                 {imagePositions.map(position => (
                     <img
                         key={position}
@@ -178,8 +261,8 @@ export default function Project() {
                         className={`image`} // Add selected class
                         style={selectedImageStyle(position)}
                        // onClick={() => handleImageClick(position)}
-                        onMouseDown={() => handleMouseDown(position)}
-                        onMouseUp={() => handleMouseUp(position)}
+                        onMouseDown={(event) => handleMouseDown(event, position)}
+                        
                         onMouseOver={() => handleMouseOver(position)}
                         onDragStart={() => preventDragHandler}
                         draggable="false"

@@ -15,6 +15,7 @@ import cz.cuni.mff.vopalenf.annotator.exception.api.NotFoundException;
 import cz.cuni.mff.vopalenf.annotator.manager.storage.StorageManager;
 import cz.cuni.mff.vopalenf.annotator.mapper.ProjectMapper;
 import cz.cuni.mff.vopalenf.annotator.mapper.TeamMapper;
+import cz.cuni.mff.vopalenf.annotator.util.ColorUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -46,6 +47,8 @@ public class ProjectService {
 
     private final StorageManager storageManager;
 
+    private final ColorUtil colorUtil;
+
     private final FileSystemService fileSystemService;
 
     public ProjectService(ProjectRepository projectRepository,
@@ -55,7 +58,8 @@ public class ProjectService {
                           StorageManager storageManager,
                           ProjectMapper projectMapper,
                           TeamMapper teamMapper,
-                          FileSystemService fileSystemService) {
+                          FileSystemService fileSystemService,
+                          ColorUtil colorUtil) {
         this.projectRepository = projectRepository;
         this.teamRepository = teamRepository;
         this.storageManager = storageManager;
@@ -64,6 +68,7 @@ public class ProjectService {
         this.projectMapper = projectMapper;
         this.teamMapper = teamMapper;
         this.fileSystemService = fileSystemService;
+        this.colorUtil = colorUtil;
     }
 
     /**
@@ -209,6 +214,25 @@ public class ProjectService {
      */
     public ResponseEntity<List<LabelEntity>> getAllLabels() {
         return ResponseEntity.ok(labelRepository.findAll());
+    }
+
+    /**
+     * Create new entity
+     *
+     * @param labelName Name of new label
+     * @return Newly created entity
+     */
+    public ResponseEntity<LabelEntity> addLabel(String labelName) {
+        if (labelRepository.existsByLabel(labelName)) {
+            return ResponseEntity.badRequest().build();
+        }
+        LabelEntity newLabel = labelRepository.save(
+                LabelEntity.builder()
+                        .label(labelName)
+                        .color(colorUtil.findLeastUsedColor())
+                        .build()
+        );
+        return ResponseEntity.ok(newLabel);
     }
 
     /**

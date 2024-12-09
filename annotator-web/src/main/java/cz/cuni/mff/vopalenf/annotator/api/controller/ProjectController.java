@@ -29,26 +29,51 @@ public class ProjectController {
         this.projectService = projectService;
     }
 
+    /**
+     * Get all existing projects
+     *
+     * @return List of all projects
+     */
     @GetMapping("/projects")
     public ResponseEntity<List<Project>> getAllProjects() {
         return projectService.getAllProjects();
     }
 
+    /**
+     * Get project by ID
+     *
+     * @param id ID of project to get
+     * @return Found project
+     */
     @GetMapping("/projects/{id}")
     public ResponseEntity<Project> getProjectById(@PathVariable Long id) {
         return projectService.getProject(id);
     }
 
+    /**
+     * Get all existing priorities
+     *
+     * @return List of all priorities
+     */
     @GetMapping("/priorities")
     public ResponseEntity<List<Priority>> getAllProjectPriorities() {
         return projectService.getAllProjectPriorities();
     }
 
+    /**
+     * Get all existing labels
+     *
+     * @return List of all labels
+     */
     @GetMapping("/labels")
     public ResponseEntity<List<LabelEntity>> getAllLabels() {
         return projectService.getAllLabels();
     }
 
+    @PostMapping("/labels/{label_name}")
+    public ResponseEntity<LabelEntity> addLabel(@PathVariable(name = "label_name") String labelName) {
+        return projectService.addLabel(labelName);
+    }
 
     /**
      * Controls creating new project and saving file to a filesystem and creating new record in db.
@@ -70,6 +95,14 @@ public class ProjectController {
         return projectService.manageFileUpload(projectName, deadline, priority, teamId, file);
     }
 
+    /**
+     * Controls annotating frame in project with label
+     *
+     * @param projectId ID of project to annotate
+     * @param frameId   ID of a frame to annotate
+     * @param labelId   ID of a label being used to annotate
+     * @return Response status about success of request
+     */
     @PostMapping("/projects/{projectId}/annotate/{frameId}/label/{labelId}")
     public ResponseEntity<Void> annotateProjectFrame(
             @PathVariable Long projectId,
@@ -96,6 +129,14 @@ public class ProjectController {
         return projectService.annotateProjectFramesInRange(projectId, startFrameId, endFrameId, labelId);
     }
 
+    /**
+     * Controls removing annotations from frames in project
+     *
+     * @param projectId    ID of project from where to remove annotations
+     * @param startFrameId From which frame to remove annotations
+     * @param endFrameId   To which frame to remove annotations
+     * @return Response status about success of request
+     */
     @PostMapping("/projects/{projectId}/erase/{startFrameId}/{endFrameId}")
     public ResponseEntity<Void> eraseAnnotationsInRange(
             @PathVariable Long projectId,
@@ -105,6 +146,12 @@ public class ProjectController {
         return projectService.eraseAnnotationsInRange(projectId, startFrameId, endFrameId);
     }
 
+    /**
+     * Get list of all annotations on a project
+     *
+     * @param projectId ID of project from which to get all annotations
+     * @return List of all annotations on one project
+     */
     @GetMapping(value = "/projects/{projectId}/annotations",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<AnnotationEntity>> getAllAnnotations(@PathVariable Long projectId) {
