@@ -1,11 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom'; // Import useHistory hook
-import {
-    MDBContainer,
-    MDBInput,
-    MDBBtn,
-} from 'mdb-react-ui-kit';
+
 
 function SignupPage() {
     const [fullName, setFullName] = useState('');
@@ -38,15 +34,15 @@ function SignupPage() {
     return (
         <div>
             <div>
-                <MDBContainer>
+                <form >
                     <h2>Sign Up Page</h2>
                     {}
                     {error && <p>{error}</p>}
-                    <MDBInput id='fullName' placeholder={"Full Name"} value={fullName} type='text'
+                    <input id='fullName' placeholder={"Full Name"} value={fullName} type='text'
                               onChange={(e) => setFullName(e.target.value)}/>
-                    <MDBInput placeholder='Email Address' id='email' value={email} type='email'
+                    <input placeholder='Email Address' id='email' value={email} type='email'
                               onChange={(e) => setEmail(e.target.value)}/>
-                    <MDBInput placeholder='Password' id='password' type='password' value={password}
+                    <input placeholder='Password' id='password' type='password' value={password}
                               onChange={(e) => setPassword(e.target.value)}/>
 
                     <label>Role:</label>
@@ -56,7 +52,7 @@ function SignupPage() {
                     </select>
                     <button onClick={handleSignup}>Sign Up
                     </button>
-                </MDBContainer>
+                </form>
             </div>
         </div>
     );

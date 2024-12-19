@@ -1,14 +1,18 @@
 package cz.cuni.mff.vopalenf.annotator.dao.model;
 
 
+import cz.cuni.mff.vopalenf.annotator.security.Role;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -50,6 +54,7 @@ public class UserEntity {
     /**
      * Username with which user will log into the system.
      */
+    @NotBlank
     @Column(name = "username", nullable = false, unique = true)
     private String username;
 
@@ -58,6 +63,13 @@ public class UserEntity {
      */
     @Column(name = "password_hash", nullable = false)
     private String passwordHash;
+
+    /**
+     * Users role in system specifying accesses to different features
+     */
+    @Column(name = "role", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     /**
      * Team to which user belongs.

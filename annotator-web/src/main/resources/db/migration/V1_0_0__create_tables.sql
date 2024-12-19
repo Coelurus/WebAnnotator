@@ -38,11 +38,12 @@ CREATE TABLE IF NOT EXISTS labels
 CREATE TABLE IF NOT EXISTS users
 (
     id            BIGINT AUTO_INCREMENT PRIMARY KEY,
-    first_name    VARCHAR(255) NOT NULL,
-    last_name     VARCHAR(255) NOT NULL,
-    username      VARCHAR(255) NOT NULL UNIQUE,
-    password_hash VARCHAR(255) NOT NULL,
-    team_id       BIGINT       NOT NULL
+    first_name    VARCHAR(255)                     NOT NULL,
+    last_name     VARCHAR(255)                     NOT NULL,
+    username      VARCHAR(255)                     NOT NULL UNIQUE,
+    password_hash VARCHAR(255)                     NOT NULL,
+    team_id       BIGINT,
+    role          ENUM ('ROLE_USER', 'ROLE_ADMIN') NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS teams

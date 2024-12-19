@@ -32,6 +32,8 @@ public class UserMapper {
                 .lastName(userEntity.getLastName())
                 .userName(userEntity.getUsername())
                 .team(team)
+                .role(userEntity.getRole().name())
+                .password(userEntity.getPasswordHash())
                 .build();
     }
 

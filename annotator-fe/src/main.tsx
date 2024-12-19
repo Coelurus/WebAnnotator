@@ -12,8 +12,9 @@ import Users from "./routes/listing/users";
 import Teams from "./routes/listing/teams";
 import ProjectForm from "./routes/project/project-form";
 import Project, {loader as projectLoader} from "./routes/project/project";
-import LoginPage from "./routes/security/log-in";
-import SignupPage from "./routes/security/sign-up";
+import LoginPage from "./routes/security/log-in/log-in-screen";
+import SignupPage from "./routes/security/sign-up/sign-up";
+import LogoutButton from "./routes/security/log-out/log-out-screen";
 
 const router = createBrowserRouter([
   {
@@ -54,6 +55,10 @@ const router = createBrowserRouter([
       {
         path: "signup",
         element: <SignupPage />
+      },
+      {
+        path: "logout",
+        element: <LogoutButton />
       }
     ]
   },

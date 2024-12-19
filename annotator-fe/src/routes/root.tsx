@@ -25,6 +25,9 @@ export default function Root() {
               <li>
                 <Link to={`./teams`}>Teams</Link>
               </li>
+              <li>
+                <Link to={`./logout`}>Logout</Link>
+              </li>
             </ul>
           </nav>
         </div>

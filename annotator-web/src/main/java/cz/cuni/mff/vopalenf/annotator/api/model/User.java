@@ -35,4 +35,12 @@ public class User {
     @JsonView(Views.ShowTeamsInUsers.class)
     Team team;
 
+    //@JsonIgnore
+    @JsonProperty("password")
+    @JsonView(Views.BothView.class)
+    String password;
+
+    @JsonProperty("role")
+    @JsonView(Views.BothView.class)
+    String role;
 }

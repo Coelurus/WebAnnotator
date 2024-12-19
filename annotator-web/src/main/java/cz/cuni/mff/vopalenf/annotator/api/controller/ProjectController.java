@@ -65,6 +65,7 @@ public class ProjectController {
      *
      * @return List of all labels
      */
+    //@PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/labels")
     public ResponseEntity<List<LabelEntity>> getAllLabels() {
         return projectService.getAllLabels();
