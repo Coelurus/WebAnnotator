@@ -1,5 +1,8 @@
 package cz.cuni.mff.vopalenf.annotator.service;
 
+import cz.cuni.mff.vopalenf.annotator.ai.GestureMagic;
+import cz.cuni.mff.vopalenf.annotator.ai.PredictionTriple;
+import cz.cuni.mff.vopalenf.annotator.api.model.LogData;
 import cz.cuni.mff.vopalenf.annotator.api.model.Project;
 import cz.cuni.mff.vopalenf.annotator.constants.Constants;
 import cz.cuni.mff.vopalenf.annotator.dao.model.AnnotationEntity;
@@ -12,6 +15,7 @@ import cz.cuni.mff.vopalenf.annotator.dao.repository.ProjectRepository;
 import cz.cuni.mff.vopalenf.annotator.dao.repository.TeamRepository;
 import cz.cuni.mff.vopalenf.annotator.enums.Priority;
 import cz.cuni.mff.vopalenf.annotator.exception.api.NotFoundException;
+import cz.cuni.mff.vopalenf.annotator.manager.DataLoaderManager;
 import cz.cuni.mff.vopalenf.annotator.manager.storage.StorageManager;
 import cz.cuni.mff.vopalenf.annotator.mapper.ProjectMapper;
 import cz.cuni.mff.vopalenf.annotator.mapper.TeamMapper;
@@ -20,6 +24,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
@@ -51,6 +56,10 @@ public class ProjectService {
 
     private final FileSystemService fileSystemService;
 
+    private final DataLoaderManager dataLoaderManager;
+
+    private final GestureMagic gestureMagic;
+
     public ProjectService(ProjectRepository projectRepository,
                           TeamRepository teamRepository,
                           AnnotationRepository annotationRepository,
@@ -59,7 +68,8 @@ public class ProjectService {
                           ProjectMapper projectMapper,
                           TeamMapper teamMapper,
                           FileSystemService fileSystemService,
-                          ColorUtil colorUtil) {
+                          ColorUtil colorUtil,
+                          DataLoaderManager dataLoaderManager, GestureMagic gestureMagic) {
         this.projectRepository = projectRepository;
         this.teamRepository = teamRepository;
         this.storageManager = storageManager;
@@ -69,6 +79,8 @@ public class ProjectService {
         this.teamMapper = teamMapper;
         this.fileSystemService = fileSystemService;
         this.colorUtil = colorUtil;
+        this.dataLoaderManager = dataLoaderManager;
+        this.gestureMagic = gestureMagic;
     }
 
     /**
@@ -266,5 +278,28 @@ public class ProjectService {
         storageManager.store(file);
 
         return ResponseEntity.ok().build();
+    }
+
+    public ResponseEntity<List<PredictionTriple>> trainAI(Long projectId) {
+        Path pathToFS = Path.of(Constants.FILE_SYSTEM_PATH);
+        Path projectPath = Arrays.stream(Objects.requireNonNull(pathToFS.toFile().listFiles()))
+                .filter(file -> Objects.equals(projectRepository.findById(projectId)
+                        .orElseThrow(() -> new NotFoundException("PROJECT_NOT_FOUND", "AAA"))
+                        .getLogFileName(), file.getName()))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("PROJECT_NOT_FOUND", "AAA"))
+                .toPath();
+
+        projectPath = Path.of(projectPath.toString(), projectPath.getFileName().toString() + ".log");
+
+        List<LogData> data = dataLoaderManager.loadLogFile(projectId, projectPath, false);
+
+        gestureMagic.train(data, projectId);
+
+        data = dataLoaderManager.loadLogFile(projectId, projectPath, true);
+
+        List<PredictionTriple> predictions = gestureMagic.test(data);
+
+        return ResponseEntity.ok().body(predictions);
     }
 }

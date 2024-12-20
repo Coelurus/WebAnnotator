@@ -10,7 +10,7 @@ VALUES (0, 'Fast', 1),
 ALTER TABLE teams ALTER COLUMN id RESTART WITH (SELECT MAX(id) + 1 FROM teams);
 
 INSERT INTO projects (id, project_name, log_file_name, deadline, priority, team_id)
-VALUES (0, 'Project Alpha', 'gestic_20240925_083111', '2024-12-01', 1, 1),
+VALUES (0, 'AI Test', 'test', '2024-12-01', 1, 1),
        (1, 'Project Beta', 'gestic_20240925_084203', '2024-11-15', 2, 0),
        (2, 'Project Gamma', 'gestic_20240925_093532', '2024-10-30', 1, 0);
 ALTER TABLE projects ALTER COLUMN id RESTART WITH (SELECT MAX(id) + 1 FROM projects);

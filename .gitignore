@@ -6,3 +6,4 @@ out/
 gs-rest-service/
 file_system/*
 database/*
+!file_system/test

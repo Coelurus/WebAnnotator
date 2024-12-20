@@ -47,3 +47,9 @@ export interface Label {
     label: string;
     color: string;
 }
+
+export interface PredictionTriple {
+    projectId: number;
+    frameId: number;
+    label: string;
+}

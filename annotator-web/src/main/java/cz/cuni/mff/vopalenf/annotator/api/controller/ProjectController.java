@@ -1,5 +1,6 @@
 package cz.cuni.mff.vopalenf.annotator.api.controller;
 
+import cz.cuni.mff.vopalenf.annotator.ai.PredictionTriple;
 import cz.cuni.mff.vopalenf.annotator.api.model.Project;
 import cz.cuni.mff.vopalenf.annotator.dao.model.AnnotationEntity;
 import cz.cuni.mff.vopalenf.annotator.dao.model.LabelEntity;
@@ -157,6 +158,11 @@ public class ProjectController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<AnnotationEntity>> getAllAnnotations(@PathVariable Long projectId) {
         return projectService.getAllAnnotations(projectId);
+    }
+
+    @PostMapping("/projects/{projectId}/trainAI")
+    public ResponseEntity<List<PredictionTriple>> trainAI(@PathVariable Long projectId) {
+        return projectService.trainAI(projectId);
     }
 
 }

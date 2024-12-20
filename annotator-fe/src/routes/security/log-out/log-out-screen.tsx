@@ -1,11 +1,10 @@
 import React from 'react';
-import { logout } from './log-out-fun'; // Import your logout API call
+import { logout } from './log-out-fun';
 
 const LogoutButton = () => {
     const handleLogout = async () => {
         await logout();
-        // Optionally redirect to the login page or clear local state
-        window.location.href = '/login'; 
+        //window.location.href = '/login'; 
     };
 
     return (

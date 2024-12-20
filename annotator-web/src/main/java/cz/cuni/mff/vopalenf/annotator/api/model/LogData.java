@@ -1,8 +1,12 @@
 package cz.cuni.mff.vopalenf.annotator.api.model;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * Information about position of a hand in a moment of time.
  */
+@Getter
 public class LogData {
 
     private final Double time;
@@ -28,10 +32,13 @@ public class LogData {
     private final Object dblTap;
     private final Object airWheel;
     private final Object gesture;
+    @Setter
+    private String label;
 
-    public LogData(String logLine) {
+    public LogData(String label, String logLine) {
         String[] fields = logLine.split("\\s+");
 
+        this.label = label;
         this.time = parseDouble(fields[0]);
         this.dimensions = fields[1];
         this.type = fields[2];
@@ -55,98 +62,6 @@ public class LogData {
         this.dblTap = parseObject(fields[20]);
         this.airWheel = parseObject(fields[21]);
         this.gesture = parseObject(fields[22]);
-    }
-
-    public Double getTime() {
-        return time;
-    }
-
-    public String getDimensions() {
-        return dimensions;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public boolean isRunning() {
-        return running;
-    }
-
-    public Object getfTx() {
-        return fTx;
-    }
-
-    public Double getPosX() {
-        return posX;
-    }
-
-    public Double getPosY() {
-        return posY;
-    }
-
-    public Double getPosZ() {
-        return posZ;
-    }
-
-    public Double getCicS() {
-        return cicS;
-    }
-
-    public Double getCicW() {
-        return cicW;
-    }
-
-    public Double getCicN() {
-        return cicN;
-    }
-
-    public Double getCicE() {
-        return cicE;
-    }
-
-    public Double getCicC() {
-        return cicC;
-    }
-
-    public Double getSdS() {
-        return sdS;
-    }
-
-    public Double getSdW() {
-        return sdW;
-    }
-
-    public Double getSdN() {
-        return sdN;
-    }
-
-    public Double getSdE() {
-        return sdE;
-    }
-
-    public Double getSdC() {
-        return sdC;
-    }
-
-    public Object getTouch() {
-        return touch;
-    }
-
-    public Object getTap() {
-        return tap;
-    }
-
-    public Object getDblTap() {
-        return dblTap;
-    }
-
-    public Object getAirWheel() {
-        return airWheel;
-    }
-
-    public Object getGesture() {
-        return gesture;
     }
 
     private Double parseDouble(String value) {

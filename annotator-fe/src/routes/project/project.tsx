@@ -1,7 +1,8 @@
+import axios from 'axios';
 import { ChangeEvent, useEffect, useState, useRef, useLayoutEffect } from "react";
 import { Form, LoaderFunction, useLoaderData } from "react-router-dom";
 import { fetchProject } from "../../persistence/fetcher/fetcher";
-import { ProjectResponse } from "../../persistence/model/responses";
+import { PredictionTriple, ProjectResponse } from "../../persistence/model/responses";
 import { Annotation, Label } from "../../persistence/model/responses";
 import "../../styles/galery.css";
 export const loader: LoaderFunction = async ({ params }) => {
@@ -27,6 +28,10 @@ export default function Project() {
     const [pressedButton, setPressedButton] = useState<number>(UNDEFINED);
 
     const [imageSize, setImageSize] = useState<number>(DEFAULT_IMAGE_SIZE);
+
+    // frameId to Label mapping
+    const [frameLabels, setFrameLabels] = useState<Record<number, Label | null>>({});
+
     const gridRef = useRef<HTMLDivElement>(null);
 
     const handleSliderChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -207,6 +212,26 @@ export default function Project() {
         }
     };
 
+    const trainAI = async (projectId: number) => {
+        try {
+            
+            const { data: response } = await axios.post<PredictionTriple[]>(`/api//projects/${projectId}/trainAI`);
+            response.forEach(element => {
+                const imageFrameElement = document.getElementById(`image-frame-indicator-${element.frameId}`);
+                const color = labels.filter(label => label.id == Number(element.label))[0].color
+                if(imageFrameElement){
+                    imageFrameElement.textContent = "X"
+                    imageFrameElement.style.color = color
+                }
+                
+            });
+            
+            alert('Training finished!');
+        } catch (error) {
+            alert('Training failed');
+        }
+    };
+
     return (
         <div 
             onMouseUp={() => handleMouseUp()}
@@ -248,25 +273,30 @@ export default function Project() {
             <input type="text" id="new-label-text-input" placeholder="New label"></input>
             <button onClick={() => handleAddLabel()}>Add label</button>
 
+            <button onClick={() => trainAI(project.id)}>Train AI</button>
+
             <div 
                 className="image-grid"
                 ref={gridRef}
-                
             >
                 {imagePositions.map(position => (
-                    <img
-                        key={position}
-                        src={`/api/projects/${project.id}/frame/${position}`}
-                        alt={`Frame ${position}`}
-                        className={`image`} // Add selected class
-                        style={selectedImageStyle(position)}
-                       // onClick={() => handleImageClick(position)}
-                        onMouseDown={(event) => handleMouseDown(event, position)}
-                        
-                        onMouseOver={() => handleMouseOver(position)}
-                        onDragStart={() => preventDragHandler}
-                        draggable="false"
-                    />
+                    <div id={`image-frame-wrapper-${position}`}>
+                        <div className='image-frame-indicator' id={`image-frame-indicator-${position}`}></div>
+                        <img
+                            id={`image-frame-${position}`}
+                            key={position}
+                            src={`/api/projects/${project.id}/frame/${position-1}`}
+                            alt={`Frame ${position}`}
+                            className={`image`} // Add selected class
+                            style={selectedImageStyle(position)}
+                            // onClick={() => handleImageClick(position)}
+                            onMouseDown={(event) => handleMouseDown(event, position)}
+                            
+                            onMouseOver={() => handleMouseOver(position)}
+                            onDragStart={() => preventDragHandler}
+                            draggable="false"
+                            />
+                    </div>
                 ))}
             </div>
             <div className="pagination-buttons">
