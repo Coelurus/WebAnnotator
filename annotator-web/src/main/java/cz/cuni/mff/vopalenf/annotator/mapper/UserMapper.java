@@ -1,8 +1,10 @@
 package cz.cuni.mff.vopalenf.annotator.mapper;
 
+import cz.cuni.mff.vopalenf.annotator.api.model.SignupCredentials;
 import cz.cuni.mff.vopalenf.annotator.api.model.Team;
 import cz.cuni.mff.vopalenf.annotator.api.model.User;
 import cz.cuni.mff.vopalenf.annotator.dao.model.UserEntity;
+import cz.cuni.mff.vopalenf.annotator.security.Role;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -43,5 +45,19 @@ public class UserMapper {
         }
 
         return modelMapper.map(user, UserEntity.UserEntityBuilder.class).build();
+    }
+
+    public UserEntity signupCredentialsToUserEntity(SignupCredentials credentials) {
+        if (credentials == null) {
+            return null;
+        }
+
+        return UserEntity.builder()
+                .firstName(credentials.firstName())
+                .lastName(credentials.lastName())
+                .username(credentials.username())
+                .team(null)
+                .role(Role.ROLE_USER)
+                .build();
     }
 }

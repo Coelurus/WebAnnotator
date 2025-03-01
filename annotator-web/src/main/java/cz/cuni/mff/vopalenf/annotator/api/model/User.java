@@ -6,11 +6,11 @@ import cz.cuni.mff.vopalenf.annotator.api.view.Views;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Value;
 
 @Builder(toBuilder = true)
-@Value
+@Data
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
 @AllArgsConstructor
 public class User {
@@ -43,4 +43,8 @@ public class User {
     @JsonProperty("role")
     @JsonView(Views.BothView.class)
     String role;
+
+    @JsonProperty("token")
+    @JsonView(Views.BothView.class)
+    String token;
 }

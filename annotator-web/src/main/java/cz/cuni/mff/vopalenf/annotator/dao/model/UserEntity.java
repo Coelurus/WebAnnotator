@@ -75,6 +75,6 @@ public class UserEntity {
      * Team to which user belongs.
      */
     @ManyToOne
-    @JoinColumn(name = "team_id", nullable = false)
+    @JoinColumn(name = "team_id", nullable = true)
     private TeamEntity team;
 }

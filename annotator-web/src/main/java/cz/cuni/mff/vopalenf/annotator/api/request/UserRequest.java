@@ -3,24 +3,18 @@ package cz.cuni.mff.vopalenf.annotator.api.request;
 import cz.cuni.mff.vopalenf.annotator.security.Role;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.validation.constraints.NotBlank;
-import lombok.Getter;
+import lombok.Builder;
+import lombok.Data;
 
-@Getter
+@Data
+@Builder
 public class UserRequest {
 
-    @NotBlank
-    String firstName;
-
-    @NotBlank
-    String lastName;
-
-    @NotBlank
-    String username;
-
-    @NotBlank
-    String password;
+    private Long id;
+    private String firstName;
+    private String lastName;
+    private String username;
 
     @Enumerated(EnumType.STRING)
-    Role role;
+    private Role role;
 }

@@ -1,12 +1,13 @@
 package cz.cuni.mff.vopalenf.annotator.api.controller;
 
-import cz.cuni.mff.vopalenf.annotator.api.request.UserRequest;
-import cz.cuni.mff.vopalenf.annotator.dao.model.UserEntity;
+import cz.cuni.mff.vopalenf.annotator.api.model.LoginCredentials;
+import cz.cuni.mff.vopalenf.annotator.api.model.SignupCredentials;
+import cz.cuni.mff.vopalenf.annotator.api.model.User;
+import cz.cuni.mff.vopalenf.annotator.config.UserAuthProvider;
 import cz.cuni.mff.vopalenf.annotator.dao.repository.UserRepository;
+import cz.cuni.mff.vopalenf.annotator.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,36 +20,32 @@ public class AuthController {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UserService userService;
+    private final UserAuthProvider userAuthProvider;
 
-    public AuthController(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public AuthController(
+            UserRepository userRepository,
+            PasswordEncoder passwordEncoder,
+            UserService userService,
+            UserAuthProvider userAuthProvider) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.userService = userService;
+        this.userAuthProvider = userAuthProvider;
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<String> signup(@RequestBody @Valid UserRequest user) {
-        if (userRepository.findByUsername(user.getUsername()).isPresent()) {
-            return ResponseEntity.badRequest().body("Username is already in use");
-        }
-
-        UserEntity userEntity = UserEntity.builder()
-                .username(user.getUsername())
-                .firstName(user.getFirstName())
-                .lastName(user.getLastName())
-                .passwordHash(passwordEncoder.encode(user.getPassword()))
-                .role(user.getRole())
-                .build();
-
-        userRepository.save(userEntity);
-
-        return ResponseEntity.ok("User registered");
+    public ResponseEntity<User> signup(@RequestBody @Valid SignupCredentials credentials) {
+        User user = userService.signup(credentials);
+        user.setToken(userAuthProvider.createToken(user));
+        return ResponseEntity.ok(user);
     }
 
     @PostMapping("/login")
-    public String login() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentPrincipalName = authentication.getName();
-        return "Login successful as: " + currentPrincipalName + " with role: " + authentication.getAuthorities().stream().findFirst().get().getAuthority();
+    public ResponseEntity<User> login(@RequestBody @Valid LoginCredentials credentials) {
+        User user = userService.login(credentials);
+        user.setToken(userAuthProvider.createToken(user));
+        return ResponseEntity.ok(user);
     }
 
 }
