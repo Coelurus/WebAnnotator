@@ -12,8 +12,8 @@ import Users from "./routes/listing/users";
 import Teams from "./routes/listing/teams";
 import ProjectForm from "./routes/project/project-form";
 import Project, {loader as projectLoader} from "./routes/project/project";
-import LoginPage from "./routes/security/log-in/log-in-screen";
-import SignupPage from "./routes/security/sign-up/sign-up";
+import LoginPage from "./routes/security/login/login-screen";
+import SignupPage from "./routes/security/signup/signup-screen";
 import LogoutButton from "./routes/security/log-out/log-out-screen";
 
 const router = createBrowserRouter([
