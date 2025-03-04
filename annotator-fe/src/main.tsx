@@ -19,6 +19,7 @@ import LoginPage from "./routes/security/login/login-screen";
 import SignupPage from "./routes/security/signup/signup-screen";
 import LogoutButton from "./routes/security/logout/logout-screen";
 import { isUserAdmin } from "./security/auth";
+import HomePage from "./routes/home/home";
 
 const AdminRoute = () => {
   const location = useLocation()
@@ -28,6 +29,10 @@ const AdminRoute = () => {
 }
 
 const router = createBrowserRouter([
+  {
+    path: "/home",
+    element: <HomePage />
+  },
   {
     path: "/",
     element: <Root />,
