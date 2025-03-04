@@ -3,6 +3,9 @@ import * as ReactDOM from "react-dom/client";
 import {
   createBrowserRouter,
   RouterProvider,
+  useLocation,
+  Outlet,
+  Navigate
 } from "react-router-dom";
 
 import Root from "./routes/root";
@@ -14,7 +17,15 @@ import ProjectForm from "./routes/project/project-form";
 import Project, {loader as projectLoader} from "./routes/project/project";
 import LoginPage from "./routes/security/login/login-screen";
 import SignupPage from "./routes/security/signup/signup-screen";
-import LogoutButton from "./routes/security/log-out/log-out-screen";
+import LogoutButton from "./routes/security/logout/logout-screen";
+import { isUserAdmin } from "./security/auth";
+
+const AdminRoute = () => {
+  const location = useLocation()
+  return isUserAdmin()
+    ? <Outlet />
+    : <Navigate to = "/" replace state ={{ from: location }} />;
+}
 
 const router = createBrowserRouter([
   {
@@ -41,12 +52,18 @@ const router = createBrowserRouter([
         ]
       },
       {
-        path: "users",
-        element: <Users />
-      },
-      {
-        path: "teams",
-        element: <Teams />
+        path: "admin",
+        element: <AdminRoute />,
+        children: [
+          {
+            path: "users",
+            element: <Users />
+          },
+          {
+            path: "teams",
+            element: <Teams />
+          },
+        ]
       },
       {
         path: "login",

@@ -1,4 +1,22 @@
 import axios from "axios";
+import { jwtDecode } from "jwt-decode";
+
+export interface JwtPayload {
+    role: string;
+}  
+
+export const isUserAdmin = () => {
+    const token = getAuthToken();
+    if(token !== null){
+        const decoded: JwtPayload = jwtDecode(token);
+        return decoded.role === "ROLE_ADMIN";
+    }
+    return false;
+}
+
+export const isUserLoggedIn = () => {
+    return getAuthToken() !== null;
+}
 
 export const getAuthToken = () => {
     return window.localStorage.getItem('auth_token');
@@ -12,7 +30,7 @@ export const setAuthToken = (token: string|null) => {
     }
 }
 
-export const request = (method: string, url: string, data: Record<string, string>) => {
+export const request = (method: string, url: string, data: Record<string, string> = {}) => {
     return axios(
         {
             method: method,

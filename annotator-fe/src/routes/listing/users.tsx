@@ -1,16 +1,17 @@
 import { useEffect, useState } from "react";
 
 import { UserResponse } from "../../persistence/model/responses";
-import { mapUserResponse } from "../../persistence/mapper/mapper";
+import { fetchUsers } from "../../persistence/fetcher/fetcher";
 
 export default function Users() {
     const [users, setUsers] = useState<UserResponse[]>([]);
 
     useEffect(() => {
-        fetch('/api/users')
-            .then((response) => response.json())
-            .then((data) => setUsers(mapUserResponse(data)))
-            .catch((error) => console.error('Error fetching teams:', error));
+        fetchUsers().then((data) => {
+          setUsers(data)
+          console.log(data);
+          
+        })
     }, []);    
 
 
@@ -32,7 +33,7 @@ export default function Users() {
                   <td>{user.id}</td>
                   <td>{user.firstName} {user.lastName}</td>
                   <td>{user.username}</td>
-                  <td>{user.team.name}</td>
+                  <td>{user.team ? user.team.name : ""}</td>
                 </tr>
               ))}
             </tbody>

@@ -13,7 +13,7 @@ function LoginPage() {
         await login(
             username,
             password,
-            () => navigate('/'),
+            () => navigate(0),
             (errorMessage) => setError(errorMessage)
         );
     };

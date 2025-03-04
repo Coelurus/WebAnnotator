@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 
 import { ProjectResponse } from '../../persistence/model/responses';
 import { mapProjectResponses } from '../../persistence/mapper/mapper';
+import { request } from '../../security/auth';
 
 
 
@@ -10,10 +11,9 @@ export default function Projects() {
     const [projects, setProjects] = useState<ProjectResponse[]>([]);
 
     useEffect(() => {
-        fetch('/api/projects')
-          .then((response) => response.json())
-          .then((data) => setProjects(mapProjectResponses(data)))
-          .catch((error) => console.error('Error fetching projects:', error));
+      request("GET", "/api/projects")
+        .then((response) => setProjects(mapProjectResponses(response.data)))
+        .catch((error) => console.error("Error fetching projects:", error));
       }, []);      
 
       return (

@@ -18,7 +18,7 @@ export const login = async (
         });
 
         setAuthToken(response.data.token);
-        onSuccess(); 
+        onSuccess();
     } catch (error) {
         setAuthToken(null);
         onError('Invalid credentials');

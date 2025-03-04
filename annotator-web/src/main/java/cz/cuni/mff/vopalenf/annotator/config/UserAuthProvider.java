@@ -46,6 +46,7 @@ public class UserAuthProvider {
                 .withExpiresAt(expiresAt)
                 .withClaim("firstName", user.getFirstName())
                 .withClaim("lastName", user.getLastName())
+                .withClaim("role", user.getRole())
                 .sign(Algorithm.HMAC256(secretKey));
     }
 

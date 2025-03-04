@@ -47,10 +47,7 @@ export function mapUserResponse(data: any[]) : UserResponse[] {
         firstName: user.first_name,
         lastName: user.last_name,
         username: user.username,
-        team: {
-            id: user.team.id,
-            name: user.team.name,
-        },
+        team: user.team ? { id: user.team.id, name: user.team.name } : null,
     }));
 }
 

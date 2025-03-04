@@ -3,7 +3,7 @@ export interface UserResponse {
     firstName: string;
     lastName: string;
     username: string;
-    team: ShortTeamResponse;
+    team: ShortTeamResponse | null;
 }
 
 export interface ShortUserResponse {
