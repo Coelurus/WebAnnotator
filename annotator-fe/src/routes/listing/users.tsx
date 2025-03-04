@@ -1,4 +1,4 @@
-import { useState, useEffect, FormEvent } from "react";
+import React, { useState, useEffect, FormEvent } from "react";
 import { Table, Button, Modal, Form } from "react-bootstrap";
 import { Pencil, Plus, Trash } from "react-bootstrap-icons";
 import { UserResponse } from "../../persistence/model/responses";

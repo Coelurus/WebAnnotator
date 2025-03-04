@@ -1,11 +1,11 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { login } from './login';
 import { Button, Card, Form } from 'react-bootstrap';
 
 interface LoginValidationErrors {
-    username?: String,
-    password?: String,
+    username?: string,
+    password?: string,
 }
 
 function LoginForm() {
@@ -16,7 +16,7 @@ function LoginForm() {
     const navigate = useNavigate();
 
     const handleLogin = async () => {
-        let errors: LoginValidationErrors = {};
+        const errors: LoginValidationErrors = {};
 
         if (!username.trim()) errors.username = "Username cannot be empty";
         if (!password.trim()) errors.password = "Password cannot be empty";

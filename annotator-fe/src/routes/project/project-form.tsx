@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { PriorityResponse, TeamResponse } from "../../persistence/model/responses";
 import { fetchPriorities, fetchTeams } from "../../persistence/fetcher/fetcher";

@@ -1,6 +1,6 @@
 import axios from 'axios';
-import { ChangeEvent, useEffect, useState, useRef, useLayoutEffect } from "react";
-import { Form, LoaderFunction, useLoaderData } from "react-router-dom";
+import React, { ChangeEvent, useEffect, useState, useRef, useLayoutEffect } from "react";
+import { LoaderFunction, useLoaderData } from "react-router-dom";
 import { fetchProject } from "../../persistence/fetcher/fetcher";
 import { PredictionTriple, ProjectResponse } from "../../persistence/model/responses";
 import { Annotation, Label } from "../../persistence/model/responses";

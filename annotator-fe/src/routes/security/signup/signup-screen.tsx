@@ -1,13 +1,13 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom'; // Import useHistory hook
 import { signup } from './signup';
 import { Form, Card, Button } from 'react-bootstrap';
 
 interface SignupValidationErrors {
-    firstName?: String,
-    lastName?: String,
-    username?: String,
-    password?: String,
+    firstName?: string,
+    lastName?: string,
+    username?: string,
+    password?: string,
 }
 
 
@@ -21,7 +21,7 @@ function SignupForm() {
     const navigate = useNavigate(); 
 
     const handleSignup = async () => {
-        let errors: SignupValidationErrors = {};
+        const errors: SignupValidationErrors = {};
 
         if (!firstName.trim()) errors.firstName = "First name cannot be empty";
         if (!lastName.trim()) errors.lastName = "Last name cannot be empty";

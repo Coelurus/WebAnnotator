@@ -1,7 +1,7 @@
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 
-export interface JwtPayload {
+export default interface JwtPayload {
     role: string;
 }  
 

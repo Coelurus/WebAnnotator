@@ -1,8 +1,13 @@
-import { Container, Navbar, Button, Row, Col, Card } from "react-bootstrap";
-import 'bootstrap/dist/css/bootstrap.min.css';
-import { useState } from "react";
+import Container from "react-bootstrap/Container"
+import Navbar from "react-bootstrap/Navbar"
+import Button from "react-bootstrap/Button";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+import React, { useState } from "react";
 import LoginForm from "../security/login/login-screen";
 import SignupForm from "../security/signup/signup-screen";
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 
 const HomePage = () => {
   const [showLogin, setShowLogin] = useState(false);

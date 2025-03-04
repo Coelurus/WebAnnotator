@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useState } from "react";
+import React, { FormEvent, useEffect, useState } from "react";
 
 import { TeamResponse } from "../../persistence/model/responses";
 import { fetchTeams } from "../../persistence/fetcher/fetcher";
