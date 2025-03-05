@@ -83,4 +83,31 @@ public class UserService {
     public void deleteUser(Long userId) {
         userRepository.deleteById(userId);
     }
+
+    /**
+     * Update existing user in db
+     *
+     * @param userId ID of a user to update
+     * @param user Update payload
+     * @return updated user
+     */
+    public User updateUser(Long userId, User user) {
+        UserEntity userToUpdate = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("Cannot update user", UserService.class.getSimpleName()));
+
+        if (userToUpdate.getFirstName() != null) {
+            user.setFirstName(userToUpdate.getFirstName());
+        }
+        if (userToUpdate.getLastName() != null) {
+            user.setLastName(userToUpdate.getLastName());
+        }
+        if (userToUpdate.getUsername() != null) {
+            user.setUserName(userToUpdate.getUsername());
+        }
+        if (userToUpdate.getTeam() != null) {
+            user.setTeam(teamMapper.mapTeam(userToUpdate.getTeam()));
+        }
+
+        return userMapper.mapUser(userRepository.save(userToUpdate));
+    }
 }
