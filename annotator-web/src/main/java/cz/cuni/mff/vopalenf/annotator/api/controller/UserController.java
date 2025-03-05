@@ -28,8 +28,7 @@ public class UserController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentPrincipalName = authentication.getName();
         System.out.println(currentPrincipalName);
-        //System.out.println(authentication.getAuthorities().stream().findFirst().get().getAuthority());
-        return userService.getAllUsers();
+        return ResponseEntity.ok().body(userService.getAllUsers());
     }
 
     @DeleteMapping("/{userId}")

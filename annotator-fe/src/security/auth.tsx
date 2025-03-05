@@ -2,24 +2,47 @@ import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 
 export default interface JwtPayload {
+  sub: string;
   role: string;
+  exp: number;
 }
 
 export const isUserAdmin = () => {
   const token = getAuthToken();
-  if (token !== null) {
-    const decoded: JwtPayload = jwtDecode(token);
+  if (isTokenValid(token)) {
+    const decoded: JwtPayload = jwtDecode(token!);
     return decoded.role === 'ROLE_ADMIN';
   }
   return false;
 };
 
 export const isUserLoggedIn = () => {
-  return getAuthToken() !== null;
+  const token = getAuthToken();
+  return isTokenValid(token);
+};
+
+const isTokenValid = (token: string | null) => {
+  if (token !== null) {
+    const decoded: JwtPayload = jwtDecode(token);
+    return Date.now() <= decoded.exp * 1000;
+  }
+  return false;
+};
+
+export const getUserUsername = () => {
+  const token = getAuthToken();
+  if (isTokenValid(token)) {
+    const decoded: JwtPayload = jwtDecode(token!);
+    return decoded.sub;
+  }
 };
 
 export const getAuthToken = () => {
   return window.localStorage.getItem('auth_token');
+};
+
+export const invalidateToken = () => {
+  setAuthToken(null);
 };
 
 export const setAuthToken = (token: string | null) => {

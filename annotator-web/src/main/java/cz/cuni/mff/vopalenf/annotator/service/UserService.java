@@ -10,7 +10,6 @@ import cz.cuni.mff.vopalenf.annotator.exception.api.NotFoundException;
 import cz.cuni.mff.vopalenf.annotator.mapper.TeamMapper;
 import cz.cuni.mff.vopalenf.annotator.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -41,17 +40,15 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public ResponseEntity<List<User>> getAllUsers() {
-        return ResponseEntity.ok(
-                userRepository.findAll().stream()
-                        .map(userEntity -> userMapper.mapUser(
-                                userEntity,
-                                teamMapper.mapTeam(
-                                        userEntity.getTeam()
-                                )
-                        ))
-                        .toList()
-        );
+    public List<User> getAllUsers() {
+        return userRepository.findAll().stream()
+                .map(userEntity -> userMapper.mapUser(
+                        userEntity,
+                        teamMapper.mapTeam(
+                                userEntity.getTeam()
+                        )
+                ))
+                .toList();
     }
 
     public User getUserByUsername(String username) {

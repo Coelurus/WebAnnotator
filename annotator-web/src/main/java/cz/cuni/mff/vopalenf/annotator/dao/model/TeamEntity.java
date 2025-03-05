@@ -44,6 +44,6 @@ public class TeamEntity {
      * Leader of a team
      */
     @ManyToOne
-    @JoinColumn(name = "leader_id", nullable = false)
+    @JoinColumn(name = "leader_id", nullable = true)
     private UserEntity leader;
 }

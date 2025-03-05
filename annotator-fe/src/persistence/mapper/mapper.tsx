@@ -33,11 +33,13 @@ export function mapTeamResponse(data: any[]): TeamResponse[] {
   return data.map((team) => ({
     id: team.id,
     name: team.name,
-    leader: {
-      id: team.leader.id,
-      firstName: team.leader.first_name,
-      lastName: team.leader.last_name
-    }
+    leader: team.leader
+      ? {
+          id: team.leader.id,
+          firstName: team.leader.first_name,
+          lastName: team.leader.last_name
+        }
+      : null
   }));
 }
 

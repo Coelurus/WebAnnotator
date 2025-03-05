@@ -53,9 +53,7 @@ export default function Teams() {
           {teams.map((team) => (
             <tr key={team.id}>
               <td>{team.name}</td>
-              <td>
-                {team.leader.firstName} {team.leader.lastName}
-              </td>
+              <td>{team.leader ? team.leader.firstName + '' + team.leader.lastName : '-'}</td>
               <td>
                 <Button
                   variant="success"

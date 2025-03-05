@@ -15,7 +15,7 @@ export interface ShortUserResponse {
 export interface TeamResponse {
   id: number;
   name: string;
-  leader: ShortUserResponse;
+  leader: ShortUserResponse | null;
 }
 
 export interface ShortTeamResponse {

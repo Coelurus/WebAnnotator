@@ -1,9 +1,9 @@
 import React, { useState, useEffect, FormEvent } from 'react';
 import { Table, Button, Modal, Form } from 'react-bootstrap';
-import { Crosshair, Pencil, Plus, Trash, X } from 'react-bootstrap-icons';
+import { Pencil, Plus, Trash, X } from 'react-bootstrap-icons';
 import { UserResponse } from '../../persistence/model/responses';
 import { fetchUsers } from '../../persistence/fetcher/fetcher';
-import { request } from '../../security/auth';
+import { getUserUsername, invalidateToken, request } from '../../security/auth';
 
 export default function Users() {
   const [users, setUsers] = useState<UserResponse[]>([]);
@@ -23,14 +23,19 @@ export default function Users() {
     handleAddUserClose();
   };
 
-  const [userIdToDelete, setUserIdToDelete] = useState<number|null>(null);
+  const [userIdToDelete, setUserIdToDelete] = useState<number | null>(null);
+  const [usernameToDelete, setUsernameToDelete] = useState<string | null>(null);
   const handleDeleteUserClose = () => setShowDeleteUserConfirmation(false);
 
   const handleDeleteUser = async () => {
-    await request('DELETE', `/api/users/${userIdToDelete}`)
+    await request('DELETE', `/api/users/${userIdToDelete}`);
     setUserIdToDelete(null);
     setShowDeleteUserConfirmation(false);
-  }
+    if (getUserUsername() === usernameToDelete) {
+      invalidateToken();
+    }
+    window.location.reload();
+  };
 
   useEffect(() => {
     fetchUsers().then(setUsers);
@@ -40,9 +45,10 @@ export default function Users() {
     alert('TODO: Edit user: ' + userId);
   };
 
-  const handleUserDelete = (userId: number) => {
+  const handleUserDelete = (userId: number, username: string) => {
     setUserIdToDelete(userId);
     setShowDeleteUserConfirmation(true);
+    setUsernameToDelete(username);
   };
 
   return (
@@ -63,7 +69,10 @@ export default function Users() {
               <td>
                 {user.firstName} {user.lastName}
               </td>
-              <td>{user.username}</td>
+              <td>
+                {user.username}
+                <b>{getUserUsername() === user.username ? ' (you)' : ''}</b>
+              </td>
               <td>{user.team ? user.team.name : '-'}</td>
               <td>
                 <Button
@@ -74,7 +83,11 @@ export default function Users() {
                 >
                   <Pencil />
                 </Button>
-                <Button variant="danger" size="sm" onClick={() => handleUserDelete(user.id)}>
+                <Button
+                  variant="danger"
+                  size="sm"
+                  onClick={() => handleUserDelete(user.id, user.username)}
+                >
                   <Trash />
                 </Button>
               </td>
