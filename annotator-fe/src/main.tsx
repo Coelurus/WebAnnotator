@@ -8,7 +8,6 @@ import {
   Navigate
 } from 'react-router-dom';
 
-import Root from './routes/root';
 import ErrorPage from './error-page';
 import Projects from './routes/listing/projects';
 import Users from './routes/listing/users';
@@ -17,7 +16,6 @@ import ProjectForm from './routes/project/project-form';
 import Project, { loader as projectLoader } from './routes/project/project';
 import LoginPage from './routes/security/login/login-screen';
 import SignupPage from './routes/security/signup/signup-screen';
-import LogoutButton from './routes/security/logout/logout-screen';
 import { isUserAdmin, isUserLoggedIn } from './security/auth';
 import HomePage from './routes/home/home';
 import LoginForm from './routes/security/login/login-screen';
@@ -93,16 +91,6 @@ const router = createBrowserRouter([
       }
     ]
   },
-  {
-    path: '/old',
-    element: <Root />,
-    children: [
-      {
-        path: 'logout',
-        element: <LogoutButton />
-      }
-    ]
-  }
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')!).render(

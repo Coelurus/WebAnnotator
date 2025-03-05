@@ -82,4 +82,8 @@ public class UserService {
         UserEntity createdUser = userRepository.save(user);
         return userMapper.mapUser(createdUser);
     }
+
+    public void deleteUser(Long userId) {
+        userRepository.deleteById(userId);
+    }
 }

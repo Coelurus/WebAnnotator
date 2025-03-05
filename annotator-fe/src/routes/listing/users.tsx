@@ -1,25 +1,36 @@
 import React, { useState, useEffect, FormEvent } from 'react';
 import { Table, Button, Modal, Form } from 'react-bootstrap';
-import { Pencil, Plus, Trash } from 'react-bootstrap-icons';
+import { Crosshair, Pencil, Plus, Trash, X } from 'react-bootstrap-icons';
 import { UserResponse } from '../../persistence/model/responses';
 import { fetchUsers } from '../../persistence/fetcher/fetcher';
+import { request } from '../../security/auth';
 
 export default function Users() {
   const [users, setUsers] = useState<UserResponse[]>([]);
-  const [show, setShow] = useState(false);
+  const [showAddUserModal, setShowAddUserModal] = useState(false);
+  const [showDeleteUserConfirmation, setShowDeleteUserConfirmation] = useState(false);
   const [newUser, setNewUser] = useState({ firstName: '', lastName: '', username: '' });
 
-  const handleShow = () => setShow(true);
-  const handleClose = () => setShow(false);
-  const handleChange = (value: string, name: string) => {
+  const handleAddUserShow = () => setShowAddUserModal(true);
+  const handleAddUserClose = () => setShowAddUserModal(false);
+  const handleAddUserChange = (value: string, name: string) => {
     setNewUser({ ...newUser, [name]: value });
   };
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleAddUserSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     alert('Here should happen smth like : handleUserAdd(newUser)');
     setNewUser({ firstName: '', lastName: '', username: '' });
-    handleClose();
+    handleAddUserClose();
   };
+
+  const [userIdToDelete, setUserIdToDelete] = useState<number|null>(null);
+  const handleDeleteUserClose = () => setShowDeleteUserConfirmation(false);
+
+  const handleDeleteUser = async () => {
+    await request('DELETE', `/api/users/${userIdToDelete}`)
+    setUserIdToDelete(null);
+    setShowDeleteUserConfirmation(false);
+  }
 
   useEffect(() => {
     fetchUsers().then(setUsers);
@@ -30,7 +41,8 @@ export default function Users() {
   };
 
   const handleUserDelete = (userId: number) => {
-    alert('TODO: Delete user: ' + userId);
+    setUserIdToDelete(userId);
+    setShowDeleteUserConfirmation(true);
   };
 
   return (
@@ -70,22 +82,22 @@ export default function Users() {
           ))}
         </tbody>
       </Table>
-      <Button variant="primary" className="mb-3" onClick={handleShow}>
+      <Button variant="primary" className="mb-3" onClick={handleAddUserShow}>
         <Plus /> Add User
       </Button>
-      <Modal show={show} onHide={handleClose}>
+      <Modal show={showAddUserModal} onHide={handleAddUserClose}>
         <Modal.Header closeButton>
           <Modal.Title>Add User</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form onSubmit={(e) => handleSubmit(e)}>
+          <Form onSubmit={(e) => handleAddUserSubmit(e)}>
             <Form.Group className="mb-3">
               <Form.Label>First Name</Form.Label>
               <Form.Control
                 type="text"
                 name="firstName"
                 value={newUser.firstName}
-                onChange={(e) => handleChange(e.target.value, e.target.name)}
+                onChange={(e) => handleAddUserChange(e.target.value, e.target.name)}
                 required
               />
             </Form.Group>
@@ -95,7 +107,7 @@ export default function Users() {
                 type="text"
                 name="lastName"
                 value={newUser.lastName}
-                onChange={(e) => handleChange(e.target.value, e.target.name)}
+                onChange={(e) => handleAddUserChange(e.target.value, e.target.name)}
                 required
               />
             </Form.Group>
@@ -105,7 +117,7 @@ export default function Users() {
                 type="text"
                 name="username"
                 value={newUser.username}
-                onChange={(e) => handleChange(e.target.value, e.target.name)}
+                onChange={(e) => handleAddUserChange(e.target.value, e.target.name)}
                 required
               />
             </Form.Group>
@@ -113,6 +125,20 @@ export default function Users() {
               Add User
             </Button>
           </Form>
+        </Modal.Body>
+      </Modal>
+
+      <Modal show={showDeleteUserConfirmation} onHide={handleDeleteUserClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>Do you really want to delete user?</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="d-flex justify-content-around">
+          <Button variant="success" className="mb-3 me-5" onClick={handleDeleteUserClose}>
+            <X /> DO NOT DELETE
+          </Button>
+          <Button variant="danger" className="mb-3" onClick={handleDeleteUser}>
+            <X /> DELETE
+          </Button>
         </Modal.Body>
       </Modal>
     </div>
