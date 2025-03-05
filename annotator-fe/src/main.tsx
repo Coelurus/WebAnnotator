@@ -18,8 +18,10 @@ import Project, {loader as projectLoader} from "./routes/project/project";
 import LoginPage from "./routes/security/login/login-screen";
 import SignupPage from "./routes/security/signup/signup-screen";
 import LogoutButton from "./routes/security/logout/logout-screen";
-import { isUserAdmin } from "./security/auth";
+import { isUserAdmin, isUserLoggedIn } from "./security/auth";
 import HomePage from "./routes/home/home";
+import LoginForm from "./routes/security/login/login-screen";
+import SignupForm from "./routes/security/signup/signup-screen";
 
 const AdminRoute = () => {
   const location = useLocation()
@@ -28,31 +30,37 @@ const AdminRoute = () => {
     : <Navigate to = "/" replace state ={{ from: location }} />;
 }
 
+const SignedUserRoute = () => {
+  const location = useLocation()
+  return isUserLoggedIn()
+    ? <Outlet />
+    : <Navigate to = "/" replace state = {{ from: location }} />;
+}
+
+const AnonymousUserRoute = () => {
+  const location = useLocation()
+  return !isUserLoggedIn()
+    ? <Outlet />
+    : <Navigate to = "/" replace state = {{ from: location }} />;
+}
+
 const router = createBrowserRouter([
   {
-    path: "/home",
-    element: <HomePage />
-  },
-  {
     path: "/",
-    element: <Root />,
+    element: <HomePage />,
     errorElement: <ErrorPage />,
     children: [
       {
-        path: "projects",
+        path: "/user",
+        element: <AnonymousUserRoute/>,
         children: [
           {
-            path: ":projectId",
-            element: <Project />,
-            loader: projectLoader
+            path: "login",
+            element: <LoginPage />,
           },
           {
-            path: "all",
-            element: <Projects />,
-          },
-          {
-            path: "create",
-            element: <ProjectForm />,
+            path: "signup",
+            element: <SignupPage />,
           },
         ]
       },
@@ -71,13 +79,31 @@ const router = createBrowserRouter([
         ]
       },
       {
-        path: "login",
-        element: <LoginPage />
+        path: "projects",
+        element: <SignedUserRoute />,
+        children: [
+          {
+            path: "all",
+            element: <Projects />,
+          },
+          {
+            path: ":projectId",
+            element: <Project />,
+            loader: projectLoader
+          },
+          {
+            path: "create",
+            element: <ProjectForm />,
+          },
+        ]
       },
-      {
-        path: "signup",
-        element: <SignupPage />
-      },
+    ]
+  },
+  {
+    path: "/old",
+    element: <Root />,
+    children: [
+      
       {
         path: "logout",
         element: <LogoutButton />

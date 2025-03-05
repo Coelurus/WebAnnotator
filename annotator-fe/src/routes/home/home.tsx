@@ -4,20 +4,34 @@ import Button from "react-bootstrap/Button";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import React, { useState } from "react";
-import LoginForm from "../security/login/login-screen";
-import SignupForm from "../security/signup/signup-screen";
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { Link, Outlet, useNavigate } from "react-router-dom";
+import { isUserAdmin, isUserLoggedIn } from "../../security/auth";
+import { logout } from "../security/logout/logout";
 
 
 const HomePage = () => {
   const [showLogin, setShowLogin] = useState(false);
   const [showSignup, setShowSignup] = useState(false);
+  const navigate = useNavigate()
 
   return (
     <>
       <Navbar bg="light" expand="lg" className="shadow-sm">
         <Container>
-          <Navbar.Brand href="#">Annotator</Navbar.Brand>
+          <Link to="/">Annotator</Link>
+        </Container>
+        <Container hidden={!isUserAdmin()}>
+          <Link to="/admin/users">Users</Link>
+        </Container>
+        <Container hidden={!isUserAdmin()}>
+          <Link to="/admin/teams">Teams</Link>
+        </Container>
+        <Container hidden={!isUserLoggedIn()}>
+          <Link to="/projects/all">Projects</Link>
+        </Container>
+        <Container hidden={!isUserLoggedIn()}>
+          <Button onClick={() => logout(() => navigate(0))}>Log out</Button>
         </Container>
       </Navbar>
 
@@ -25,28 +39,24 @@ const HomePage = () => {
         <h1 className="fw-bold">Welcome to Annotator</h1>
         <p className="text-muted">Annotate data from capacitive sensor!</p>
 
-        <Row className="mt-4">
+        <Row className="mt-4" hidden={isUserLoggedIn()}>
           <Col>
             <Button variant="primary" size="lg" onClick={() => { 
-                setShowLogin(!showLogin); 
-                setShowSignup(false); 
+                navigate("/user/login")
             }}>
               Login
             </Button>
           </Col>
           <Col>
             <Button variant="outline-primary" size="lg" onClick={() => { 
-                setShowSignup(!showSignup); 
-                setShowLogin(false); 
+                navigate("/user/signup")
             }}>
               Sign&nbsp;Up
             </Button>
           </Col>
         </Row>
 
-        {showLogin && <LoginForm />}
-        
-        {showSignup && <SignupForm />}
+        <Outlet />
       </Container>
     </>
   );

@@ -22,10 +22,7 @@ export default function Users() {
     };
 
     useEffect(() => {
-        fetchUsers().then((data) => {
-            setUsers(data);
-            console.log(data);
-        });
+        fetchUsers().then(setUsers);
     }, []);
 
     const handleUserEdit = (userId: number) => {
@@ -39,9 +36,6 @@ export default function Users() {
     return (
         <div className="container mt-4">
             <h1 className="mb-4">Users</h1>
-            <Button variant="primary" className="mb-3" onClick={handleShow}>
-                <Plus /> Add User
-            </Button>
             <Table striped bordered hover responsive>
                 <thead className="table-dark">
                     <tr>
@@ -78,6 +72,9 @@ export default function Users() {
                     ))}
                 </tbody>
             </Table>
+            <Button variant="primary" className="mb-3" onClick={handleShow}>
+                <Plus /> Add User
+            </Button>
             <Modal show={show} onHide={handleClose}>
                 <Modal.Header closeButton>
                     <Modal.Title>Add User</Modal.Title>

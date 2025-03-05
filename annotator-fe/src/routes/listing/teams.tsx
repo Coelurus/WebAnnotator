@@ -42,9 +42,6 @@ export default function Teams() {
     return (
         <div className="container mt-4">
           <h1 className="mb-4">Teams</h1>
-          <Button variant="primary" className="mb-3" onClick={handleShow}>
-              <Plus /> Add Team
-          </Button>
           <Table striped bordered hover responsive>
             <thead className="table-dark">
               <tr>
@@ -88,6 +85,9 @@ export default function Teams() {
               ))}
             </tbody>
           </Table>
+          <Button variant="primary" className="mb-3" onClick={handleShow}>
+              <Plus /> Add Team
+          </Button>
           <Modal show={show} onHide={handleClose}>
                 <Modal.Header closeButton>
                     <Modal.Title>Add User</Modal.Title>
