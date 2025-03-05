@@ -1,10 +1,10 @@
-import { useRouteError } from "react-router-dom";
-import React from "react"
+import { useRouteError } from 'react-router-dom';
+import React from 'react';
 
 interface ErrorResponse {
-    statusText?: string;
-    message?: string;
-  }
+  statusText?: string;
+  message?: string;
+}
 
 export default function ErrorPage() {
   const error = useRouteError() as ErrorResponse;

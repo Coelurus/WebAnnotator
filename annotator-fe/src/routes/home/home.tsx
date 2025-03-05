@@ -1,19 +1,18 @@
-import Container from "react-bootstrap/Container"
-import Navbar from "react-bootstrap/Navbar"
-import Button from "react-bootstrap/Button";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
-import React, { useState } from "react";
+import Container from 'react-bootstrap/Container';
+import Navbar from 'react-bootstrap/Navbar';
+import Button from 'react-bootstrap/Button';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Link, Outlet, useNavigate } from "react-router-dom";
-import { isUserAdmin, isUserLoggedIn } from "../../security/auth";
-import { logout } from "../security/logout/logout";
-
+import { Link, Outlet, useNavigate } from 'react-router-dom';
+import { isUserAdmin, isUserLoggedIn } from '../../security/auth';
+import { logout } from '../security/logout/logout';
 
 const HomePage = () => {
   const [showLogin, setShowLogin] = useState(false);
   const [showSignup, setShowSignup] = useState(false);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   return (
     <>
@@ -41,16 +40,24 @@ const HomePage = () => {
 
         <Row className="mt-4" hidden={isUserLoggedIn()}>
           <Col>
-            <Button variant="primary" size="lg" onClick={() => { 
-                navigate("/user/login")
-            }}>
+            <Button
+              variant="primary"
+              size="lg"
+              onClick={() => {
+                navigate('/user/login');
+              }}
+            >
               Login
             </Button>
           </Col>
           <Col>
-            <Button variant="outline-primary" size="lg" onClick={() => { 
-                navigate("/user/signup")
-            }}>
+            <Button
+              variant="outline-primary"
+              size="lg"
+              onClick={() => {
+                navigate('/user/signup');
+              }}
+            >
               Sign&nbsp;Up
             </Button>
           </Col>

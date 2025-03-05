@@ -1,8 +1,7 @@
-import { Outlet, Link } from "react-router-dom";
-import React from "react"
-import { isUserAdmin, isUserLoggedIn, } from "../security/auth";
-import LogoutButton from "./security/logout/logout-screen";
-
+import { Outlet, Link } from 'react-router-dom';
+import React from 'react';
+import { isUserAdmin, isUserLoggedIn } from '../security/auth';
+import LogoutButton from './security/logout/logout-screen';
 
 export default function Root() {
   return (
@@ -41,8 +40,8 @@ export default function Root() {
                 </li>
               </>
             )}
-            {isUserLoggedIn() &&
-              (<li>
+            {isUserLoggedIn() && (
+              <li>
                 <LogoutButton />
               </li>
             )}
@@ -50,7 +49,7 @@ export default function Root() {
         </nav>
       </div>
       <div id="detail">
-          <Outlet />
+        <Outlet />
       </div>
     </>
   );
