@@ -2,7 +2,7 @@ package cz.cuni.mff.vopalenf.annotator.manager.storage;
 
 import cz.cuni.mff.vopalenf.annotator.config.StorageConfig;
 import cz.cuni.mff.vopalenf.annotator.exception.StorageException;
-import org.apache.commons.lang3.NotImplementedException;
+import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -92,7 +92,38 @@ public class StorageManagerImpl implements StorageManager {
         if (filename.isEmpty()) {
             throw new StorageException("Filename must not be empty!");
         }
-        throw new NotImplementedException("TODO");
+        deleteDirIfExists(filename);
     }
 
+    /**
+     * Delete directory based on name in file system root
+     *
+     * @param dirToDelete Name of the dir in root of filesystem
+     *
+     * @throws StorageException When folder with such name does not exist
+     */
+    private void deleteDirIfExists(String dirToDelete){
+        Path targetDir = this.rootLocation.resolve(dirToDelete);
+
+        if (Files.exists(targetDir) && Files.isDirectory(targetDir)) {
+            deleteDirRecursively(targetDir);
+        } else {
+            throw new StorageException("Folder does not exist!");
+        }
+    }
+
+    /**
+     * Delete directory and everything inside it
+     *
+     * @param targetDir Path to a directory to delete
+     *
+     * @throws StorageException When exception occurs during file deleting
+     */
+    private void deleteDirRecursively(Path targetDir) {
+        try {
+            FileUtils.deleteDirectory(targetDir.toFile());
+        } catch (IOException e) {
+            throw new StorageException("Failure occurred during deleting files...", e);
+        }
+    }
 }
