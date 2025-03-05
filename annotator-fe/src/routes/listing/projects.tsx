@@ -4,11 +4,18 @@ import { Link } from 'react-router-dom';
 import { ProjectResponse } from '../../persistence/model/responses';
 import { mapProjectResponses } from '../../persistence/mapper/mapper';
 import { request } from '../../security/auth';
-import { Button, Table } from 'react-bootstrap';
-import { Pencil, Trash } from 'react-bootstrap-icons';
+import { Button, Modal, Table } from 'react-bootstrap';
+import { Pencil, Trash, X } from 'react-bootstrap-icons';
+
+interface ProjectInfo {
+  id: number;
+  name: string;
+}
 
 export default function Projects() {
   const [projects, setProjects] = useState<ProjectResponse[]>([]);
+  const [projectToDelete, setProjectToDelete] = useState<ProjectInfo | null>(null);
+  const [showDeleteProjectConfirmation, setShowDeleteProjectConfirmation] = useState(false);
 
   useEffect(() => {
     request('GET', '/api/projects')
@@ -16,12 +23,21 @@ export default function Projects() {
       .catch((error) => console.error('Error fetching projects:', error));
   }, []);
 
-  function handleProjectEdit(id: number): void {
+  const handleProjectEdit = (id: number) => {
     alert('TODO: handleProjectEdit');
   }
 
-  function handleProjectDelete(id: number): void {
-    alert('TODO: handleProjectDelete');
+  const handleProjectDelete = (projectId: number, projectName: string) => {
+    setProjectToDelete({id: projectId, name: projectName});
+    setShowDeleteProjectConfirmation(true);
+  }
+
+  const handleDeleteProjectClose = () => setShowDeleteProjectConfirmation(false);
+
+  const deleteProject = async () => {
+    await request('DELETE', `/api/projects/${projectToDelete?.id}`)
+    setProjectToDelete(null);
+    window.location.reload();
   }
 
   return (
@@ -61,7 +77,7 @@ export default function Projects() {
                   variant="danger"
                   size="sm"
                   className="me-2"
-                  onClick={() => handleProjectDelete(project.id)}
+                  onClick={() => handleProjectDelete(project.id, project.projectName)}
                 >
                   <Trash />
                 </Button>
@@ -70,6 +86,20 @@ export default function Projects() {
           ))}
         </tbody>
       </Table>
+
+      <Modal show={showDeleteProjectConfirmation} onHide={handleDeleteProjectClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>Do you really want to delete team?</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="d-flex justify-content-around">
+          <Button variant="success" className="mb-3 me-5" onClick={handleDeleteProjectClose}>
+            <X /> DO NOT DELETE
+          </Button>
+          <Button variant="danger" className="mb-3" onClick={deleteProject}>
+            <X /> DELETE
+          </Button>
+        </Modal.Body>
+      </Modal>
     </div>
   );
 }

@@ -3,12 +3,20 @@ import React, { FormEvent, useEffect, useState } from 'react';
 import { TeamResponse } from '../../persistence/model/responses';
 import { fetchTeams } from '../../persistence/fetcher/fetcher';
 import { Button, Form, Modal, Table } from 'react-bootstrap';
-import { Pencil, PersonAdd, Plus, Trash } from 'react-bootstrap-icons';
+import { Pencil, PersonAdd, Plus, Trash, X } from 'react-bootstrap-icons';
+import { request } from '../../security/auth';
+
+interface TeamInfo {
+  id: number;
+  name: string;
+}
 
 export default function Teams() {
   const [teams, setTeams] = useState<TeamResponse[]>([]);
   const [show, setShow] = useState(false);
   const [newTeam, setNewTeam] = useState({ teamName: '', leaderName: '' });
+  const [teamToDelete, setTeamToDelete] = useState<TeamInfo | null>(null);
+  const [showDeleteTeamConfirmation, setShowDeleteTeamConfirmation] = useState(false);
 
   const handleShow = () => setShow(true);
   const handleClose = () => setShow(false);
@@ -30,12 +38,21 @@ export default function Teams() {
     alert('TODO: Edit team: ' + teamId);
   };
 
-  const handleTeamDelete = (teamId: number) => {
-    alert('TODO: Delete team: ' + teamId);
+  const handleTeamDelete = (teamId: number, teamName: string) => {
+    setTeamToDelete({ id: teamId, name: teamName });
+    setShowDeleteTeamConfirmation(true);
   };
+
+  const handleDeleteTeamClose = () => setShowDeleteTeamConfirmation(false);
 
   const handleAddTeamMember = (teamId: number) => {
     alert('TODO: Add teammember to team: ' + teamId);
+  };
+
+  const deleteTeam = async () => {
+    await request('DELETE', `/api/teams/${teamToDelete?.id}`);
+    setTeamToDelete(null);
+    window.location.reload();
   };
 
   return (
@@ -53,7 +70,7 @@ export default function Teams() {
           {teams.map((team) => (
             <tr key={team.id}>
               <td>{team.name}</td>
-              <td>{team.leader ? team.leader.firstName + '' + team.leader.lastName : '-'}</td>
+              <td>{team.leader ? team.leader.firstName + ' ' + team.leader.lastName : '-'}</td>
               <td>
                 <Button
                   variant="success"
@@ -75,7 +92,7 @@ export default function Teams() {
                   variant="danger"
                   size="sm"
                   className="me-2"
-                  onClick={() => handleTeamDelete(team.id)}
+                  onClick={() => handleTeamDelete(team.id, team.name)}
                 >
                   <Trash />
                 </Button>
@@ -117,6 +134,20 @@ export default function Teams() {
               Add Team
             </Button>
           </Form>
+        </Modal.Body>
+      </Modal>
+
+      <Modal show={showDeleteTeamConfirmation} onHide={handleDeleteTeamClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>Do you really want to delete team?</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="d-flex justify-content-around">
+          <Button variant="success" className="mb-3 me-5" onClick={handleDeleteTeamClose}>
+            <X /> DO NOT DELETE
+          </Button>
+          <Button variant="danger" className="mb-3" onClick={deleteTeam}>
+            <X /> DELETE
+          </Button>
         </Modal.Body>
       </Modal>
     </div>

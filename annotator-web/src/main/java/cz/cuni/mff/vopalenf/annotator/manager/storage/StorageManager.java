@@ -13,4 +13,10 @@ public interface StorageManager {
      */
     void store(MultipartFile file);
 
+    /**
+     * Delete file from a local disk.
+     *
+     * @param filename Name of file to be deleted
+     */
+    void delete(String filename);
 }

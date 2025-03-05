@@ -25,13 +25,19 @@ const HomePage = () => {
             <Nav className="ms-auto">
               {isUserAdmin() && (
                 <>
-                  <Nav.Link as={Link} to="/admin/users">Users</Nav.Link>
-                  <Nav.Link as={Link} to="/admin/teams">Teams</Nav.Link>
+                  <Nav.Link as={Link} to="/admin/users">
+                    Users
+                  </Nav.Link>
+                  <Nav.Link as={Link} to="/admin/teams">
+                    Teams
+                  </Nav.Link>
                 </>
               )}
               {isUserLoggedIn() && (
                 <>
-                  <Nav.Link as={Link} to="/projects/all">Projects</Nav.Link>
+                  <Nav.Link as={Link} to="/projects/all">
+                    Projects
+                  </Nav.Link>
                   <Button
                     variant="outline-danger"
                     size="sm"
@@ -53,18 +59,16 @@ const HomePage = () => {
 
         {!isUserLoggedIn() && (
           <div className="mt-4 d-flex gap-3">
-            <Button variant="primary" size="lg" onClick={() => navigate("/user/login")}>
+            <Button variant="primary" size="lg" onClick={() => navigate('/user/login')}>
               Login
             </Button>
-            <Button variant="outline-primary" size="lg" onClick={() => navigate("/user/signup")}>
+            <Button variant="outline-primary" size="lg" onClick={() => navigate('/user/signup')}>
               Sign Up
             </Button>
           </div>
         )}
         <Outlet />
-        
       </Container>
-
     </>
   );
 };

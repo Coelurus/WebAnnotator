@@ -302,4 +302,12 @@ public class ProjectService {
 
         return ResponseEntity.ok().body(predictions);
     }
+
+    public void deleteProject(Long id) {
+        String logFileName = projectRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("PROJECT_NOT_FOUND", ProjectEntity.class.getSimpleName()))
+                .getLogFileName();
+        storageManager.delete(logFileName);
+        projectRepository.deleteById(id);
+    }
 }

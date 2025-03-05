@@ -2,6 +2,7 @@ package cz.cuni.mff.vopalenf.annotator.manager.storage;
 
 import cz.cuni.mff.vopalenf.annotator.config.StorageConfig;
 import cz.cuni.mff.vopalenf.annotator.exception.StorageException;
+import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -80,12 +81,18 @@ public class StorageManagerImpl implements StorageManager {
                     }
                     zipInputStream.closeEntry();
                 }
-
-                //Files.copy(inputStream, destinationFile, StandardCopyOption.REPLACE_EXISTING);
             }
         } catch (IOException e) {
             throw new StorageException("Failure occurred during storing files...", e);
         }
+    }
+
+    @Override
+    public void delete(String filename) {
+        if (filename.isEmpty()) {
+            throw new StorageException("Filename must not be empty!");
+        }
+        throw new NotImplementedException("TODO");
     }
 
 }

@@ -9,6 +9,7 @@ import cz.cuni.mff.vopalenf.annotator.service.ProjectService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -49,6 +50,18 @@ public class ProjectController {
     @GetMapping("/projects/{id}")
     public ResponseEntity<Project> getProjectById(@PathVariable Long id) {
         return projectService.getProject(id);
+    }
+
+    /**
+     * Delete project by ID
+     *
+     * @param id ID of project to delete
+     * @return Success on response on deletion
+     */
+    @DeleteMapping("/projects/{id}")
+    public ResponseEntity<Void> deleteProjectById(@PathVariable Long id) {
+        projectService.deleteProject(id);
+        return ResponseEntity.ok().build();
     }
 
     /**

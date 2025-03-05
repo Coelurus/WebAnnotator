@@ -5,7 +5,6 @@ import cz.cuni.mff.vopalenf.annotator.dao.repository.TeamRepository;
 import cz.cuni.mff.vopalenf.annotator.mapper.TeamMapper;
 import cz.cuni.mff.vopalenf.annotator.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -28,17 +27,18 @@ public class TeamService {
         this.teamMapper = teamMapper;
     }
 
-    public ResponseEntity<List<Team>> getAllTeams() {
-        return ResponseEntity.ok(
-                teamRepository.findAll().stream()
-                        .map(teamEntity -> teamMapper.mapTeam(
-                                teamEntity,
-                                userMapper.mapUser(
-                                        teamEntity.getLeader()
-                                )
-                        ))
-                        .toList()
-        );
+    public List<Team> getAllTeams() {
+        return teamRepository.findAll().stream()
+                .map(teamEntity -> teamMapper.mapTeam(
+                        teamEntity,
+                        userMapper.mapUser(
+                                teamEntity.getLeader()
+                        )
+                ))
+                .toList();
     }
 
+    public void deleteTeam(Long teamId) {
+        teamRepository.deleteById(teamId);
+    }
 }

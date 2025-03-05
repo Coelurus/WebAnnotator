@@ -27,7 +27,7 @@ export default function Users() {
   const [usernameToDelete, setUsernameToDelete] = useState<string | null>(null);
   const handleDeleteUserClose = () => setShowDeleteUserConfirmation(false);
 
-  const handleDeleteUser = async () => {
+  const deleteUser = async () => {
     await request('DELETE', `/api/users/${userIdToDelete}`);
     setUserIdToDelete(null);
     setShowDeleteUserConfirmation(false);
@@ -47,8 +47,8 @@ export default function Users() {
 
   const handleUserDelete = (userId: number, username: string) => {
     setUserIdToDelete(userId);
-    setShowDeleteUserConfirmation(true);
     setUsernameToDelete(username);
+    setShowDeleteUserConfirmation(true);
   };
 
   return (
@@ -149,7 +149,7 @@ export default function Users() {
           <Button variant="success" className="mb-3 me-5" onClick={handleDeleteUserClose}>
             <X /> DO NOT DELETE
           </Button>
-          <Button variant="danger" className="mb-3" onClick={handleDeleteUser}>
+          <Button variant="danger" className="mb-3" onClick={deleteUser}>
             <X /> DELETE
           </Button>
         </Modal.Body>
