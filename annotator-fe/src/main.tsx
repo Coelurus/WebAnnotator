@@ -10,7 +10,7 @@ import {
 
 import ErrorPage from './error-page';
 import Projects from './routes/listing/projects';
-import Users from './routes/listing/users';
+import Users from './routes/listing/users/users';
 import Teams from './routes/listing/teams';
 import ProjectForm from './routes/project/project-form';
 import Project, { loader as projectLoader } from './routes/project/project';

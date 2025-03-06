@@ -25,20 +25,20 @@ export default function Projects() {
 
   const handleProjectEdit = (id: number) => {
     alert('TODO: handleProjectEdit');
-  }
+  };
 
   const handleProjectDelete = (projectId: number, projectName: string) => {
-    setProjectToDelete({id: projectId, name: projectName});
+    setProjectToDelete({ id: projectId, name: projectName });
     setShowDeleteProjectConfirmation(true);
-  }
+  };
 
   const handleDeleteProjectClose = () => setShowDeleteProjectConfirmation(false);
 
   const deleteProject = async () => {
-    await request('DELETE', `/api/projects/${projectToDelete?.id}`)
+    await request('DELETE', `/api/projects/${projectToDelete?.id}`);
     setProjectToDelete(null);
     window.location.reload();
-  }
+  };
 
   return (
     <div className="container mt-4">
