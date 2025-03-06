@@ -8,7 +8,8 @@ import {
   mapTeamResponse,
   mapUserResponse,
   mapProjectResponse,
-  mapPriorityResponse
+  mapPriorityResponse,
+  mapRoles
 } from '../../persistence/mapper/mapper';
 import { request } from '../../security/auth';
 
@@ -49,5 +50,15 @@ export async function fetchProject(id: number): Promise<ProjectResponse | null> 
   } catch (error) {
     console.error('Error fetching project:', error);
     return null;
+  }
+}
+
+export async function fetchRoles(): Promise<string[]> {
+  try {
+    const response = await request('GET', '/api/users/roles');
+    return mapRoles(response.data);
+  } catch (error) {
+    console.error('Error fetching roles:', error);
+    return [];
   }
 }

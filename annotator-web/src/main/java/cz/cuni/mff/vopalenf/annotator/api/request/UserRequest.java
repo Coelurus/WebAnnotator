@@ -9,11 +9,10 @@ import lombok.Data;
 @Data
 @Builder
 public class UserRequest {
-
-    private Long id;
     private String firstName;
     private String lastName;
     private String username;
+    private Long teamId;
 
     @Enumerated(EnumType.STRING)
     private Role role;

@@ -3,12 +3,14 @@ package cz.cuni.mff.vopalenf.annotator.service;
 import cz.cuni.mff.vopalenf.annotator.api.model.LoginCredentials;
 import cz.cuni.mff.vopalenf.annotator.api.model.SignupCredentials;
 import cz.cuni.mff.vopalenf.annotator.api.model.User;
+import cz.cuni.mff.vopalenf.annotator.api.request.UserRequest;
 import cz.cuni.mff.vopalenf.annotator.dao.model.UserEntity;
 import cz.cuni.mff.vopalenf.annotator.dao.repository.UserRepository;
 import cz.cuni.mff.vopalenf.annotator.exception.api.BadRequestException;
 import cz.cuni.mff.vopalenf.annotator.exception.api.NotFoundException;
 import cz.cuni.mff.vopalenf.annotator.mapper.TeamMapper;
 import cz.cuni.mff.vopalenf.annotator.mapper.UserMapper;
+import cz.cuni.mff.vopalenf.annotator.security.Role;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -88,26 +90,35 @@ public class UserService {
      * Update existing user in db
      *
      * @param userId ID of a user to update
-     * @param user Update payload
+     * @param userRequest Update payload
      * @return updated user
      */
-    public User updateUser(Long userId, User user) {
+    public User updateUser(Long userId, UserRequest userRequest) {
         UserEntity userToUpdate = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Cannot update user", UserService.class.getSimpleName()));
 
-        if (userToUpdate.getFirstName() != null) {
-            user.setFirstName(userToUpdate.getFirstName());
-        }
-        if (userToUpdate.getLastName() != null) {
-            user.setLastName(userToUpdate.getLastName());
-        }
-        if (userToUpdate.getUsername() != null) {
-            user.setUserName(userToUpdate.getUsername());
-        }
-        if (userToUpdate.getTeam() != null) {
-            user.setTeam(teamMapper.mapTeam(userToUpdate.getTeam()));
-        }
+        userToUpdate.setFirstName(userRequest.getFirstName());
+        userToUpdate.setLastName(userRequest.getLastName());
+        userToUpdate.setUsername(userRequest.getUsername());
+        userToUpdate.setRole(userRequest.getRole());
+        userToUpdate.setTeam(teamMapper.mapTeamEntity(userRequest.getTeamId()));
 
         return userMapper.mapUser(userRepository.save(userToUpdate));
+    }
+
+    public User createUser(UserRequest userRequest) {
+        UserEntity newUser = UserEntity.builder()
+                .username(userRequest.getUsername())
+                .passwordHash(passwordEncoder.encode(CharBuffer.wrap(userRequest.getUsername())))
+                .firstName(userRequest.getFirstName())
+                .lastName(userRequest.getLastName())
+                .team(teamMapper.mapTeamEntity(userRequest.getTeamId()))
+                .role(userRequest.getRole() != null ? userRequest.getRole() : Role.ROLE_USER)
+                .build();
+        return userMapper.mapUser(userRepository.save(newUser));
+    }
+
+    public List<Role> getAllRoles() {
+        return List.of(Role.values());
     }
 }

@@ -1,4 +1,4 @@
-import { request, setAuthToken } from '../../../security/auth';
+import { loginRequst, request, setAuthToken } from '../../../security/auth';
 
 export const login = async (
   username: string,
@@ -12,7 +12,7 @@ export const login = async (
   }
 
   try {
-    const response = await request('POST', '/api/auth/login', {
+    const response = await loginRequst('POST', '/api/auth/login', {
       username: username,
       password: password
     });

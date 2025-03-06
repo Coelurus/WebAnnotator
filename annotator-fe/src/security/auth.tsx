@@ -1,10 +1,16 @@
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
+import { UserRequest } from '../persistence/model/requests';
 
 export default interface JwtPayload {
   sub: string;
   role: string;
   exp: number;
+}
+
+export interface LoginCredentials {
+  username: string,
+  password: string
 }
 
 export const isUserAdmin = () => {
@@ -53,7 +59,7 @@ export const setAuthToken = (token: string | null) => {
   }
 };
 
-export const request = (method: string, url: string, data: Record<string, string> = {}) => {
+export const request = (method: string, url: string, data: Record<string, string> | UserRequest = {}) => {
   return axios({
     method: method,
     url: url,
@@ -61,6 +67,14 @@ export const request = (method: string, url: string, data: Record<string, string
       getAuthToken() !== null && getAuthToken() !== 'null'
         ? { Authorization: `Bearer ${getAuthToken()}` }
         : {},
+    data: data
+  });
+};
+
+export const loginRequst = (method: string, url: string, data: LoginCredentials) => {
+  return axios({
+    method: method,
+    url: url,
     data: data
   });
 };

@@ -1,3 +1,4 @@
+import { UserRequest } from '../model/requests';
 import { PriorityResponse, ProjectResponse, TeamResponse, UserResponse } from '../model/responses';
 
 export function mapProjectResponse(project: any): ProjectResponse {
@@ -35,10 +36,10 @@ export function mapTeamResponse(data: any[]): TeamResponse[] {
     name: team.name,
     leader: team.leader
       ? {
-          id: team.leader.id,
-          firstName: team.leader.first_name,
-          lastName: team.leader.last_name
-        }
+        id: team.leader.id,
+        firstName: team.leader.first_name,
+        lastName: team.leader.last_name
+      }
       : null
   }));
 }
@@ -49,10 +50,25 @@ export function mapUserResponse(data: any[]): UserResponse[] {
     firstName: user.first_name,
     lastName: user.last_name,
     username: user.username,
+    role: user.role,
     team: user.team ? { id: user.team.id, name: user.team.name } : null
   }));
 }
 
 export function mapPriorityResponse(data: string[]): PriorityResponse[] {
   return data.map((priority) => ({ name: priority }));
+}
+
+export function mapUserRequest(data: UserResponse): UserRequest {
+  return {
+    firstName: data.firstName,
+    lastName: data.lastName,
+    username: data.username,
+    teamId: data.team?.id,
+    role: data.role
+  };
+}
+
+export function mapRoles(data: any[]): string[] {
+  return data.map((role) => role)
 }

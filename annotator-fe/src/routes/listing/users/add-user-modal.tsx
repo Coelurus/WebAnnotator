@@ -2,6 +2,8 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import React from 'react';
+import { request } from '../../../security/auth';
+import { UserRequest } from '../../../persistence/model/requests';
 
 interface AddUserModalProps {
   showAddUserModal: boolean;
@@ -9,7 +11,7 @@ interface AddUserModalProps {
 }
 
 export default function AddUserModal({ showAddUserModal, setShowAddUserModal }: AddUserModalProps) {
-  const [newUser, setNewUser] = React.useState({ firstName: '', lastName: '', username: '' });
+  const [newUser, setNewUser] = React.useState<UserRequest>({});
   const handleAddUserClose = () => setShowAddUserModal(false);
   const handleAddUserChange = (value: string, name: string) => {
     setNewUser({ ...newUser, [name]: value });
@@ -17,9 +19,11 @@ export default function AddUserModal({ showAddUserModal, setShowAddUserModal }: 
 
   const handleAddUserSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    alert('Here should happen smth like : handleUserAdd(newUser)');
-    setNewUser({ firstName: '', lastName: '', username: '' });
+    request('POST', '/api/users', newUser);
+
+    setNewUser({});
     handleAddUserClose();
+    window.location.reload();
   };
 
   return (
@@ -34,6 +38,7 @@ export default function AddUserModal({ showAddUserModal, setShowAddUserModal }: 
             <Form.Control
               type="text"
               name="firstName"
+              placeholder='First Name'
               value={newUser.firstName}
               onChange={(e) => handleAddUserChange(e.target.value, e.target.name)}
               required
@@ -44,6 +49,7 @@ export default function AddUserModal({ showAddUserModal, setShowAddUserModal }: 
             <Form.Control
               type="text"
               name="lastName"
+              placeholder='Last Name'
               value={newUser.lastName}
               onChange={(e) => handleAddUserChange(e.target.value, e.target.name)}
               required
@@ -54,6 +60,7 @@ export default function AddUserModal({ showAddUserModal, setShowAddUserModal }: 
             <Form.Control
               type="text"
               name="username"
+              placeholder='Username'
               value={newUser.username}
               onChange={(e) => handleAddUserChange(e.target.value, e.target.name)}
               required
