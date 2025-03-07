@@ -5,7 +5,8 @@ import { ProjectResponse } from '../../persistence/model/responses';
 import { mapProjectResponses } from '../../persistence/mapper/mapper';
 import { request } from '../../security/auth';
 import { Button, Modal, Table } from 'react-bootstrap';
-import { Pencil, Trash, X } from 'react-bootstrap-icons';
+import { Pencil, Plus, Trash, X } from 'react-bootstrap-icons';
+import ProjectForm from '../project/project-form';
 
 interface ProjectInfo {
   id: number;
@@ -16,6 +17,7 @@ export default function Projects() {
   const [projects, setProjects] = useState<ProjectResponse[]>([]);
   const [projectToDelete, setProjectToDelete] = useState<ProjectInfo | null>(null);
   const [showDeleteProjectConfirmation, setShowDeleteProjectConfirmation] = useState(false);
+  const [showAddProjectModal, setShowAddProjectModal] = useState(false);
 
   useEffect(() => {
     request('GET', '/api/projects')
@@ -39,6 +41,8 @@ export default function Projects() {
     setProjectToDelete(null);
     window.location.reload();
   };
+
+  const handleAddProjectShow = () => setShowAddProjectModal(true);
 
   return (
     <div className="container mt-4">
@@ -87,6 +91,10 @@ export default function Projects() {
         </tbody>
       </Table>
 
+      <Button variant="primary" className="mb-3" onClick={handleAddProjectShow}>
+        <Plus /> Add Project
+      </Button>
+
       <Modal show={showDeleteProjectConfirmation} onHide={handleDeleteProjectClose}>
         <Modal.Header closeButton>
           <Modal.Title>Do you really want to delete team?</Modal.Title>
@@ -100,6 +108,11 @@ export default function Projects() {
           </Button>
         </Modal.Body>
       </Modal>
+
+      <ProjectForm
+        showAddProjectModal={showAddProjectModal}
+        setShowAddProjectModal={setShowAddProjectModal}
+      />
     </div>
   );
 }

@@ -83,10 +83,10 @@ const router = createBrowserRouter([
             element: <Project />,
             loader: projectLoader
           },
-          {
-            path: 'create',
-            element: <ProjectForm />
-          }
+          // {
+          //   path: 'create',
+          //   element: <ProjectForm />
+          // }
         ]
       }
     ]

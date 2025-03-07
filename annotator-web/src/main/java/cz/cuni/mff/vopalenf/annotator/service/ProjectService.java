@@ -4,6 +4,7 @@ import cz.cuni.mff.vopalenf.annotator.ai.GestureMagic;
 import cz.cuni.mff.vopalenf.annotator.ai.PredictionTriple;
 import cz.cuni.mff.vopalenf.annotator.api.model.LogData;
 import cz.cuni.mff.vopalenf.annotator.api.model.Project;
+import cz.cuni.mff.vopalenf.annotator.api.request.ProjectRequest;
 import cz.cuni.mff.vopalenf.annotator.constants.Constants;
 import cz.cuni.mff.vopalenf.annotator.dao.model.AnnotationEntity;
 import cz.cuni.mff.vopalenf.annotator.dao.model.LabelEntity;
@@ -250,34 +251,29 @@ public class ProjectService {
     /**
      * Create new project and save its metadata into database and data into filesystem
      *
-     * @param projectName Name of the project
-     * @param deadline    By when should be the project finished
-     * @param priority    Importance of the project
-     * @param teamId      ID of the team assigned to this project
-     * @param file        Zipped file with data from sensor and camera
+     * @param projectRequest Payload information about new project to create
      * @return Response status
      */
-    public ResponseEntity<String> manageFileUpload(String projectName, LocalDate deadline,
-                                                   String priority, Integer teamId, MultipartFile file) {
+    public Project manageFileUpload(ProjectRequest projectRequest) {
 
-        TeamEntity teamEntity = teamRepository.findById(Long.valueOf(teamId)).orElse(null);
+        TeamEntity teamEntity = teamRepository
+                .findById(projectRequest.getTeamId())
+                .orElse(null);
 
-        String compressedFileName = file.getOriginalFilename();
+        String compressedFileName = projectRequest.getFile().getOriginalFilename();
         String shortenedFileName = Objects.requireNonNull(compressedFileName)
                 .substring(0, compressedFileName.indexOf(Constants.ARCHIVE_EXTENSION));
 
         ProjectEntity projectEntity = ProjectEntity.builder()
-                .projectName(projectName)
+                .projectName(projectRequest.getProjectName())
                 .logFileName(shortenedFileName)
-                .deadline(deadline)
-                .priority(Priority.fromName(priority))
+                .deadline(projectRequest.getDeadline())
+                .priority(projectRequest.getPriority())
                 .team(teamEntity)
                 .build();
 
-        projectRepository.save(projectEntity);
-        storageManager.store(file);
-
-        return ResponseEntity.ok().build();
+        storageManager.store(projectRequest.getFile());
+        return projectMapper.mapProject(projectRepository.save(projectEntity));
     }
 
     public ResponseEntity<List<PredictionTriple>> trainAI(Long projectId) {

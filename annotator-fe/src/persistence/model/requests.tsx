@@ -5,3 +5,11 @@ export interface UserRequest {
     role?: string,
     teamId?: number | null
 }
+
+export interface ProjectRequest {
+    projectName?: string,
+    deadline?: string;
+    priority?: string,
+    teamId?: number | null,
+    file?: File,
+}

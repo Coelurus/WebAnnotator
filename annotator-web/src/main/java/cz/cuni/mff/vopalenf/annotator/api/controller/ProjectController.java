@@ -2,6 +2,7 @@ package cz.cuni.mff.vopalenf.annotator.api.controller;
 
 import cz.cuni.mff.vopalenf.annotator.ai.PredictionTriple;
 import cz.cuni.mff.vopalenf.annotator.api.model.Project;
+import cz.cuni.mff.vopalenf.annotator.api.request.ProjectRequest;
 import cz.cuni.mff.vopalenf.annotator.dao.model.AnnotationEntity;
 import cz.cuni.mff.vopalenf.annotator.dao.model.LabelEntity;
 import cz.cuni.mff.vopalenf.annotator.enums.Priority;
@@ -13,8 +14,10 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -100,14 +103,23 @@ public class ProjectController {
      * @param file        Compressed zip file containing log file and camera shots.
      * @return Redirection to a main menu.
      */
-    @PostMapping("/projects/upload")
-    public ResponseEntity<String> manageFileUpload(
-            @RequestParam("project_name") String projectName,
-            @RequestParam("deadline") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate deadline,
-            @RequestParam("priority") String priority,
-            @RequestParam("team_id") Integer teamId,
-            @RequestParam("file") MultipartFile file) {
-        return projectService.manageFileUpload(projectName, deadline, priority, teamId, file);
+    @PostMapping(value = "/projects", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_OCTET_STREAM_VALUE})
+    public ResponseEntity<Project> manageFileUpload(
+            @RequestPart("projectName") String projectName,
+            @RequestPart("deadline") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate deadline,
+            @RequestPart("priority") Priority priority,
+            @RequestPart("teamId") Long teamId,
+            @RequestPart("file") MultipartFile file
+    ) {
+        ProjectRequest projectRequest = ProjectRequest.builder()
+                .projectName(projectName)
+                .deadline(deadline)
+                .priority(priority)
+                .teamId(teamId)
+                .file(file)
+                .build();
+        Project newProject = projectService.manageFileUpload(projectRequest);
+        return ResponseEntity.ok(newProject);
     }
 
     /**
