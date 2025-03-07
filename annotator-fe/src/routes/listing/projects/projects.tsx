@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
-import { ProjectResponse } from '../../persistence/model/responses';
-import { mapProjectResponses } from '../../persistence/mapper/mapper';
-import { request } from '../../security/auth';
+import { ProjectResponse } from '../../../persistence/model/responses';
+import { mapProjectResponses } from '../../../persistence/mapper/mapper';
+import { request } from '../../../security/auth';
 import { Button, Modal, Table } from 'react-bootstrap';
 import { Pencil, Plus, Trash, X } from 'react-bootstrap-icons';
-import ProjectForm from '../project/project-form';
+import ProjectForm from './add-project-modal';
 
 interface ProjectInfo {
   id: number;
@@ -23,7 +23,9 @@ export default function Projects() {
     request('GET', '/api/projects')
       .then((response) => setProjects(mapProjectResponses(response.data)))
       .catch((error) => console.error('Error fetching projects:', error));
-  }, []);
+    console.log("cycle?");
+    
+  }, [showAddProjectModal]);
 
   const handleProjectEdit = (id: number) => {
     alert('TODO: handleProjectEdit');

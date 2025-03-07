@@ -59,14 +59,16 @@ export const setAuthToken = (token: string | null) => {
   }
 };
 
-export const request = (method: string, url: string, data: Record<string, string> | UserRequest | FormData = {}) => {
+export const request = (method: string, url: string, data: Record<string, string> | UserRequest | FormData = {}, contentType: string = "" ) => {
   return axios({
     method: method,
     url: url,
-    headers:
-      getAuthToken() !== null && getAuthToken() !== 'null'
+    headers: {
+      ...(getAuthToken() !== null && getAuthToken() !== 'null'
         ? { Authorization: `Bearer ${getAuthToken()}` }
-        : {},
+        : {}),
+      ...(contentType ? { "Content-Type": contentType } : {})
+    },
     data: data
   });
 };

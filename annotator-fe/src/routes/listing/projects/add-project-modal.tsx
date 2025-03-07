@@ -1,12 +1,13 @@
 import React from 'react';
 
-import { PriorityResponse, TeamResponse } from '../../persistence/model/responses';
-import { fetchPriorities, fetchTeams } from '../../persistence/fetcher/fetcher';
+import { PriorityResponse, TeamResponse } from '../../../persistence/model/responses';
+import { fetchPriorities, fetchTeams } from '../../../persistence/fetcher/fetcher';
 import Modal from 'react-bootstrap/esm/Modal';
 import Form from 'react-bootstrap/esm/Form';
 import Button from 'react-bootstrap/esm/Button';
-import { request } from '../../security/auth';
-import { ProjectRequest } from '../../persistence/model/requests';
+import { request } from '../../../security/auth';
+import { ProjectRequest } from '../../../persistence/model/requests';
+import { AxiosError } from 'axios';
 
 interface AddProjectModalProps {
   showAddProjectModal: boolean;
@@ -27,7 +28,7 @@ export default function ProjectForm({ showAddProjectModal, setShowAddProjectModa
 
   const handleAddProjectClose = () => setShowAddProjectModal(false);
 
-  const handleAddProjectChange = (value: string | File, name: string) => {
+  const handleAddProjectChange = (value: string, name: string) => {   
     setNewProject({ ...newProject, [name]: value });
   };
 
@@ -41,23 +42,33 @@ export default function ProjectForm({ showAddProjectModal, setShowAddProjectModa
     }
   };
 
+  const handleSelectChange = (
+      field: string,
+      team: TeamResponse | undefined
+    ) => {
+      setNewProject({ ...newProject, [field]: team ? team.id : null })
+    }
+
   const handleAddProjectSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(newProject);
-
+    
     const formData = new FormData();
     Object.entries(newProject).forEach(([key, value]) => {
-      formData.append(key, value);
+      if (value instanceof File) {
+        formData.append(key, value);
+      } else {
+        formData.append(key, String(value));
+      }
     });
 
-    console.log(formData);
+    request('POST', '/api/projects', formData)
+      .then(() =>{
+        setNewProject({});
+        handleAddProjectClose();
+      }).catch((exception: AxiosError) => {      
+        alert(exception.message)
+      });
 
-    request('POST', '/api/projects', formData);
-
-    alert("aaa");
-    setNewProject({});
-    handleAddProjectClose();
-    window.location.reload();
   }
 
   return (
@@ -96,7 +107,11 @@ export default function ProjectForm({ showAddProjectModal, setShowAddProjectModa
           </Form.Group>
           <Form.Group className="mb-3">
             <Form.Label>Priority</Form.Label>
-            <Form.Select name="priority" required>
+            <Form.Select 
+              name="priority" 
+              required
+              onChange={(e) => handleAddProjectChange(e.target.value, e.target.name)}
+            >
               <option value="">None</option>
               {priorities.map((priority) => (
                 <option value={priority.name} key={priority.name}>
@@ -107,7 +122,10 @@ export default function ProjectForm({ showAddProjectModal, setShowAddProjectModa
           </Form.Group>
           <Form.Group className="mb-3">
             <Form.Label>Team</Form.Label>
-            <Form.Select name="team_id" required>
+            <Form.Select 
+              required
+              onChange={(e) => handleSelectChange("teamId", teams.find((t) => t.id === Number(e.target.value)))}
+            >
               <option value="">All</option>
               {teams.map((team) => (
                 <option value={team.id} key={team.id}>

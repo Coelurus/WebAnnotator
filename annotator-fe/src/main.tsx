@@ -9,10 +9,10 @@ import {
 } from 'react-router-dom';
 
 import ErrorPage from './error-page';
-import Projects from './routes/listing/projects';
+import Projects from './routes/listing/projects/projects';
 import Users from './routes/listing/users/users';
 import Teams from './routes/listing/teams';
-import ProjectForm from './routes/project/project-form';
+import ProjectForm from './routes/listing/projects/add-project-modal';
 import Project, { loader as projectLoader } from './routes/project/project';
 import LoginPage from './routes/security/login/login-screen';
 import SignupPage from './routes/security/signup/signup-screen';
