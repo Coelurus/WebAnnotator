@@ -10,8 +10,8 @@ import { UserRequest } from '../../../persistence/model/requests';
 import { mapUserRequest } from '../../../persistence/mapper/mapper';
 
 export interface UserInfo {
-  id: number,
-  name: string
+  id: number;
+  name: string;
 }
 
 export default function Users() {
@@ -26,7 +26,7 @@ export default function Users() {
 
   const handleAddUserShow = () => setShowAddUserModal(true);
   const handleUserDeleteShow = (userId: number, username: string) => {
-    setUserToDelete({ id: userId, name: username })
+    setUserToDelete({ id: userId, name: username });
     setShowDeleteUserConfirmation(true);
   };
   const handleUserEdit = (user: UserResponse) => {
@@ -36,7 +36,6 @@ export default function Users() {
     setEditValues({ ...mapUserRequest(user) });
 
     console.log(editValues);
-
   };
   const handleFieldChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
@@ -44,14 +43,11 @@ export default function Users() {
   ) => {
     setEditValues({ ...editValues, [field]: e.target.value });
   };
-  const handleSelectChange = (
-    field: string,
-    team: TeamResponse | undefined
-  ) => {
-    setEditValues({ ...editValues, [field]: team ? team.id : null })
-  }
+  const handleSelectChange = (field: string, team: TeamResponse | undefined) => {
+    setEditValues({ ...editValues, [field]: team ? team.id : null });
+  };
   const handleSubmitUserEdit = () => {
-    console.log("edit vals", editValues);
+    console.log('edit vals', editValues);
 
     request('PUT', `/api/users/${editMode}`, editValues);
     setEditMode(null);
@@ -59,7 +55,7 @@ export default function Users() {
   };
   const handleCancelUserEdit = () => {
     setEditMode(null);
-  }
+  };
 
   useEffect(() => {
     fetchUsers().then(setUsers);
@@ -93,40 +89,45 @@ export default function Users() {
                     <Form.Control
                       type="text"
                       value={editValues.firstName}
-                      onChange={(e) => handleFieldChange(e, "firstName")}
+                      onChange={(e) => handleFieldChange(e, 'firstName')}
                     />
                     <Form.Control
                       type="text"
                       value={editValues.lastName}
-                      onChange={(e) => handleFieldChange(e, "lastName")}
+                      onChange={(e) => handleFieldChange(e, 'lastName')}
                     />
                   </td>
                   <td>
                     <Form.Control
                       type="datalist"
                       value={editValues.username}
-                      onChange={(e) => handleFieldChange(e, "username")}
+                      onChange={(e) => handleFieldChange(e, 'username')}
                     />
                   </td>
                   <td>
                     <Form.Select
-                      defaultValue={editValues.teamId !== null && editValues.teamId !== undefined ? `${editValues.teamId}` : undefined}
-                      onChange={(e) => handleSelectChange("teamId", teams.find((t) => t.id === Number(e.target.value)))}
+                      defaultValue={
+                        editValues.teamId !== null && editValues.teamId !== undefined
+                          ? `${editValues.teamId}`
+                          : undefined
+                      }
+                      onChange={(e) =>
+                        handleSelectChange(
+                          'teamId',
+                          teams.find((t) => t.id === Number(e.target.value))
+                        )
+                      }
                     >
-                      <option value={undefined}>
-                        -
-                      </option>
+                      <option value={undefined}>-</option>
                       {teams.map((team) => (
-                        <option value={team.id}>
-                          {team.name}
-                        </option>
+                        <option value={team.id}>{team.name}</option>
                       ))}
                     </Form.Select>
                   </td>
                   <td>
                     <Form.Select
                       defaultValue={editValues.role}
-                      onChange={(e) => handleFieldChange(e, "role")}
+                      onChange={(e) => handleFieldChange(e, 'role')}
                     >
                       {roles.map((role) => (
                         <option value={role} key={role}>
@@ -146,18 +147,29 @@ export default function Users() {
                 </>
               ) : (
                 <>
-                  <td>{user.firstName} {user.lastName}</td>
+                  <td>
+                    {user.firstName} {user.lastName}
+                  </td>
                   <td>
                     {user.username}
-                    <b>{getUserUsername() === user.username ? " (you)" : ""}</b>
+                    <b>{getUserUsername() === user.username ? ' (you)' : ''}</b>
                   </td>
-                  <td>{user.team ? user.team.name : "-"}</td>
+                  <td>{user.team ? user.team.name : '-'}</td>
                   <td>{user.role}</td>
                   <td>
-                    <Button variant="warning" className="me-2" size="sm" onClick={() => handleUserEdit(user)}>
+                    <Button
+                      variant="warning"
+                      className="me-2"
+                      size="sm"
+                      onClick={() => handleUserEdit(user)}
+                    >
                       <Pencil />
                     </Button>
-                    <Button variant="danger" size="sm" onClick={() => handleUserDeleteShow(user.id, user.username)}>
+                    <Button
+                      variant="danger"
+                      size="sm"
+                      onClick={() => handleUserDeleteShow(user.id, user.username)}
+                    >
                       <Trash />
                     </Button>
                   </td>
@@ -172,10 +184,7 @@ export default function Users() {
         <Plus /> Add User
       </Button>
 
-      <AddUserModal
-        showAddUserModal={showAddUserModal}
-        setShowAddUserModal={setShowAddUserModal}
-      />
+      <AddUserModal showAddUserModal={showAddUserModal} setShowAddUserModal={setShowAddUserModal} />
 
       <DeleteUserModal
         showDeleteUserConfirmation={showDeleteUserConfirmation}

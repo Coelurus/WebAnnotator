@@ -12,14 +12,11 @@ import ErrorPage from './error-page';
 import Projects from './routes/listing/projects/projects';
 import Users from './routes/listing/users/users';
 import Teams from './routes/listing/teams';
-import ProjectForm from './routes/listing/projects/add-project-modal';
-import Project, { loader as projectLoader } from './routes/project/project';
+import Project, { loader as projectLoader } from './routes/project/annotator';
 import LoginPage from './routes/security/login/login-screen';
 import SignupPage from './routes/security/signup/signup-screen';
 import { isUserAdmin, isUserLoggedIn } from './security/auth';
 import HomePage from './routes/home/home';
-import LoginForm from './routes/security/login/login-screen';
-import SignupForm from './routes/security/signup/signup-screen';
 
 const AdminRoute = () => {
   const location = useLocation();
@@ -82,7 +79,7 @@ const router = createBrowserRouter([
             path: ':projectId',
             element: <Project />,
             loader: projectLoader
-          },
+          }
           // {
           //   path: 'create',
           //   element: <ProjectForm />

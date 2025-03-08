@@ -36,10 +36,10 @@ export function mapTeamResponse(data: any[]): TeamResponse[] {
     name: team.name,
     leader: team.leader
       ? {
-        id: team.leader.id,
-        firstName: team.leader.first_name,
-        lastName: team.leader.last_name
-      }
+          id: team.leader.id,
+          firstName: team.leader.first_name,
+          lastName: team.leader.last_name
+        }
       : null
   }));
 }
@@ -70,5 +70,5 @@ export function mapUserRequest(data: UserResponse): UserRequest {
 }
 
 export function mapRoles(data: any[]): string[] {
-  return data.map((role) => role)
+  return data.map((role) => role);
 }

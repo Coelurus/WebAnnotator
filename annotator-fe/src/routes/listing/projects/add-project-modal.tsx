@@ -14,7 +14,10 @@ interface AddProjectModalProps {
   setShowAddProjectModal: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export default function ProjectForm({ showAddProjectModal, setShowAddProjectModal }: AddProjectModalProps) {
+export default function ProjectForm({
+  showAddProjectModal,
+  setShowAddProjectModal
+}: AddProjectModalProps) {
   const [teams, setTeams] = React.useState<TeamResponse[]>([]);
   const [priorities, setPriorities] = React.useState<PriorityResponse[]>([]);
   const [newProject, setNewProject] = React.useState<ProjectRequest>({});
@@ -28,30 +31,27 @@ export default function ProjectForm({ showAddProjectModal, setShowAddProjectModa
 
   const handleAddProjectClose = () => setShowAddProjectModal(false);
 
-  const handleAddProjectChange = (value: string, name: string) => {   
+  const handleAddProjectChange = (value: string, name: string) => {
     setNewProject({ ...newProject, [name]: value });
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      const file = e.target.files[0]
+      const file = e.target.files[0];
       setNewProject((prev) => ({
         ...prev,
-        file: file,
+        file: file
       }));
     }
   };
 
-  const handleSelectChange = (
-      field: string,
-      team: TeamResponse | undefined
-    ) => {
-      setNewProject({ ...newProject, [field]: team ? team.id : null })
-    }
+  const handleSelectChange = (field: string, team: TeamResponse | undefined) => {
+    setNewProject({ ...newProject, [field]: team ? team.id : null });
+  };
 
   const handleAddProjectSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
+
     const formData = new FormData();
     Object.entries(newProject).forEach(([key, value]) => {
       if (value instanceof File) {
@@ -62,14 +62,14 @@ export default function ProjectForm({ showAddProjectModal, setShowAddProjectModa
     });
 
     request('POST', '/api/projects', formData)
-      .then(() =>{
+      .then(() => {
         setNewProject({});
         handleAddProjectClose();
-      }).catch((exception: AxiosError) => {      
-        alert(exception.message)
+      })
+      .catch((exception: AxiosError) => {
+        alert(exception.message);
       });
-
-  }
+  };
 
   return (
     <Modal show={showAddProjectModal} onHide={handleAddProjectClose} centered>
@@ -83,32 +83,28 @@ export default function ProjectForm({ showAddProjectModal, setShowAddProjectModa
             <Form.Control
               type="text"
               name="projectName"
-              placeholder='Project Name'
+              placeholder="Project Name"
               onChange={(e) => handleAddProjectChange(e.target.value, e.target.name)}
               required
             />
           </Form.Group>
           <Form.Group className="mb-3">
             <Form.Label>File to Upload</Form.Label>
-            <Form.Control
-              type="file"
-              name="file"
-              onChange={handleFileChange}
-            />
+            <Form.Control type="file" name="file" onChange={handleFileChange} />
           </Form.Group>
           <Form.Group className="mb-3">
             <Form.Label>Deadline</Form.Label>
             <Form.Control
               type="date"
               name="deadline"
-              placeholder='Deadline'
+              placeholder="Deadline"
               onChange={(e) => handleAddProjectChange(e.target.value, e.target.name)}
             />
           </Form.Group>
           <Form.Group className="mb-3">
             <Form.Label>Priority</Form.Label>
-            <Form.Select 
-              name="priority" 
+            <Form.Select
+              name="priority"
               required
               onChange={(e) => handleAddProjectChange(e.target.value, e.target.name)}
             >
@@ -122,9 +118,14 @@ export default function ProjectForm({ showAddProjectModal, setShowAddProjectModa
           </Form.Group>
           <Form.Group className="mb-3">
             <Form.Label>Team</Form.Label>
-            <Form.Select 
+            <Form.Select
               required
-              onChange={(e) => handleSelectChange("teamId", teams.find((t) => t.id === Number(e.target.value)))}
+              onChange={(e) =>
+                handleSelectChange(
+                  'teamId',
+                  teams.find((t) => t.id === Number(e.target.value))
+                )
+              }
             >
               <option value="">All</option>
               {teams.map((team) => (

@@ -23,8 +23,7 @@ export default function Projects() {
     request('GET', '/api/projects')
       .then((response) => setProjects(mapProjectResponses(response.data)))
       .catch((error) => console.error('Error fetching projects:', error));
-    console.log("cycle?");
-    
+    console.log('cycle?');
   }, [showAddProjectModal]);
 
   const handleProjectEdit = (id: number) => {

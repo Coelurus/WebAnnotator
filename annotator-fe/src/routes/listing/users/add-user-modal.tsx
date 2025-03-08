@@ -38,7 +38,7 @@ export default function AddUserModal({ showAddUserModal, setShowAddUserModal }: 
             <Form.Control
               type="text"
               name="firstName"
-              placeholder='First Name'
+              placeholder="First Name"
               value={newUser.firstName}
               onChange={(e) => handleAddUserChange(e.target.value, e.target.name)}
               required
@@ -49,7 +49,7 @@ export default function AddUserModal({ showAddUserModal, setShowAddUserModal }: 
             <Form.Control
               type="text"
               name="lastName"
-              placeholder='Last Name'
+              placeholder="Last Name"
               value={newUser.lastName}
               onChange={(e) => handleAddUserChange(e.target.value, e.target.name)}
               required
@@ -60,7 +60,7 @@ export default function AddUserModal({ showAddUserModal, setShowAddUserModal }: 
             <Form.Control
               type="text"
               name="username"
-              placeholder='Username'
+              placeholder="Username"
               value={newUser.username}
               onChange={(e) => handleAddUserChange(e.target.value, e.target.name)}
               required

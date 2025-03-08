@@ -16,17 +16,17 @@ export default function DeleteUserModal({
   showDeleteUserConfirmation,
   setShowDeleteUserConfirmation,
   userToDelete,
-  setUserToDelete,
+  setUserToDelete
 }: DeleteUserModalProps) {
   const deleteUser = async () => {
-    if(userToDelete){
-        await request('DELETE', `/api/users/${userToDelete.id}`);
-        setUserToDelete(null);
-        setShowDeleteUserConfirmation(false);
-        if (getUserUsername() === userToDelete.name) {
-          invalidateToken();
-        }
-        window.location.reload();
+    if (userToDelete) {
+      await request('DELETE', `/api/users/${userToDelete.id}`);
+      setUserToDelete(null);
+      setShowDeleteUserConfirmation(false);
+      if (getUserUsername() === userToDelete.name) {
+        invalidateToken();
+      }
+      window.location.reload();
     }
   };
 
