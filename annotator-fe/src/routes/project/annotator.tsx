@@ -8,16 +8,21 @@ import { request } from '../../security/auth';
 import AnnotatorHeader from './annotator-header';
 import AnnotatorFooter from './annotator-footer';
 import AnnotatorContent from './annotator-content';
+import { CreateToast, ToastParams } from '../../notifications/toasts';
+
 export const loader: LoaderFunction = async ({ params }) => {
   const project = await fetchProject(Number(params.projectId));
   return project;
 };
+
+
 
 export default function Project() {
   const UNDEFINED = -1;
   const LEFT_BUTTON = 0;
   const RIGHT_BUTTON = 2;
   const DEFAULT_IMAGE_SIZE = 50;
+  const GAP_SIZE = 5;
 
   const [pageNum, setPageNum] = useState<number>(0);
   const [frameCount, setFrameCount] = useState<number>(0);
@@ -30,18 +35,24 @@ export default function Project() {
   const [currentLabel, setCurrentLabel] = useState<Label>();
   const [pressedButton, setPressedButton] = useState<number>(UNDEFINED);
   const [imageSize, setImageSize] = useState<number>(DEFAULT_IMAGE_SIZE);
+  const [toastMessage, setToastMessage] = useState<ToastParams | null>(null);
 
+  const screenRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
+  const headerRef = useRef<HTMLDivElement>(null);
+  const footerRef = useRef<HTMLDivElement>(null);
 
   useLayoutEffect(() => {
     const updateImagesPerPage = () => {
       if (gridRef.current) {
         const gridWidth = gridRef.current.clientWidth;
-        const gridHeight = gridRef.current.clientHeight;
-        const columns = Math.floor(gridWidth / imageSize);
-        const rows = Math.floor(gridHeight / imageSize);
+        const gridHeight =
+          (screenRef.current?.clientHeight ?? 500) -
+          ((headerRef.current?.clientHeight ?? 0) + (footerRef.current?.clientHeight ?? 0));
+        const columns = Math.floor((gridWidth + GAP_SIZE) / (imageSize + GAP_SIZE));
+        const rows = Math.floor((gridHeight + GAP_SIZE) / (imageSize + GAP_SIZE));
+
         setImagesPerPage(columns * rows);
-        console.log(gridWidth, gridHeight);
       }
     };
 
@@ -51,14 +62,26 @@ export default function Project() {
   }, [imageSize]);
 
   useEffect(() => {
-    request('GET', `/api/projects/${project.id}/frame/count`)
+    request('GET', `/api/projects/${project?.id}/frame/count`)
       .then((response) => setFrameCount(response.data.count))
-      .catch((error) => console.error('Error fetching frame count:', error));
+      .catch(() => {
+        setToastMessage({
+          header: "Error",
+          body: "Error fetching frame count",
+          variant: "danger"
+        })
+      });
 
-    request('GET', `/api/projects/${project.id}/annotations`)
+    request('GET', `/api/projects/${project?.id}/annotations`)
       .then((response) => setSelectedFrames(response.data))
-      .catch((error) => console.error('Error fetching annotations:', error));
-  }, [project.id]);
+      .catch(() => {
+        setToastMessage({
+          header: "Error",
+          body: "Error fetching annotations",
+          variant: "danger"
+        })
+      });
+  }, [project?.id]);
 
   useEffect(() => {
     request(`GET`, `/api/labels`)
@@ -66,7 +89,13 @@ export default function Project() {
         setLabels(response.data);
         setCurrentLabel(response.data[0]);
       })
-      .catch((error) => console.error('Error fetching labels:', error));
+      .catch(() => {
+        setToastMessage({
+          header: "Error",
+          body: "Error fetching labels",
+          variant: "danger"
+        })
+      });
   }, []);
 
   const handleMouseDown = (event: React.MouseEvent, frameId: number) => {
@@ -100,7 +129,14 @@ export default function Project() {
     }
 
     if (pressedButton === RIGHT_BUTTON) {
-      request('POST', `/api/projects/${project.id}/erase/${lowerIndex}/${higherIndex}`);
+      request('POST', `/api/projects/${project.id}/erase/${lowerIndex}/${higherIndex}`)
+      .catch(() => {
+        setToastMessage({
+          header: "Error",
+          body: "Error erasing annotations",
+          variant: "danger"
+        })
+      });;
 
       const withoutErased = selectedFrames.filter(
         (annotation) => annotation.frameId < lowerIndex || annotation.frameId > higherIndex
@@ -112,7 +148,13 @@ export default function Project() {
       request(
         'POST',
         `/api/projects/${project.id}/annotate/${lowerIndex}/${higherIndex}/label/${currentLabel?.id}`
-      );
+      ).catch(() => {
+        setToastMessage({
+          header: "Error",
+          body: "Error adding annotations",
+          variant: "danger"
+        })
+      });;
 
       const framesToAdd: Annotation[] = [];
       for (let index = lowerIndex; index <= higherIndex; index++) {
@@ -129,40 +171,58 @@ export default function Project() {
 
   return (
     <div
+      ref={screenRef}
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100vh',
+        overflow: 'hidden'
+      }}
       onMouseUp={() => handleMouseUp()}
       onContextMenu={(event) => {
         event.preventDefault();
       }}
     >
-      <AnnotatorHeader
-        imageSize={imageSize}
-        setImageSize={setImageSize}
-        currentLabel={currentLabel}
-        setCurrentLabel={setCurrentLabel}
-        labels={labels}
-        setLabels={setLabels}
-        project={project}
-      />
+      <div style={{ flex: '0 0 auto' }}>
+        <AnnotatorHeader
+          headerRef={headerRef}
+          imageSize={imageSize}
+          setImageSize={setImageSize}
+          currentLabel={currentLabel}
+          setCurrentLabel={setCurrentLabel}
+          labels={labels}
+          setLabels={setLabels}
+          project={project}
+        />
+      </div>
 
-      <AnnotatorContent
-        gridRef={gridRef}
-        pageNum={pageNum}
-        imagesPerPage={imagesPerPage}
-        frameCount={frameCount}
-        imageSize={imageSize}
-        labels={labels}
-        selectedFrames={selectedFrames}
-        project={project}
-        handleMouseDown={handleMouseDown}
-        handleMouseOver={handleMouseOver}
-      />
+      <div style={{ flex: '1 1 auto', overflow: 'hidden' }}>
+        <AnnotatorContent
+          gridRef={gridRef}
+          pageNum={pageNum}
+          setPageNum={setPageNum}
+          imagesPerPage={imagesPerPage}
+          frameCount={frameCount}
+          imageSize={imageSize}
+          labels={labels}
+          selectedFrames={selectedFrames}
+          project={project}
+          handleMouseDown={handleMouseDown}
+          handleMouseOver={handleMouseOver}
+        />
+      </div>
 
-      <AnnotatorFooter
-        frameCount={frameCount}
-        imagesPerPage={imagesPerPage}
-        pageNum={pageNum}
-        setPageNum={setPageNum}
-      />
+      <div style={{ flex: '0 0 auto' }}>
+        <AnnotatorFooter
+          footerRef={footerRef}
+          frameCount={frameCount}
+          imagesPerPage={imagesPerPage}
+          pageNum={pageNum}
+          setPageNum={setPageNum}
+        />
+      </div>
+
+      {toastMessage && CreateToast(toastMessage)}
     </div>
   );
 }

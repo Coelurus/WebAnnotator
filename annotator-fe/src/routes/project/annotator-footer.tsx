@@ -5,13 +5,15 @@ interface AnnotatorFooterProps {
   imagesPerPage: number;
   pageNum: number;
   setPageNum: React.Dispatch<React.SetStateAction<number>>;
+  footerRef: React.RefObject<HTMLDivElement>;
 }
 
 export default function AnnotatorFooter({
   frameCount,
   imagesPerPage,
   pageNum,
-  setPageNum
+  setPageNum,
+  footerRef
 }: AnnotatorFooterProps) {
   const nextPage = () => {
     if ((pageNum + 1) * imagesPerPage < frameCount) {
@@ -26,7 +28,7 @@ export default function AnnotatorFooter({
   };
 
   return (
-    <div className="pagination-buttons">
+    <div className="pagination-buttons" ref={footerRef}>
       <button onClick={prevPage} disabled={pageNum === 0}>
         Back
       </button>

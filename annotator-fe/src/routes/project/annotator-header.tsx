@@ -2,15 +2,17 @@ import React from 'react';
 import { request } from '../../security/auth';
 import { Label, ProjectResponse } from '../../persistence/model/responses';
 import { trainAI } from './ai/train-ai';
+import { CreateToast } from '../../notifications/toasts';
 
 interface AnnotatorHeaderProps {
   imageSize: number;
   setImageSize: React.Dispatch<React.SetStateAction<number>>;
   currentLabel: Label | undefined;
-  setCurrentLabel: React.Dispatch<React.SetStateAction<Label|undefined>>;
+  setCurrentLabel: React.Dispatch<React.SetStateAction<Label | undefined>>;
   labels: Label[];
   setLabels: React.Dispatch<React.SetStateAction<Label[]>>;
   project: ProjectResponse;
+  headerRef: React.RefObject<HTMLDivElement>;
 }
 
 export default function AnnotatorHeader({
@@ -20,7 +22,8 @@ export default function AnnotatorHeader({
   setCurrentLabel,
   labels,
   setLabels,
-  project
+  project,
+  headerRef
 }: AnnotatorHeaderProps) {
   const handleSliderChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setImageSize(Number(event.target.value));
@@ -58,43 +61,45 @@ export default function AnnotatorHeader({
 
   return (
     <>
-      <h1>{project ? project.projectName : 'No project found'}</h1>
+      <div ref={headerRef}>
+        <h1>{project ? project.projectName : 'No project found'}</h1>
 
-      <div className="slider-container">
-        <label htmlFor="image-size-slider">Image Size: {imageSize}px</label>
-        <input
-          type="range"
-          id="image-size-slider"
-          min="30"
-          max="200"
-          value={imageSize}
-          onChange={handleSliderChange}
-        />
+        <div className="slider-container">
+          <label htmlFor="image-size-slider">Image Size: {imageSize}px</label>
+          <input
+            type="range"
+            id="image-size-slider"
+            min="30"
+            max="200"
+            value={imageSize}
+            onChange={handleSliderChange}
+          />
+        </div>
+
+        <select
+          name="label"
+          id="label-select"
+          value={currentLabel?.label || ''}
+          onChange={handleLabelChange}
+        >
+          {labels.map((label) => (
+            <option
+              value={label.label}
+              key={'label_' + label.label}
+              data-label-id={label.id}
+              data-label-name={label.label}
+              data-label-color={label.color}
+            >
+              {label.label}
+            </option>
+          ))}
+        </select>
+
+        <input type="text" id="new-label-text-input" placeholder="New label"></input>
+        <button onClick={() => handleAddLabel()}>Add label</button>
+
+        <button onClick={() => trainAI(project.id, labels)}>Train AI</button>
       </div>
-
-      <select
-        name="label"
-        id="label-select"
-        value={currentLabel?.label || ''}
-        onChange={handleLabelChange}
-      >
-        {labels.map((label) => (
-          <option
-            value={label.label}
-            key={'label_' + label.label}
-            data-label-id={label.id}
-            data-label-name={label.label}
-            data-label-color={label.color}
-          >
-            {label.label}
-          </option>
-        ))}
-      </select>
-
-      <input type="text" id="new-label-text-input" placeholder="New label"></input>
-      <button onClick={() => handleAddLabel()}>Add label</button>
-
-      <button onClick={() => trainAI(project.id, labels)}>Train AI</button>
     </>
   );
 }

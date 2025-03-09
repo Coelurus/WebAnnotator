@@ -63,7 +63,8 @@ export const request = (
   method: string,
   url: string,
   data: Record<string, string> | UserRequest | FormData = {},
-  contentType: string = ''
+  contentType: string = '',
+  responseType: string = ''
 ) => {
   return axios({
     method: method,
@@ -72,7 +73,8 @@ export const request = (
       ...(getAuthToken() !== null && getAuthToken() !== 'null'
         ? { Authorization: `Bearer ${getAuthToken()}` }
         : {}),
-      ...(contentType ? { 'Content-Type': contentType } : {})
+      ...(contentType ? { 'Content-Type': contentType } : {}),
+      ...(responseType ? { 'Response-Type': responseType } : {})
     },
     data: data
   });
@@ -83,5 +85,16 @@ export const loginRequst = (method: string, url: string, data: LoginCredentials)
     method: method,
     url: url,
     data: data
+  });
+};
+
+export const blobRequest = (url: string) => {
+  return axios.get(url, {
+    responseType: 'blob',
+    headers: {
+      ...(getAuthToken() !== null && getAuthToken() !== 'null'
+        ? { Authorization: `Bearer ${getAuthToken()}` }
+        : {})
+    }
   });
 };

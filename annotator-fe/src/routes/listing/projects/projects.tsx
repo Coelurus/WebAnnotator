@@ -23,7 +23,6 @@ export default function Projects() {
     request('GET', '/api/projects')
       .then((response) => setProjects(mapProjectResponses(response.data)))
       .catch((error) => console.error('Error fetching projects:', error));
-    console.log('cycle?');
   }, [showAddProjectModal]);
 
   const handleProjectEdit = (id: number) => {
@@ -63,7 +62,7 @@ export default function Projects() {
           {projects.map((project) => (
             <tr key={project.id}>
               <td>
-                <Link to={'/projects/' + project.id}>{project.projectName}</Link>
+                <Link to={'/editor/' + project.id}>{project.projectName}</Link>
               </td>
               <td>{project.logFileName}</td>
               <td>{project.deadline}</td>

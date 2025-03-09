@@ -30,12 +30,8 @@ export default function Users() {
     setShowDeleteUserConfirmation(true);
   };
   const handleUserEdit = (user: UserResponse) => {
-    console.log(user);
-
     setEditMode(user.id);
     setEditValues({ ...mapUserRequest(user) });
-
-    console.log(editValues);
   };
   const handleFieldChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
@@ -47,8 +43,6 @@ export default function Users() {
     setEditValues({ ...editValues, [field]: team ? team.id : null });
   };
   const handleSubmitUserEdit = () => {
-    console.log('edit vals', editValues);
-
     request('PUT', `/api/users/${editMode}`, editValues);
     setEditMode(null);
     window.location.reload();

@@ -40,7 +40,7 @@ const router = createBrowserRouter([
     errorElement: <ErrorPage />,
     children: [
       {
-        path: '/user',
+        path: 'user',
         element: <AnonymousUserRoute />,
         children: [
           {
@@ -87,6 +87,12 @@ const router = createBrowserRouter([
         ]
       }
     ]
+  },
+  {
+    errorElement: <ErrorPage />,
+    path: 'editor/:projectId',
+    element: <Project />,
+    loader: projectLoader
   }
 ]);
 

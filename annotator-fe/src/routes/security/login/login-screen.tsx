@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { login } from './login';
 import { Button, Card, Form } from 'react-bootstrap';
@@ -9,10 +9,10 @@ interface LoginValidationErrors {
 }
 
 function LoginForm() {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [validationErrors, setValidationErrors] = useState<LoginValidationErrors>({});
+  const [username, setUsername] = React.useState('');
+  const [password, setPassword] = React.useState('');
+  const [error, setError] = React.useState('');
+  const [validationErrors, setValidationErrors] = React.useState<LoginValidationErrors>({});
   const navigate = useNavigate();
 
   const handleLogin = async () => {
@@ -32,6 +32,20 @@ function LoginForm() {
     );
   };
 
+  const hadleKeyOnUsername = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      document.getElementById('password-form-control')?.focus();
+    }
+  };
+
+  const hadleKeyOnPassword = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleLogin();
+    }
+  };
+
   return (
     <Card className="mt-4 p-4 shadow-sm" style={{ maxWidth: '400px', width: '100%' }}>
       <h3 className="text-center">Login</h3>
@@ -43,15 +57,18 @@ function LoginForm() {
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             isInvalid={!!validationErrors.username}
+            onKeyDown={hadleKeyOnUsername}
           />
         </Form.Group>
         <Form.Group className="mb-3">
           <Form.Control
+            id="password-form-control"
             type="password"
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             isInvalid={!!validationErrors.password}
+            onKeyDown={hadleKeyOnPassword}
           />
         </Form.Group>
         {error && <p className="text-danger text-center">{error}</p>}

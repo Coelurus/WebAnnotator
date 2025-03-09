@@ -1,10 +1,11 @@
 import React from 'react';
 import { Annotation, Label, ProjectResponse } from '../../persistence/model/responses';
-import { request } from '../../security/auth';
+import { blobRequest } from '../../security/auth';
 
 interface AnnotatorContentProps {
   gridRef: React.RefObject<HTMLDivElement>;
   pageNum: number;
+  setPageNum: React.Dispatch<React.SetStateAction<number>>;
   imagesPerPage: number;
   frameCount: number;
   imageSize: number;
@@ -18,6 +19,7 @@ interface AnnotatorContentProps {
 export default function AnnotatorContent({
   gridRef,
   pageNum,
+  setPageNum,
   imagesPerPage,
   frameCount,
   imageSize,
@@ -31,12 +33,17 @@ export default function AnnotatorContent({
     e.preventDefault();
   };
 
-  const startPosition = pageNum * imagesPerPage + 1;
-  const endPosition = Math.min(startPosition + imagesPerPage - 1, frameCount);
-  const imagePositions = Array.from(
-    { length: endPosition - startPosition + 1 },
-    (_, i) => startPosition + i
-  );
+  const [imagePositions, setImagePositions] = React.useState<number[]>([]);
+  const [imageSources, setImageSources] = React.useState<{ [key: number]: string }>({});
+
+  React.useEffect(() => {
+    const startPosition = pageNum * imagesPerPage + 1;
+    const endPosition = Math.min(startPosition + imagesPerPage - 1, frameCount);
+
+    setImagePositions(
+      Array.from({ length: endPosition - startPosition + 1 }, (_, i) => startPosition + i)
+    );
+  }, [frameCount, imagesPerPage, pageNum]);
 
   const selectedImageStyle = (index: number) => {
     const frame = selectedFrames.find((frame) => frame.frameId === index);
@@ -49,31 +56,35 @@ export default function AnnotatorContent({
     };
   };
 
-  const [imageUrls, setImageUrls] = React.useState<{ [key: number]: string }>({});
+  React.useEffect(() => {
+    if ((pageNum + 1) * imagesPerPage >= frameCount && pageNum > 0) {
+      console.log('(pageNum + 1) * imagesPerPage', (pageNum + 1) * imagesPerPage);
+      console.log('frameCount', frameCount);
+
+      setPageNum(pageNum - 1);
+    }
+  }, [imageSize]);
 
   React.useEffect(() => {
     const loadImages = async () => {
-      const newImageUrls: { [key: number]: string } = {};
-  
+      const newImageSources: { [key: number]: string } = {};
+
       await Promise.all(
         imagePositions.map(async (position) => {
-          try {
-            const response = await request('GET', `/api/projects/${project.id}/frame/${position - 1}`, {}, ''); // No content type needed
-            const blob = new Blob([response.data]);
-            const imageUrl = URL.createObjectURL(blob);
-            newImageUrls[position] = imageUrl;
-          } catch (error) {
-            console.error(`Error fetching image for position ${position}:`, error);
-          }
+          const response = await blobRequest(`/api/projects/${project.id}/frame/${position - 1}`);
+
+          const blob = new Blob([response.data], { type: response.headers['content-type'] });
+          const imageUrl = URL.createObjectURL(blob);
+
+          newImageSources[position] = imageUrl;
         })
       );
-  
-      setImageUrls(newImageUrls);
+
+      setImageSources(newImageSources);
     };
-  
+
     loadImages();
-    
-  }, [project.id]); //[project.id, imagePositions]
+  }, [imagePositions]);
 
   return (
     <div className="image-grid" ref={gridRef}>
@@ -87,10 +98,10 @@ export default function AnnotatorContent({
           <img
             id={`image-frame-${position}`}
             key={position}
-            src={imageUrls[position] || ''} // Use fetched image URL
             alt={`Frame ${position}`}
             className="image"
             style={selectedImageStyle(position)}
+            src={imageSources[position]}
             onMouseDown={(event) => handleMouseDown(event, position)}
             onMouseOver={() => handleMouseOver(position)}
             onDragStart={() => preventDragHandler}
