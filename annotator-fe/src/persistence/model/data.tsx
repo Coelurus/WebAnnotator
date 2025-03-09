@@ -1,39 +1,39 @@
-export interface UserResponse {
+export interface ShortUser {
+  id: number;
+  firstName: string;
+  lastName: string;
+}
+
+export interface LongUser {
   id: number;
   firstName: string;
   lastName: string;
   username: string;
   role: string;
-  team: ShortTeamResponse | null;
+  team: ShortTeam | null;
 }
 
-export interface ShortUserResponse {
-  id: number;
-  firstName: string;
-  lastName: string;
-}
-
-export interface TeamResponse {
-  id: number;
-  name: string;
-  leader: ShortUserResponse | null;
-}
-
-export interface ShortTeamResponse {
+export interface ShortTeam {
   id: number;
   name: string;
 }
 
-export interface ProjectResponse {
+export interface LongTeam {
+  id: number;
+  name: string;
+  leader: ShortUser | null;
+}
+
+export interface Project {
   id: number;
   projectName: string;
   logFileName: string;
   deadline: string;
   priority: number;
-  team: ShortTeamResponse;
+  team: ShortTeam;
 }
 
-export interface PriorityResponse {
+export interface Priority {
   name: string;
 }
 

@@ -1,8 +1,8 @@
 import React from 'react';
 import { request } from '../../security/auth';
-import { Label, ProjectResponse } from '../../persistence/model/responses';
+import { Label, Project } from '../../persistence/model/data';
 import { trainAI } from './ai/train-ai';
-import { CreateToast } from '../../notifications/toasts';
+import { ToastParams } from '../../notifications/toasts';
 
 interface AnnotatorHeaderProps {
   imageSize: number;
@@ -11,8 +11,9 @@ interface AnnotatorHeaderProps {
   setCurrentLabel: React.Dispatch<React.SetStateAction<Label | undefined>>;
   labels: Label[];
   setLabels: React.Dispatch<React.SetStateAction<Label[]>>;
-  project: ProjectResponse;
+  project: Project;
   headerRef: React.RefObject<HTMLDivElement>;
+  setToastMessage: React.Dispatch<React.SetStateAction<ToastParams | null>>;
 }
 
 export default function AnnotatorHeader({
@@ -23,8 +24,11 @@ export default function AnnotatorHeader({
   labels,
   setLabels,
   project,
-  headerRef
+  headerRef,
+  setToastMessage
 }: AnnotatorHeaderProps) {
+  const [newLabel, setNewLabel] = React.useState<string>('');
+
   const handleSliderChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setImageSize(Number(event.target.value));
   };
@@ -43,20 +47,31 @@ export default function AnnotatorHeader({
   };
 
   const handleAddLabel = () => {
-    const element = document.getElementById('new-label-text-input') as HTMLInputElement;
-
-    if (element) {
-      request('POST', `/api/labels/${element.value}`)
+    if (newLabel.length === 0) {
+      setToastMessage({
+        header: 'Error creating label',
+        body: `Cannot create empty label.`,
+        variant: 'danger'
+      });
+    } else {
+      request('POST', `/api/labels/${newLabel}`)
         .then((response) => {
           setLabels([...labels, response.data]);
           setCurrentLabel(response.data);
         })
         .catch(() => {
-          alert('Error creating label: ' + element.value + '\nLabel name already exists.');
+          setToastMessage({
+            header: 'Error creating label',
+            body: `Label with name ${newLabel} already exists.`,
+            variant: 'danger'
+          });
         });
-    } else {
-      alert('Issue occurred');
+      setNewLabel('');
     }
+  };
+
+  const handleLabelInputFieldChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setNewLabel(event.target.value);
   };
 
   return (
@@ -95,9 +110,15 @@ export default function AnnotatorHeader({
           ))}
         </select>
 
-        <input type="text" id="new-label-text-input" placeholder="New label"></input>
-        <button onClick={() => handleAddLabel()}>Add label</button>
+        <input
+          type="text"
+          id="new-label-text-input"
+          placeholder="New label"
+          onChange={handleLabelInputFieldChange}
+          value={newLabel}
+        />
 
+        <button onClick={handleAddLabel}>Add label</button>
         <button onClick={() => trainAI(project.id, labels)}>Train AI</button>
       </div>
     </>

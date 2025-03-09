@@ -1,5 +1,5 @@
 import React from 'react';
-import { Annotation, Label, ProjectResponse } from '../../persistence/model/responses';
+import { Annotation, Label, Project } from '../../persistence/model/data';
 import { blobRequest } from '../../security/auth';
 
 interface AnnotatorContentProps {
@@ -11,7 +11,7 @@ interface AnnotatorContentProps {
   imageSize: number;
   labels: Label[];
   selectedFrames: Annotation[];
-  project: ProjectResponse;
+  project: Project;
   handleMouseDown: (event: React.MouseEvent, frameId: number) => void;
   handleMouseOver: (frameId: number) => void;
 }
@@ -47,10 +47,11 @@ export default function AnnotatorContent({
 
   const selectedImageStyle = (index: number) => {
     const frame = selectedFrames.find((frame) => frame.frameId === index);
+
     return {
       width: `${imageSize}px`,
       height: `${imageSize}px`,
-      borderColor: frame ? labels[frame.labelId].color : '',
+      borderColor: frame ? labels[frame.labelId]?.color : '',
       borderWidth: '5px',
       borderStyle: 'solid'
     };

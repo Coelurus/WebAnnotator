@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
-import { ProjectResponse } from '../../../persistence/model/responses';
+import { ProjectResponse } from '../../../persistence/model/data';
 import { mapProjectResponses } from '../../../persistence/mapper/mapper';
 import { request } from '../../../security/auth';
 import { Button, Modal, Table } from 'react-bootstrap';

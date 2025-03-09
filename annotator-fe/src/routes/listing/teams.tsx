@@ -1,6 +1,6 @@
 import React, { FormEvent, useEffect, useState } from 'react';
 
-import { TeamResponse } from '../../persistence/model/responses';
+import { LongTeamApiResponse } from '../../persistence/model/data';
 import { fetchTeams } from '../../persistence/fetcher/fetcher';
 import { Button, Form, Modal, Table } from 'react-bootstrap';
 import { Pencil, PersonAdd, Plus, Trash, X } from 'react-bootstrap-icons';
@@ -12,7 +12,7 @@ interface TeamInfo {
 }
 
 export default function Teams() {
-  const [teams, setTeams] = useState<TeamResponse[]>([]);
+  const [teams, setTeams] = useState<LongTeamApiResponse[]>([]);
   const [show, setShow] = useState(false);
   const [newTeam, setNewTeam] = useState({ teamName: '', leaderName: '' });
   const [teamToDelete, setTeamToDelete] = useState<TeamInfo | null>(null);

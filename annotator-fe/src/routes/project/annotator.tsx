@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useRef, useLayoutEffect } from 'react';
 import { LoaderFunction, useLoaderData } from 'react-router-dom';
 import { fetchProject } from '../../persistence/fetcher/fetcher';
-import { ProjectResponse } from '../../persistence/model/responses';
-import { Annotation, Label } from '../../persistence/model/responses';
+import { ProjectResponse } from '../../persistence/model/data';
+import { Annotation, Label } from '../../persistence/model/data';
 import '../../styles/galery.css';
 import { request } from '../../security/auth';
 import AnnotatorHeader from './annotator-header';
@@ -14,8 +14,6 @@ export const loader: LoaderFunction = async ({ params }) => {
   const project = await fetchProject(Number(params.projectId));
   return project;
 };
-
-
 
 export default function Project() {
   const UNDEFINED = -1;
@@ -66,20 +64,20 @@ export default function Project() {
       .then((response) => setFrameCount(response.data.count))
       .catch(() => {
         setToastMessage({
-          header: "Error",
-          body: "Error fetching frame count",
-          variant: "danger"
-        })
+          header: 'Error',
+          body: 'Error fetching frame count',
+          variant: 'danger'
+        });
       });
 
     request('GET', `/api/projects/${project?.id}/annotations`)
       .then((response) => setSelectedFrames(response.data))
       .catch(() => {
         setToastMessage({
-          header: "Error",
-          body: "Error fetching annotations",
-          variant: "danger"
-        })
+          header: 'Error',
+          body: 'Error fetching annotations',
+          variant: 'danger'
+        });
       });
   }, [project?.id]);
 
@@ -91,10 +89,10 @@ export default function Project() {
       })
       .catch(() => {
         setToastMessage({
-          header: "Error",
-          body: "Error fetching labels",
-          variant: "danger"
-        })
+          header: 'Error',
+          body: 'Error fetching labels',
+          variant: 'danger'
+        });
       });
   }, []);
 
@@ -129,14 +127,15 @@ export default function Project() {
     }
 
     if (pressedButton === RIGHT_BUTTON) {
-      request('POST', `/api/projects/${project.id}/erase/${lowerIndex}/${higherIndex}`)
-      .catch(() => {
-        setToastMessage({
-          header: "Error",
-          body: "Error erasing annotations",
-          variant: "danger"
-        })
-      });;
+      request('POST', `/api/projects/${project.id}/erase/${lowerIndex}/${higherIndex}`).catch(
+        () => {
+          setToastMessage({
+            header: 'Error',
+            body: 'Error erasing annotations',
+            variant: 'danger'
+          });
+        }
+      );
 
       const withoutErased = selectedFrames.filter(
         (annotation) => annotation.frameId < lowerIndex || annotation.frameId > higherIndex
@@ -150,11 +149,11 @@ export default function Project() {
         `/api/projects/${project.id}/annotate/${lowerIndex}/${higherIndex}/label/${currentLabel?.id}`
       ).catch(() => {
         setToastMessage({
-          header: "Error",
-          body: "Error adding annotations",
-          variant: "danger"
-        })
-      });;
+          header: 'Error',
+          body: 'Error adding annotations',
+          variant: 'danger'
+        });
+      });
 
       const framesToAdd: Annotation[] = [];
       for (let index = lowerIndex; index <= higherIndex; index++) {
@@ -193,6 +192,7 @@ export default function Project() {
           labels={labels}
           setLabels={setLabels}
           project={project}
+          setToastMessage={setToastMessage}
         />
       </div>
 
@@ -222,7 +222,7 @@ export default function Project() {
         />
       </div>
 
-      {toastMessage && CreateToast(toastMessage)}
+      {toastMessage && <CreateToast {...toastMessage} />}
     </div>
   );
 }

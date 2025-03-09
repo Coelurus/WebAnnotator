@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Label, PredictionTriple } from '../../../persistence/model/responses';
+import { Label, PredictionTriple } from '../../../persistence/model/data';
 
 export const trainAI = async (projectId: number, labels: Label[]) => {
   try {

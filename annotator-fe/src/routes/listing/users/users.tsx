@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Button, Form } from 'react-bootstrap';
 import { Check, Pencil, Plus, Trash, X } from 'react-bootstrap-icons';
-import { TeamResponse, UserResponse } from '../../../persistence/model/responses';
+import { LongTeamApiResponse, UserResponse } from '../../../persistence/model/data';
 import { fetchRoles, fetchTeams, fetchUsers } from '../../../persistence/fetcher/fetcher';
 import { getUserUsername, request } from '../../../security/auth';
 import AddUserModal from './add-user-modal';
@@ -21,7 +21,7 @@ export default function Users() {
   const [userToDelete, setUserToDelete] = useState<UserInfo | null>(null);
   const [editMode, setEditMode] = useState<number | null>(null);
   const [editValues, setEditValues] = useState<UserRequest>({});
-  const [teams, setTeams] = useState<TeamResponse[]>([]);
+  const [teams, setTeams] = useState<LongTeamApiResponse[]>([]);
   const [roles, setRoles] = useState<string[]>([]);
 
   const handleAddUserShow = () => setShowAddUserModal(true);
@@ -39,7 +39,7 @@ export default function Users() {
   ) => {
     setEditValues({ ...editValues, [field]: e.target.value });
   };
-  const handleSelectChange = (field: string, team: TeamResponse | undefined) => {
+  const handleSelectChange = (field: string, team: LongTeamApiResponse | undefined) => {
     setEditValues({ ...editValues, [field]: team ? team.id : null });
   };
   const handleSubmitUserEdit = () => {

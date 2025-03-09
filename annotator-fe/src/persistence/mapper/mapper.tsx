@@ -1,7 +1,15 @@
 import { UserRequest } from '../model/requests';
-import { PriorityResponse, ProjectResponse, TeamResponse, UserResponse } from '../model/responses';
+import { Project, Priority, LongUser, LongTeam } from '../model/data';
+import {
+  ProjectApiResponse,
+  ShortTeamApiResponse,
+  LongTeamApiResponse,
+  UserApiResponse
+} from '../model/api-responses';
 
-export function mapProjectResponse(project: any): ProjectResponse {
+export function mapProjectResponse(project: ProjectApiResponse<ShortTeamApiResponse>): Project {
+  console.log('project', project);
+
   return {
     id: project.id,
     projectName: project.project_name,
@@ -15,7 +23,7 @@ export function mapProjectResponse(project: any): ProjectResponse {
   };
 }
 
-export function mapProjectResponses(data: any[]): ProjectResponse[] {
+export function mapProjectResponses(data: ProjectApiResponse<LongTeamApiResponse>[]): Project[] {
   return data.map((project) => ({
     id: project.id,
     projectName: project.project_name,
@@ -30,7 +38,7 @@ export function mapProjectResponses(data: any[]): ProjectResponse[] {
   }));
 }
 
-export function mapTeamResponse(data: any[]): TeamResponse[] {
+export function mapTeamResponse(data: LongTeamApiResponse[]): LongTeam[] {
   return data.map((team) => ({
     id: team.id,
     name: team.name,
@@ -44,7 +52,7 @@ export function mapTeamResponse(data: any[]): TeamResponse[] {
   }));
 }
 
-export function mapUserResponse(data: any[]): UserResponse[] {
+export function mapUserResponse(data: UserApiResponse[]): LongUser[] {
   return data.map((user) => ({
     id: user.id,
     firstName: user.first_name,
@@ -55,11 +63,11 @@ export function mapUserResponse(data: any[]): UserResponse[] {
   }));
 }
 
-export function mapPriorityResponse(data: string[]): PriorityResponse[] {
+export function mapPriorityResponse(data: string[]): Priority[] {
   return data.map((priority) => ({ name: priority }));
 }
 
-export function mapUserRequest(data: UserResponse): UserRequest {
+export function mapUserRequest(data: LongUser): UserRequest {
   return {
     firstName: data.firstName,
     lastName: data.lastName,
@@ -69,6 +77,6 @@ export function mapUserRequest(data: UserResponse): UserRequest {
   };
 }
 
-export function mapRoles(data: any[]): string[] {
+export function mapRoles(data: string[]): string[] {
   return data.map((role) => role);
 }

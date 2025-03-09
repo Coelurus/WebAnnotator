@@ -1,9 +1,4 @@
-import {
-  TeamResponse,
-  UserResponse,
-  ProjectResponse,
-  PriorityResponse
-} from '../../persistence/model/responses';
+import { LongTeam, LongUser, Project, Priority } from '../model/data';
 import {
   mapTeamResponse,
   mapUserResponse,
@@ -13,7 +8,7 @@ import {
 } from '../../persistence/mapper/mapper';
 import { request } from '../../security/auth';
 
-export async function fetchTeams(): Promise<TeamResponse[]> {
+export async function fetchTeams(): Promise<LongTeam[]> {
   try {
     const response = await request('GET', '/api/teams');
     return mapTeamResponse(response.data);
@@ -23,7 +18,7 @@ export async function fetchTeams(): Promise<TeamResponse[]> {
   }
 }
 
-export async function fetchUsers(): Promise<UserResponse[]> {
+export async function fetchUsers(): Promise<LongUser[]> {
   try {
     const response = await request('GET', '/api/users');
     return mapUserResponse(response.data);
@@ -33,7 +28,7 @@ export async function fetchUsers(): Promise<UserResponse[]> {
   }
 }
 
-export async function fetchPriorities(): Promise<PriorityResponse[]> {
+export async function fetchPriorities(): Promise<Priority[]> {
   try {
     const response = await request('GET', '/api/priorities');
     return mapPriorityResponse(response.data);
@@ -43,7 +38,7 @@ export async function fetchPriorities(): Promise<PriorityResponse[]> {
   }
 }
 
-export async function fetchProject(id: number): Promise<ProjectResponse | null> {
+export async function fetchProject(id: number): Promise<Project | null> {
   try {
     const response = await request('GET', `/api/projects/${id}`);
     return mapProjectResponse(response.data);

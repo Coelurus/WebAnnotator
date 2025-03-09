@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { PriorityResponse, TeamResponse } from '../../../persistence/model/responses';
+import { PriorityResponse, LongTeamApiResponse } from '../../../persistence/model/data';
 import { fetchPriorities, fetchTeams } from '../../../persistence/fetcher/fetcher';
 import Modal from 'react-bootstrap/esm/Modal';
 import Form from 'react-bootstrap/esm/Form';
@@ -18,7 +18,7 @@ export default function ProjectForm({
   showAddProjectModal,
   setShowAddProjectModal
 }: AddProjectModalProps) {
-  const [teams, setTeams] = React.useState<TeamResponse[]>([]);
+  const [teams, setTeams] = React.useState<LongTeamApiResponse[]>([]);
   const [priorities, setPriorities] = React.useState<PriorityResponse[]>([]);
   const [newProject, setNewProject] = React.useState<ProjectRequest>({});
 
@@ -45,7 +45,7 @@ export default function ProjectForm({
     }
   };
 
-  const handleSelectChange = (field: string, team: TeamResponse | undefined) => {
+  const handleSelectChange = (field: string, team: LongTeamApiResponse | undefined) => {
     setNewProject({ ...newProject, [field]: team ? team.id : null });
   };
 
