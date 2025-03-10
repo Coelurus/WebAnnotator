@@ -71,7 +71,7 @@ public class UserAuthProvider {
         JWTVerifier verifier = JWT.require(Algorithm.HMAC256(secretKey)).build();
         DecodedJWT jwt = verifier.verify(token);
         User user = userService.getUserByUsername(jwt.getSubject());
-        return new UsernamePasswordAuthenticationToken(user, null, Collections.emptyList());
+        return new UsernamePasswordAuthenticationToken(user, null, Collections.singletonList(new SimpleGrantedAuthority(user.getRole())));
     }
 
 }

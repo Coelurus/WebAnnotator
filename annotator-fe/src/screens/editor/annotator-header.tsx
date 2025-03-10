@@ -7,6 +7,8 @@ import Button from 'react-bootstrap/Button';
 import Collapse from 'react-bootstrap/Collapse';
 import { LabelRequest } from '../../persistence/model/requests';
 import { postCreateLabel } from '../../persistence/requests/poster';
+import { LabelApiResponse } from '../../persistence/model/api-responses';
+import { mapLabel } from '../../persistence/mapper/mapper';
 
 interface AnnotatorHeaderProps {
   imageSize: number;
@@ -31,7 +33,9 @@ export default function AnnotatorHeader({
   headerRef,
   setToastMessage
 }: AnnotatorHeaderProps) {
-  const [newLabel, setNewLabel] = React.useState<LabelRequest>({});
+  const DEFAULT_COLOR_OPTION = '#563d7c';
+
+  const [newLabel, setNewLabel] = React.useState<LabelRequest>({color: DEFAULT_COLOR_OPTION});
   const [showSettings, setShowSettings] = useState(false);
 
   const handleSliderChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -61,10 +65,11 @@ export default function AnnotatorHeader({
     } else {
       postCreateLabel(newLabel, (message) =>
         setToastMessage({ header: 'Error creating label', body: message, variant: 'danger' })
-      ).then((createdLabel) => {
+      ).then((createdLabel: LabelApiResponse) => {        
         if (!createdLabel) return;
-        setLabels([...labels, createdLabel]);
-        setCurrentLabel(createdLabel);
+        setLabels([...labels, mapLabel(createdLabel)]);
+        
+        setCurrentLabel(mapLabel(createdLabel));
         setNewLabel({});
       });
     }
@@ -78,17 +83,17 @@ export default function AnnotatorHeader({
     <div ref={headerRef} className="p-3 border rounded">
       <div className="d-flex align-items-center justify-content-between">
         <h5 className="m-0">{project ? project.projectName : 'No project found'}</h5>
-        <select
+        <Form.Select
           className="form-select w-auto ms-2"
           name="label"
           id="label-select"
-          value={currentLabel?.label || ''}
+          value={currentLabel?.id ?? ''}
           onChange={handleLabelChange}
         >
           {labels.map((label) => (
             <option
-              value={label.label}
-              key={'label_' + label.label}
+              value={label.id}
+              key={'label_' + label.id}
               data-label-id={label.id}
               data-label-name={label.label}
               data-label-color={label.color}
@@ -96,7 +101,7 @@ export default function AnnotatorHeader({
               {label.label}
             </option>
           ))}
-        </select>
+        </Form.Select>
         <Button variant="secondary" className="ms-2" onClick={() => setShowSettings(!showSettings)}>
           {showSettings ? 'Hide' : 'Show'} Settings
         </Button>
@@ -128,7 +133,7 @@ export default function AnnotatorHeader({
               title="Choose color for your label"
               onChange={handleLabelInputFieldChange}
               name="color"
-              value={newLabel.color ?? '#563d7c'}
+              value={newLabel.color ?? DEFAULT_COLOR_OPTION}
               className="me-2"
             />
             <Button variant="primary" onClick={handleAddLabel}>

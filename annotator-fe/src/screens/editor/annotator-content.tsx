@@ -85,7 +85,7 @@ export default function AnnotatorContent({
   }, [imagePositions]);
 
   return (
-    <div className="image-grid" ref={gridRef}>
+    <div className="d-flex flex-wrap gap-1 image-grid" ref={gridRef}>
       {imagePositions.map((position) => (
         <div id={`image-frame-wrapper-${position}`} key={`image-frame-wrapper-${position}`}>
           <div
@@ -97,8 +97,13 @@ export default function AnnotatorContent({
             id={`image-frame-${position}`}
             key={position}
             alt={`Frame ${position}`}
-            className="image"
-            style={selectedImageStyle(position)}
+            className="img-fluid"
+            style={{
+              objectFit: "cover",
+              cursor: "pointer",
+              border: "5px solid rgba(0, 0, 0, 0)",
+              ...selectedImageStyle(position),
+            }}
             src={imageSources[position]}
             onMouseDown={(event) => handleMouseDown(event, position)}
             onMouseOver={() => handleMouseOver(position)}

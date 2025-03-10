@@ -1,5 +1,6 @@
 import { request } from '../../security/auth';
-import { Label } from '../model/data';
+import { ErrorResponse } from '../errors/error-response';
+import { LabelApiResponse } from '../model/api-responses';
 import { LabelRequest, UserRequest } from '../model/requests';
 
 export function postEraseAnnotations(
@@ -26,8 +27,8 @@ export function postAddAnnotations(
   request(
     'POST',
     `/api/projects/${projectId}/annotate/${lowerIndex}/${higherIndex}/label/${labelId}`
-  ).catch((error) => {
-    console.error(error);
+  ).catch((error: ErrorResponse) => {
+    console.error(error.response);
     onError('Error adding annotations');
   });
 }
@@ -35,7 +36,7 @@ export function postAddAnnotations(
 export function postCreateLabel(
   newLabel: LabelRequest,
   onError: (message: string) => void
-): Promise<Label | null> {
+): Promise<LabelApiResponse> {
   return request('POST', '/api/labels', newLabel)
     .then((response) => response.data)
     .catch((error) => {

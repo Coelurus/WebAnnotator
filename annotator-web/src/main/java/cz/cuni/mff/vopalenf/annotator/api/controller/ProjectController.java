@@ -10,6 +10,7 @@ import cz.cuni.mff.vopalenf.annotator.enums.Priority;
 import cz.cuni.mff.vopalenf.annotator.service.ProjectService;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -38,6 +39,7 @@ public class ProjectController {
      *
      * @return List of all projects
      */
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     @GetMapping("/projects")
     public ResponseEntity<List<Project>> getAllProjects() {
         return ResponseEntity.ok(projectService.getAllProjects());
@@ -49,6 +51,7 @@ public class ProjectController {
      * @param id ID of project to get
      * @return Found project
      */
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     @GetMapping("/projects/{id}")
     public ResponseEntity<Project> getProjectById(@PathVariable Long id) {
         return ResponseEntity.ok(projectService.getProject(id));
@@ -60,6 +63,7 @@ public class ProjectController {
      * @param id ID of project to delete
      * @return Success on response on deletion
      */
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     @DeleteMapping("/projects/{id}")
     public ResponseEntity<Void> deleteProjectById(@PathVariable Long id) {
         projectService.deleteProject(id);
@@ -71,6 +75,7 @@ public class ProjectController {
      *
      * @return List of all priorities
      */
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     @GetMapping("/priorities")
     public ResponseEntity<List<Priority>> getAllProjectPriorities() {
         return ResponseEntity.ok(projectService.getAllProjectPriorities());
@@ -81,12 +86,13 @@ public class ProjectController {
      *
      * @return List of all labels
      */
-    //@PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     @GetMapping("/labels")
     public ResponseEntity<List<Label>> getAllLabels() {
         return ResponseEntity.ok(projectService.getAllLabels());
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     @PostMapping("/labels")
     public ResponseEntity<Label> addLabel(@RequestBody LabelRequest label) {
         return ResponseEntity.ok(projectService.addLabel(label));
@@ -102,6 +108,7 @@ public class ProjectController {
      * @param file        Compressed zip file containing log file and camera shots.
      * @return Redirection to a main menu.
      */
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     @PostMapping(value = "/projects", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<Project> manageFileUpload(
             @RequestPart("projectName") String projectName,
@@ -129,6 +136,7 @@ public class ProjectController {
      * @param labelId   ID of a label being used to annotate
      * @return Response status about success of request
      */
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     @PostMapping("/projects/{projectId}/annotate/{frameId}/label/{labelId}")
     public ResponseEntity<Void> annotateProjectFrame(
             @PathVariable Long projectId,
@@ -147,6 +155,7 @@ public class ProjectController {
      * @param labelId      ID of a label being used to annotate
      * @return Response status about success of request
      */
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     @PostMapping("/projects/{projectId}/annotate/{startFrameId}/{endFrameId}/label/{labelId}")
     public ResponseEntity<Void> annotateProjectFramesInRange(
             @PathVariable Long projectId,
@@ -165,6 +174,7 @@ public class ProjectController {
      * @param endFrameId   To which frame to remove annotations
      * @return Response status about success of request
      */
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     @PostMapping("/projects/{projectId}/erase/{startFrameId}/{endFrameId}")
     public ResponseEntity<Void> eraseAnnotationsInRange(
             @PathVariable Long projectId,
@@ -181,12 +191,14 @@ public class ProjectController {
      * @param projectId ID of project from which to get all annotations
      * @return List of all annotations on one project
      */
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     @GetMapping(value = "/projects/{projectId}/annotations",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<Annotation>> getAllAnnotations(@PathVariable Long projectId) {
         return ResponseEntity.ok(projectService.getAllAnnotations(projectId));
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     @PostMapping("/projects/{projectId}/trainAI")
     public ResponseEntity<List<PredictionTriple>> trainAI(@PathVariable Long projectId) {
         return ResponseEntity.ok(projectService.trainAI(projectId));

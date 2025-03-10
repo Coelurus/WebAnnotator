@@ -5,11 +5,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.Map;
 
 
@@ -35,6 +37,7 @@ public class FileSystemController {
      * @param position Position of a frame from project
      * @return Image HTML tag with found frame
      */
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     @GetMapping(
             value = "/projects/{id}/frame/{position}",
             produces = MediaType.IMAGE_JPEG_VALUE
@@ -43,8 +46,20 @@ public class FileSystemController {
         return fileSystemService.getFrame(id, position);
     }
 
-    @GetMapping(value = "/projects/{id}/frame/count",
-            produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
+    @GetMapping(
+            value = "/projects/{id}/frame/{fromPosition}/{toPosition}",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<List<Resource>> getFrames(@PathVariable Long id, @PathVariable Integer fromPosition, @PathVariable Integer toPosition) {
+        return fileSystemService.getFrames(id, fromPosition, toPosition);
+    }
+
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
+    @GetMapping(
+            value = "/projects/{id}/frame/count",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
     public ResponseEntity<Map<String, Integer>> getFramesCount(@PathVariable Long id) {
         return fileSystemService.getFramesCount(id);
     }

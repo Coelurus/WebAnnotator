@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Button, Form } from 'react-bootstrap';
 import { Check, Pencil, Plus, Trash, X } from 'react-bootstrap-icons';
-import { LongTeamApiResponse, UserResponse } from '../../../persistence/model/data';
 import { fetchRoles, fetchTeams, fetchUsers } from '../../../persistence/requests/fetcher';
 import { getUserUsername, request } from '../../../security/auth';
 import AddUserModal from './add-user-modal';
 import DeleteUserModal from './delete-user-modal';
 import { UserRequest } from '../../../persistence/model/requests';
 import { mapUserRequest } from '../../../persistence/mapper/mapper';
+import { LongTeam, LongUser } from '../../../persistence/model/data';
 
 export interface UserInfo {
   id: number;
@@ -15,13 +15,13 @@ export interface UserInfo {
 }
 
 export default function Users() {
-  const [users, setUsers] = useState<UserResponse[]>([]);
+  const [users, setUsers] = useState<LongUser[]>([]);
   const [showAddUserModal, setShowAddUserModal] = useState(false);
   const [showDeleteUserConfirmation, setShowDeleteUserConfirmation] = useState(false);
   const [userToDelete, setUserToDelete] = useState<UserInfo | null>(null);
   const [editMode, setEditMode] = useState<number | null>(null);
   const [editValues, setEditValues] = useState<UserRequest>({});
-  const [teams, setTeams] = useState<LongTeamApiResponse[]>([]);
+  const [teams, setTeams] = useState<LongTeam[]>([]);
   const [roles, setRoles] = useState<string[]>([]);
 
   const handleAddUserShow = () => setShowAddUserModal(true);
@@ -29,7 +29,7 @@ export default function Users() {
     setUserToDelete({ id: userId, name: username });
     setShowDeleteUserConfirmation(true);
   };
-  const handleUserEdit = (user: UserResponse) => {
+  const handleUserEdit = (user: LongUser) => {
     setEditMode(user.id);
     setEditValues({ ...mapUserRequest(user) });
   };
@@ -39,7 +39,7 @@ export default function Users() {
   ) => {
     setEditValues({ ...editValues, [field]: e.target.value });
   };
-  const handleSelectChange = (field: string, team: LongTeamApiResponse | undefined) => {
+  const handleSelectChange = (field: string, team: LongTeam | undefined) => {
     setEditValues({ ...editValues, [field]: team ? team.id : null });
   };
   const handleSubmitUserEdit = () => {

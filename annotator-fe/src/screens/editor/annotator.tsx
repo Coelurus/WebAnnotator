@@ -7,7 +7,6 @@ import {
   fetchProject
 } from '../../persistence/requests/fetcher';
 import { Annotation, Label, Project as ProjectType } from '../../persistence/model/data';
-import '../../styles/galery.css';
 import AnnotatorHeader from './annotator-header';
 import AnnotatorFooter from './annotator-footer';
 import AnnotatorContent from './annotator-content';
@@ -78,6 +77,8 @@ export default function Project() {
   }, [project?.id]);
 
   useEffect(() => {
+    console.log("aaaa");
+    
     fetchLabels((message) => {
       setToastMessage({
         header: 'Error',

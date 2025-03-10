@@ -240,6 +240,9 @@ public class ProjectService {
         if (labelRepository.existsByLabel(label.getLabelName())) {
             throw new BadRequestException("Label already exists", ProjectService.class.getSimpleName());
         }
+        if (label.getColor() == null) {
+            throw new BadRequestException("Color was not chosen.", ProjectService.class.getSimpleName());
+        }
         if (!label.getColor().matches("^#([A-Fa-f0-9]{6})$")) {
             throw new BadRequestException(label.getColor() + " is not a valid color.", ProjectService.class.getSimpleName());
         }

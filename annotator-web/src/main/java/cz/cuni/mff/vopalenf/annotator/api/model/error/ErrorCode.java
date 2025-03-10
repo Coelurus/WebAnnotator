@@ -8,4 +8,5 @@ public enum ErrorCode {
     BAD_REQUEST,
     UNPROCESSABLE_CONTENT,
     BAD_CREDENTIALS,
+    RUNTIME_EXCEPTION,
 }

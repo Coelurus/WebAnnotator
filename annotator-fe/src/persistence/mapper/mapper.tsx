@@ -100,3 +100,11 @@ export function mapAnnotations(data: AnnotationApiResponse[]): Annotation[] {
     labelId: annotation.labelId
   }));
 }
+
+export function mapLabel(data: LabelApiResponse): Label {
+  return {
+    id: data.id,
+    label: data.labelName,
+    color: data.color
+  }
+}
