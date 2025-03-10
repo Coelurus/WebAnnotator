@@ -29,3 +29,23 @@ spring:
       secret-key: "secret"
       # secret-key: ${JWT_SECRET}
 
+management:
+  server:
+    port: 8088
+  endpoints:
+    web:
+      exposure:
+        include: info, health, swaggerui, openapi
+  health:
+    db:
+      enabled: true
+    defaults:
+      enabled: true
+  observations:
+    annotations:
+      enabled: true
+
+springdoc:
+  use-management-port: true
+  override-with-generic-response: false
+  default-produces-media-type: application/json

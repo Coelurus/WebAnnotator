@@ -6,6 +6,7 @@ import cz.cuni.mff.vopalenf.annotator.exception.api.APIException;
 import cz.cuni.mff.vopalenf.annotator.exception.api.BadCredentialsException;
 import cz.cuni.mff.vopalenf.annotator.exception.api.BadRequestException;
 import cz.cuni.mff.vopalenf.annotator.exception.api.NotFoundException;
+import cz.cuni.mff.vopalenf.annotator.exception.api.ServerException;
 import cz.cuni.mff.vopalenf.annotator.exception.api.UnprocessableContentException;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.http.HttpStatus;
@@ -67,6 +68,18 @@ public class RestExceptionHandler {
     public ResponseEntity<ErrorResponse> handleBadCredentialsException(BadCredentialsException e) {
         ErrorResponse errorResponse = handleException(e, HttpStatus.BAD_REQUEST);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
+
+    /**
+     * Handler for ServerException
+     *
+     * @param e Thrown exception
+     * @return Error response with information about exception
+     */
+    @ExceptionHandler(ServerException.class)
+    public ResponseEntity<ErrorResponse> handleServerException(ServerException e) {
+        ErrorResponse errorResponse = handleException(e, HttpStatus.INTERNAL_SERVER_ERROR);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     }
 
     /**

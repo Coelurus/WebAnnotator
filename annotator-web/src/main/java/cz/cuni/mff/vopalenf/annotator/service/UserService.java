@@ -42,6 +42,11 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    /**
+     * Get all users from database
+     *
+     * @return List of all users
+     */
     public List<User> getAllUsers() {
         return userRepository.findAll().stream()
                 .map(userEntity -> userMapper.mapUser(
@@ -53,12 +58,27 @@ public class UserService {
                 .toList();
     }
 
+    /**
+     * Get user by their username
+     *
+     * @param username Username to find user by
+     * @return User by given username
+     * @throws NotFoundException when username does not exist
+     */
     public User getUserByUsername(String username) {
         UserEntity user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new NotFoundException("User with " + username + " not found", UserService.class.getSimpleName()));
         return userMapper.mapUser(user);
     }
 
+    /**
+     * Login user to the system and return them token
+     *
+     * @param credentials Login credentials containing username and password
+     * @return User information about logged-in user
+     * @throws NotFoundException       when username does not exist
+     * @throws BadCredentialsException when the credentials are invalid
+     */
     public User login(LoginCredentials credentials) {
         UserEntity userEntity = userRepository.findByUsername(credentials.username())
                 .orElseThrow(() -> new NotFoundException("Unknown user", UserService.class.getSimpleName()));
@@ -69,6 +89,13 @@ public class UserService {
         throw new BadCredentialsException("Invalid credentials", UserService.class.getSimpleName());
     }
 
+    /**
+     * Create new account for user
+     *
+     * @param credentials New user data containing name, username and password
+     * @return newly created user
+     * @throws BadRequestException when username already exists
+     */
     public User signup(SignupCredentials credentials) {
         Optional<UserEntity> existingUser = userRepository.findByUsername(credentials.username());
         if (existingUser.isPresent()) {
@@ -82,7 +109,16 @@ public class UserService {
         return userMapper.mapUser(createdUser);
     }
 
+    /**
+     * Delete user from db by ID
+     *
+     * @param userId ID of user to delete
+     * @throws NotFoundException when user with given ID does not exist
+     */
     public void deleteUser(Long userId) {
+        if (!userRepository.existsById(userId)) {
+            throw new NotFoundException("User not found", UserService.class.getSimpleName());
+        }
         userRepository.deleteById(userId);
     }
 
@@ -92,10 +128,11 @@ public class UserService {
      * @param userId      ID of a user to update
      * @param userRequest Update payload
      * @return updated user
+     * @throws NotFoundException when user with given ID does not exist
      */
     public User updateUser(Long userId, UserRequest userRequest) {
         UserEntity userToUpdate = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("Cannot update user", UserService.class.getSimpleName()));
+                .orElseThrow(() -> new NotFoundException("User not found", UserService.class.getSimpleName()));
 
         userToUpdate.setFirstName(userRequest.getFirstName());
         userToUpdate.setLastName(userRequest.getLastName());
@@ -106,7 +143,18 @@ public class UserService {
         return userMapper.mapUser(userRepository.save(userToUpdate));
     }
 
+    /**
+     * Create new user and save it to the db
+     *
+     * @param userRequest User payload
+     * @return newly created user
+     * @throws BadRequestException when username already exists
+     */
     public User createUser(UserRequest userRequest) {
+        if (userRepository.findByUsername(userRequest.getUsername()).isPresent()) {
+            throw new BadRequestException("Username already exists", UserService.class.getSimpleName());
+        }
+
         UserEntity newUser = UserEntity.builder()
                 .username(userRequest.getUsername())
                 .passwordHash(passwordEncoder.encode(CharBuffer.wrap(userRequest.getUsername())))
@@ -118,6 +166,11 @@ public class UserService {
         return userMapper.mapUser(userRepository.save(newUser));
     }
 
+    /**
+     * Get all roles in app
+     *
+     * @return List of all roles in app
+     */
     public List<Role> getAllRoles() {
         return List.of(Role.values());
     }

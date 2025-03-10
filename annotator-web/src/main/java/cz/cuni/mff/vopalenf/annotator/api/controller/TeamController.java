@@ -4,6 +4,12 @@ import com.fasterxml.jackson.annotation.JsonView;
 import cz.cuni.mff.vopalenf.annotator.api.model.Team;
 import cz.cuni.mff.vopalenf.annotator.api.view.Views;
 import cz.cuni.mff.vopalenf.annotator.service.TeamService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+@Tag(name = "Teams", description = "Endpoints for managing teams")
 @RestController
 @RequestMapping("/api/teams")
 public class TeamController {
@@ -24,6 +31,14 @@ public class TeamController {
         this.teamService = teamService;
     }
 
+    @Operation(
+            summary = "Get all teams",
+            description = "Retrieves a list of all teams along with their users.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Teams retrieved successfully"),
+                    @ApiResponse(responseCode = "403", description = "Forbidden – Only admins can access this endpoint")
+            }
+    )
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @JsonView({Views.ShowUsersInTeams.class})
     @GetMapping
@@ -31,6 +46,18 @@ public class TeamController {
         return ResponseEntity.ok(teamService.getAllTeams());
     }
 
+    @Operation(
+            summary = "Delete a team",
+            description = "Deletes a team by its ID.",
+            parameters = {
+                    @Parameter(in = ParameterIn.PATH, name = "teamId", schema = @Schema(type = "integer"), description = "ID of the team to be deleted", required = true)
+            },
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Team deleted successfully"),
+                    @ApiResponse(responseCode = "403", description = "Forbidden – Only admins can delete teams"),
+                    @ApiResponse(responseCode = "404", description = "Team not found")
+            }
+    )
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @DeleteMapping("/{teamId}")
     public ResponseEntity<Void> deleteTeam(@PathVariable Long teamId) {

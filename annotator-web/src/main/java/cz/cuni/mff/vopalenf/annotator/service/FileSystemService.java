@@ -1,17 +1,15 @@
 package cz.cuni.mff.vopalenf.annotator.service;
 
+import cz.cuni.mff.vopalenf.annotator.api.model.FrameCount;
 import cz.cuni.mff.vopalenf.annotator.constants.Constants;
 import cz.cuni.mff.vopalenf.annotator.dao.model.ProjectEntity;
 import cz.cuni.mff.vopalenf.annotator.dao.repository.ProjectRepository;
+import cz.cuni.mff.vopalenf.annotator.exception.api.NotFoundException;
 import cz.cuni.mff.vopalenf.annotator.exception.api.ServerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -19,11 +17,14 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
+import static cz.cuni.mff.vopalenf.annotator.constants.Constants.IMAGE_EXTENSION;
+
+/**
+ * Service for accessing images of projects in file system
+ */
 @Service
 public class FileSystemService {
 
@@ -34,40 +35,79 @@ public class FileSystemService {
         this.projectRepository = projectRepository;
     }
 
+    /**
+     * Get array of all image files for a project by its ID
+     *
+     * @param projectId ID of project to find images of
+     * @return array of image files of project
+     * @throws NotFoundException when projectId is invalid, or it does not have assigned directory
+     */
     private File[] getImageFiles(Long projectId) {
-        ProjectEntity projectEntity = projectRepository.findById(projectId).orElseThrow(() -> new ResponseStatusException(HttpStatusCode.valueOf(404), "Invalid project id"));
+        ProjectEntity projectEntity = projectRepository.findById(projectId)
+                .orElseThrow(() -> new NotFoundException("Invalid project id: " + projectId, FileSystemService.class.getSimpleName()));
+
         String logFileName = projectEntity.getLogFileName();
         Path pathToFS = Path.of(Constants.FILE_SYSTEM_PATH);
 
         File projectDir = Arrays.stream(Objects.requireNonNull(pathToFS.toFile().listFiles()))
                 .filter(file -> file.getName().equals(logFileName))
                 .findFirst()
-                .orElseThrow(() -> new ResponseStatusException(HttpStatusCode.valueOf(404), "Invalid project id"));
+                .orElseThrow(() -> new NotFoundException("Not found project dir for project with id: " + projectId, FileSystemService.class.getSimpleName()));
 
-
-        return Objects.requireNonNull(projectDir.listFiles(((dir, name) -> name.toLowerCase().endsWith(".jpg"))));
+        return Objects.requireNonNull(projectDir.listFiles(((dir, name) -> name.toLowerCase().endsWith(IMAGE_EXTENSION))));
     }
 
-    public ResponseEntity<Resource> getFrame(Long id, Integer position) {
-        File[] imageFiles = getImageFiles(id);
+    /**
+     * Get frame from project at a position
+     *
+     * @param projectId ID of a project
+     * @param position  Order number of the frame in project
+     * @return image from a project at a position
+     * @throws NotFoundException when projectId is invalid, or it does not have assigned directory
+     * @throws ServerException   when image fetching fails
+     */
+    public Resource getFrame(Long projectId, Integer position) {
+        File[] imageFiles = getImageFiles(projectId);
         Arrays.sort(imageFiles);
         Arrays.sort(imageFiles, Comparator.comparingInt(f -> Integer.parseInt(f.getPath().substring(f.getPath().indexOf("frame_") + 6, f.getPath().indexOf("_msec.jpg")))));
-        Resource resource = null;
+        Resource resource;
+
+        if (imageFiles.length <= position) {
+            throw new NotFoundException(
+                    "Position " + position + " of image for project with id " + projectId + "is out of range",
+                    FileSystemService.class.getSimpleName()
+            );
+        }
+
         try {
             resource = new UrlResource(Path.of(imageFiles[position].getPath()).toUri());
         } catch (MalformedURLException e) {
             throw new ServerException("Fetching image failed", FileSystemService.class.getSimpleName());
         }
-        return ResponseEntity.ok()
-                .contentType(MediaType.IMAGE_JPEG)
-                .body(resource);
+        return resource;
     }
 
-    public ResponseEntity<List<Resource>> getFrames(Long id, Integer fromPosition, Integer toPosition) {
-        File[] imageFiles = getImageFiles(id);
+    /**
+     * Get frames of a project in range
+     *
+     * @param projectId    ID of a project
+     * @param fromPosition Order number of the frame from which to include
+     * @param toPosition   Order number of the frame to which to include
+     * @return images from a project at in a range
+     * @throws NotFoundException when projectId is invalid, or it does not have assigned directory
+     * @throws ServerException   when image fetching fails
+     */
+    public List<Resource> getFrames(Long projectId, Integer fromPosition, Integer toPosition) {
+        File[] imageFiles = getImageFiles(projectId);
         Arrays.sort(imageFiles);
         Arrays.sort(imageFiles, Comparator.comparingInt(f -> Integer.parseInt(f.getPath().substring(f.getPath().indexOf("frame_") + 6, f.getPath().indexOf("_msec.jpg")))));
         List<Resource> resources = new ArrayList<>();
+        if (imageFiles.length <= toPosition) {
+            throw new NotFoundException(
+                    "Position " + toPosition + " of image for project with id " + projectId + "is out of range",
+                    FileSystemService.class.getSimpleName()
+            );
+        }
         try {
             for (int i = fromPosition; i < toPosition; i++) {
                 resources.add(new UrlResource(Path.of(imageFiles[i].getPath()).toUri()));
@@ -75,15 +115,20 @@ public class FileSystemService {
         } catch (MalformedURLException e) {
             throw new ServerException("Fetching images failed", FileSystemService.class.getSimpleName());
         }
-        return ResponseEntity.ok()
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(resources);
+        return resources;
     }
 
-    public ResponseEntity<Map<String, Integer>> getFramesCount(Long projectId) {
-        Map<String, Integer> countObject = new HashMap<>();
-        countObject.put("count", getImageFiles(projectId).length);
-        return ResponseEntity.ok(countObject);
+    /**
+     * Get number of frames of a project by its ID
+     *
+     * @param projectId ID of project to count its images
+     * @return Frame count
+     * @throws NotFoundException when projectId is invalid, or it does not have assigned directory
+     */
+    public FrameCount getFramesCount(Long projectId) {
+        return FrameCount.builder()
+                .count(getImageFiles(projectId).length)
+                .build();
 
     }
 }

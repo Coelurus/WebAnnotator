@@ -18,6 +18,7 @@ import cz.cuni.mff.vopalenf.annotator.dao.repository.LabelRepository;
 import cz.cuni.mff.vopalenf.annotator.dao.repository.ProjectRepository;
 import cz.cuni.mff.vopalenf.annotator.dao.repository.TeamRepository;
 import cz.cuni.mff.vopalenf.annotator.enums.Priority;
+import cz.cuni.mff.vopalenf.annotator.exception.StorageException;
 import cz.cuni.mff.vopalenf.annotator.exception.api.BadRequestException;
 import cz.cuni.mff.vopalenf.annotator.exception.api.NotFoundException;
 import cz.cuni.mff.vopalenf.annotator.manager.DataLoaderManager;
@@ -63,6 +64,8 @@ public class ProjectService {
 
     private final AnnotationMapper annotationMapper;
 
+    private final FileSystemService fileSystemService;
+
     public ProjectService(ProjectRepository projectRepository,
                           TeamRepository teamRepository,
                           AnnotationRepository annotationRepository,
@@ -73,7 +76,8 @@ public class ProjectService {
                           DataLoaderManager dataLoaderManager,
                           GestureMagic gestureMagic,
                           LabelMapper labelMapper,
-                          AnnotationMapper annotationMapper) {
+                          AnnotationMapper annotationMapper,
+                          FileSystemService fileSystemService) {
         this.projectRepository = projectRepository;
         this.teamRepository = teamRepository;
         this.storageManager = storageManager;
@@ -85,6 +89,7 @@ public class ProjectService {
         this.gestureMagic = gestureMagic;
         this.labelMapper = labelMapper;
         this.annotationMapper = annotationMapper;
+        this.fileSystemService = fileSystemService;
     }
 
     /**
@@ -108,12 +113,12 @@ public class ProjectService {
      * Find project by its id
      *
      * @param projectId id of project to be found
-     * @return Project response with corresponding id, throws exception otherwise
+     * @return Project response with corresponding id
      * @throws NotFoundException Thrown when requested id is not owned by any project
      */
     public Project getProject(Long projectId) {
         ProjectEntity foundProject = projectRepository.findById(projectId)
-                .orElseThrow(() -> new NotFoundException("PROJECT ID NOT FOUND", ProjectService.class.getSimpleName()));
+                .orElseThrow(() -> new NotFoundException("Not found project with id" + projectId, ProjectService.class.getSimpleName()));
 
         return projectMapper.mapProject(
                 foundProject,
@@ -138,12 +143,16 @@ public class ProjectService {
      * @param projectId id of project where to add / remove annotation
      * @param frameId   id of a frame which to (un)annotate
      * @param labelId   ID of a label being used to annotate
+     * @throws NotFoundException   when project ID does not exist
+     * @throws BadRequestException when frame position is larger than frame count
      */
     public void annotateProjectFrame(Long projectId, Long frameId, Long labelId) {
         if (!projectRepository.existsById(projectId)) {
             throw new NotFoundException("PROJECT ID NOT FOUND", ProjectService.class.getSimpleName());
         }
-        //TODO: somehow get frame count and check whether frameId is valid
+        if (fileSystemService.getFramesCount(projectId).getCount() <= frameId) {
+            throw new BadRequestException("Frame position is out of range", ProjectService.class.getSimpleName());
+        }
         annotateFrameInProject(projectId, frameId, labelId, false);
     }
 
@@ -154,6 +163,7 @@ public class ProjectService {
      * @param startFrameId id of frame from which to annotate
      * @param endFrameId   id of frame to which annotate
      * @param labelId      id of a label to be used to annotate
+     * @throws NotFoundException when project ID does not exist
      */
     public void annotateProjectFramesInRange(Long projectId, Long startFrameId, Long endFrameId, Long labelId) {
         if (!projectRepository.existsById(projectId)) {
@@ -164,6 +174,14 @@ public class ProjectService {
         }
     }
 
+    /**
+     * Erase all annotations from frames in range
+     *
+     * @param projectId    id of project to annotate frames in
+     * @param startFrameId id of frame from which to annotate
+     * @param endFrameId   id of frame to which annotate
+     * @throws NotFoundException when project ID does not exist
+     */
     public void eraseAnnotationsInRange(Long projectId, Long startFrameId, Long endFrameId) {
         if (!projectRepository.existsById(projectId)) {
             throw new NotFoundException("PROJECT ID NOT FOUND", ProjectService.class.getSimpleName());
@@ -214,6 +232,9 @@ public class ProjectService {
      * @return List of all annotations on project defined by id
      */
     public List<Annotation> getAllAnnotations(Long projectId) {
+        if (!projectRepository.existsById(projectId)) {
+            throw new NotFoundException("PROJECT ID NOT FOUND", ProjectService.class.getSimpleName());
+        }
         return annotationRepository.findByProjectId(projectId).stream()
                 .map(annotationMapper::mapAnnotation)
                 .toList();
@@ -235,6 +256,7 @@ public class ProjectService {
      *
      * @param label Name and color of label to create
      * @return Newly created entity
+     * @throws BadRequestException when label already exists or color is not valid
      */
     public Label addLabel(LabelRequest label) {
         if (labelRepository.existsByLabel(label.getLabelName())) {
@@ -246,7 +268,6 @@ public class ProjectService {
         if (!label.getColor().matches("^#([A-Fa-f0-9]{6})$")) {
             throw new BadRequestException(label.getColor() + " is not a valid color.", ProjectService.class.getSimpleName());
         }
-
         return labelMapper.mapLabel(labelRepository.save(
                 LabelEntity.builder()
                         .label(label.getLabelName())
@@ -260,6 +281,7 @@ public class ProjectService {
      *
      * @param projectRequest Payload information about new project to create
      * @return Response status
+     * @throws StorageException when error occurs during file saving
      */
     public Project manageFileUpload(ProjectRequest projectRequest) {
 
@@ -304,6 +326,14 @@ public class ProjectService {
         return gestureMagic.test(data);
     }
 
+
+    /**
+     * Delete project by its ID
+     *
+     * @param id ID of a project to delete
+     * @throws NotFoundException when project ID does not exist
+     * @throws StorageException  when folder does not exist or when deleting files fails
+     */
     public void deleteProject(Long id) {
         String logFileName = projectRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("PROJECT_NOT_FOUND", ProjectEntity.class.getSimpleName()))

@@ -8,6 +8,13 @@ import cz.cuni.mff.vopalenf.annotator.api.request.LabelRequest;
 import cz.cuni.mff.vopalenf.annotator.api.request.ProjectRequest;
 import cz.cuni.mff.vopalenf.annotator.enums.Priority;
 import cz.cuni.mff.vopalenf.annotator.service.ProjectService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,6 +31,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDate;
 import java.util.List;
 
+@Tag(name = "Projects", description = "Endpoints for managing projects and related data")
 @RestController
 @RequestMapping("/api")
 public class ProjectController {
@@ -34,35 +42,48 @@ public class ProjectController {
         this.projectService = projectService;
     }
 
-    /**
-     * Get all existing projects
-     *
-     * @return List of all projects
-     */
+    @Operation(
+            summary = "Get all existing projects",
+            description = "Retrieves a list of all projects available in the system.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200", description = "List of projects retrieved successfully",
+                            content = @Content(schema = @Schema(implementation = Project.class))
+                    ),
+            }
+    )
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     @GetMapping("/projects")
     public ResponseEntity<List<Project>> getAllProjects() {
         return ResponseEntity.ok(projectService.getAllProjects());
     }
 
-    /**
-     * Get project by ID
-     *
-     * @param id ID of project to get
-     * @return Found project
-     */
+    @Operation(
+            summary = "Get project by ID", description = "Retrieves a project based on the given ID.",
+            parameters = {
+                    @Parameter(in = ParameterIn.PATH, name = "id", description = "ID of the project", required = true)
+            },
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Project retrieved successfully"),
+                    @ApiResponse(responseCode = "404", description = "Project not found")
+            }
+    )
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     @GetMapping("/projects/{id}")
     public ResponseEntity<Project> getProjectById(@PathVariable Long id) {
         return ResponseEntity.ok(projectService.getProject(id));
     }
 
-    /**
-     * Delete project by ID
-     *
-     * @param id ID of project to delete
-     * @return Success on response on deletion
-     */
+    @Operation(
+            summary = "Delete project by ID", description = "Deletes a project based on the given ID.",
+            parameters = {
+                    @Parameter(in = ParameterIn.PATH, name = "id", description = "ID of the project", required = true)
+            },
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Project deleted successfully"),
+                    @ApiResponse(responseCode = "404", description = "Project not found")
+            }
+    )
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     @DeleteMapping("/projects/{id}")
     public ResponseEntity<Void> deleteProjectById(@PathVariable Long id) {
@@ -70,51 +91,75 @@ public class ProjectController {
         return ResponseEntity.ok().build();
     }
 
-    /**
-     * Get all existing priorities
-     *
-     * @return List of all priorities
-     */
+    @Operation(
+            summary = "Get all priorities",
+            description = "Retrieves a list of all available priorities.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Priorities retrieved successfully")
+            }
+    )
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     @GetMapping("/priorities")
     public ResponseEntity<List<Priority>> getAllProjectPriorities() {
         return ResponseEntity.ok(projectService.getAllProjectPriorities());
     }
 
-    /**
-     * Get all existing labels
-     *
-     * @return List of all labels
-     */
+    @Operation(
+            summary = "Get all labels",
+            description = "Retrieves a list of all labels.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Labels retrieved successfully")
+            }
+    )
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     @GetMapping("/labels")
     public ResponseEntity<List<Label>> getAllLabels() {
         return ResponseEntity.ok(projectService.getAllLabels());
     }
 
+    @Operation(
+            summary = "Add a new label",
+            description = "Creates a new label with the given details.",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Label request object containing necessary details",
+                    required = true,
+                    content = @Content(schema = @Schema(implementation = LabelRequest.class))
+            ),
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Label created successfully"),
+                    @ApiResponse(responseCode = "400", description = "Invalid request data")
+            }
+    )
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     @PostMapping("/labels")
     public ResponseEntity<Label> addLabel(@RequestBody LabelRequest label) {
         return ResponseEntity.ok(projectService.addLabel(label));
     }
 
-    /**
-     * Controls creating new project and saving file to a filesystem and creating new record in db.
-     *
-     * @param projectName Name of the new project
-     * @param deadline    Date till which the project should be finished.
-     * @param priority    A need to finish this project.
-     * @param teamId      Identifier of team to which the project is assigned to.
-     * @param file        Compressed zip file containing log file and camera shots.
-     * @return Redirection to a main menu.
-     */
+    @Operation(
+            summary = "Upload project data",
+            description = "Creates a new project, saves a file to the filesystem, and creates a new database record.",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    required = true,
+                    content = @Content(mediaType = "multipart/form-data")
+            ),
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Project created successfully"),
+                    @ApiResponse(responseCode = "400", description = "Invalid input format"),
+            }
+    )
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     @PostMapping(value = "/projects", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<Project> manageFileUpload(
+            @Parameter(description = "Name of the new project", required = true)
             @RequestPart("projectName") String projectName,
+            @Parameter(description = "Deadline for project completion (yyyy-MM-dd format)", required = true)
             @RequestPart("deadline") String deadline,
+            @Parameter(description = "Project priority (HIGH, MEDIUM, LOW)", required = true)
             @RequestPart("priority") String priority,
+            @Parameter(description = "Team ID associated with the project", required = true)
             @RequestPart("teamId") String teamId,
+            @Parameter(description = "Compressed ZIP file containing log files and images", required = true)
             @RequestPart("file") MultipartFile file
     ) {
         ProjectRequest projectRequest = ProjectRequest.builder()
@@ -128,14 +173,20 @@ public class ProjectController {
         return ResponseEntity.ok(newProject);
     }
 
-    /**
-     * Controls annotating frame in project with label
-     *
-     * @param projectId ID of project to annotate
-     * @param frameId   ID of a frame to annotate
-     * @param labelId   ID of a label being used to annotate
-     * @return Response status about success of request
-     */
+    @Operation(
+            summary = "Annotate a single frame",
+            description = "Annotates a specific frame in a project with a given label.",
+            parameters = {
+                    @Parameter(name = "projectId", description = "Project ID", required = true, in = ParameterIn.PATH),
+                    @Parameter(name = "frameId", description = "Frame ID", required = true, in = ParameterIn.PATH),
+                    @Parameter(name = "labelId", description = "Label ID to use for annotation", required = true, in = ParameterIn.PATH)
+            },
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Annotation added successfully"),
+                    @ApiResponse(responseCode = "400", description = "Frame ID is out of range"),
+                    @ApiResponse(responseCode = "404", description = "Project not found"),
+            }
+    )
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     @PostMapping("/projects/{projectId}/annotate/{frameId}/label/{labelId}")
     public ResponseEntity<Void> annotateProjectFrame(
@@ -146,15 +197,20 @@ public class ProjectController {
         return ResponseEntity.ok().build();
     }
 
-    /**
-     * Controls annotating range of frames in project with label
-     *
-     * @param projectId    ID of project to annotate
-     * @param startFrameId ID of a first frame to annotate
-     * @param endFrameId   ID of a last frame to annotate
-     * @param labelId      ID of a label being used to annotate
-     * @return Response status about success of request
-     */
+    @Operation(
+            summary = "Annotate a range of frames",
+            description = "Annotates multiple frames in a project with a given label.",
+            parameters = {
+                    @Parameter(name = "projectId", description = "Project ID", required = true, in = ParameterIn.PATH),
+                    @Parameter(name = "startFrameId", description = "Starting frame ID", required = true, in = ParameterIn.PATH),
+                    @Parameter(name = "endFrameId", description = "Ending frame ID", required = true, in = ParameterIn.PATH),
+                    @Parameter(name = "labelId", description = "Label ID to use for annotation", required = true, in = ParameterIn.PATH)
+            },
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Frames annotated successfully"),
+                    @ApiResponse(responseCode = "404", description = "Project not found"),
+            }
+    )
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     @PostMapping("/projects/{projectId}/annotate/{startFrameId}/{endFrameId}/label/{labelId}")
     public ResponseEntity<Void> annotateProjectFramesInRange(
@@ -166,14 +222,19 @@ public class ProjectController {
         return ResponseEntity.ok().build();
     }
 
-    /**
-     * Controls removing annotations from frames in project
-     *
-     * @param projectId    ID of project from where to remove annotations
-     * @param startFrameId From which frame to remove annotations
-     * @param endFrameId   To which frame to remove annotations
-     * @return Response status about success of request
-     */
+    @Operation(
+            summary = "Erase annotations in a range",
+            description = "Removes annotations from a range of frames in a project.",
+            parameters = {
+                    @Parameter(name = "projectId", description = "Project ID", required = true, in = ParameterIn.PATH),
+                    @Parameter(name = "startFrameId", description = "Starting frame ID", required = true, in = ParameterIn.PATH),
+                    @Parameter(name = "endFrameId", description = "Ending frame ID", required = true, in = ParameterIn.PATH)
+            },
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Annotations erased successfully"),
+                    @ApiResponse(responseCode = "404", description = "Project not found"),
+            }
+    )
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     @PostMapping("/projects/{projectId}/erase/{startFrameId}/{endFrameId}")
     public ResponseEntity<Void> eraseAnnotationsInRange(
@@ -185,12 +246,17 @@ public class ProjectController {
         return ResponseEntity.ok().build();
     }
 
-    /**
-     * Get list of all annotations on a project
-     *
-     * @param projectId ID of project from which to get all annotations
-     * @return List of all annotations on one project
-     */
+    @Operation(
+            summary = "Get all annotations for a project",
+            description = "Retrieves a list of all annotations associated with a project.",
+            parameters = {
+                    @Parameter(name = "projectId", description = "Project ID", required = true, in = ParameterIn.PATH)
+            },
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "List of annotations retrieved successfully", content = @Content(schema = @Schema(implementation = Annotation.class))),
+                    @ApiResponse(responseCode = "404", description = "Project not found"),
+            }
+    )
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     @GetMapping(value = "/projects/{projectId}/annotations",
             produces = MediaType.APPLICATION_JSON_VALUE)
@@ -198,6 +264,17 @@ public class ProjectController {
         return ResponseEntity.ok(projectService.getAllAnnotations(projectId));
     }
 
+    @Operation(
+            summary = "Train AI model on a project",
+            description = "Trains an AI model based on the annotations in a project.",
+            parameters = {
+                    @Parameter(name = "projectId", description = "Project ID", required = true, in = ParameterIn.PATH)
+            },
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "AI model trained successfully"),
+                    @ApiResponse(responseCode = "404", description = "Project not found"),
+            }
+    )
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     @PostMapping("/projects/{projectId}/trainAI")
     public ResponseEntity<List<PredictionTriple>> trainAI(@PathVariable Long projectId) {
