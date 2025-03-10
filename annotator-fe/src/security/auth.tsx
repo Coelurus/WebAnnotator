@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
-import { UserRequest } from '../persistence/model/requests';
+import { LabelRequest, UserRequest } from '../persistence/model/requests';
 
 export default interface JwtPayload {
   sub: string;
@@ -11,6 +11,13 @@ export default interface JwtPayload {
 export interface LoginCredentials {
   username: string;
   password: string;
+}
+
+export interface SignupCredentials {
+  username: string,
+  password: string,
+  firstName: string,
+  lastName: string,
 }
 
 export const isUserAdmin = () => {
@@ -62,7 +69,7 @@ export const setAuthToken = (token: string | null) => {
 export const request = (
   method: string,
   url: string,
-  data: Record<string, string> | UserRequest | FormData = {},
+  data: Record<string, string> | UserRequest | FormData | LabelRequest = {},
   contentType: string = '',
   responseType: string = ''
 ) => {
@@ -80,10 +87,18 @@ export const request = (
   });
 };
 
-export const loginRequst = (method: string, url: string, data: LoginCredentials) => {
+export const loginRequest = (data: LoginCredentials) => {
   return axios({
-    method: method,
-    url: url,
+    method: 'POST',
+    url: '/api/auth/login',
+    data: data
+  });
+};
+
+export const signupRequest = (data: SignupCredentials) => {
+  return axios({
+    method: 'POST',
+    url: '/api/auth/signup',
     data: data
   });
 };

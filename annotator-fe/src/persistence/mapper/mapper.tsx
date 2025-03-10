@@ -1,15 +1,16 @@
 import { UserRequest } from '../model/requests';
-import { Project, Priority, LongUser, LongTeam } from '../model/data';
+import { Project, Priority, LongUser, LongTeam, Label, Annotation } from '../model/data';
 import {
   ProjectApiResponse,
   ShortTeamApiResponse,
   LongTeamApiResponse,
-  UserApiResponse
+  UserApiResponse,
+  LabelApiResponse,
+  FrameCountApiResponse,
+  AnnotationApiResponse
 } from '../model/api-responses';
 
 export function mapProjectResponse(project: ProjectApiResponse<ShortTeamApiResponse>): Project {
-  console.log('project', project);
-
   return {
     id: project.id,
     projectName: project.project_name,
@@ -79,4 +80,23 @@ export function mapUserRequest(data: LongUser): UserRequest {
 
 export function mapRoles(data: string[]): string[] {
   return data.map((role) => role);
+}
+
+export function mapLabels(data: LabelApiResponse[]): Label[] {
+  return data.map((label) => ({
+    id: label.id,
+    label: label.labelName,
+    color: label.color,
+  }));
+}
+
+export function mapFrameCount(data: FrameCountApiResponse): number {
+  return data.count;
+}
+
+export function mapAnnotations(data: AnnotationApiResponse[]): Annotation[] {
+  return data.map((annotation) => ({
+    frameId: annotation.frameId,
+    labelId: annotation.labelId
+  }));
 }

@@ -1,8 +1,9 @@
 package cz.cuni.mff.vopalenf.annotator.api.controller.advice;
 
-import cz.cuni.mff.vopalenf.annotator.api.model.ErrorResponse;
-import cz.cuni.mff.vopalenf.annotator.api.model.ErrorResponseItem;
+import cz.cuni.mff.vopalenf.annotator.api.model.error.ErrorResponse;
+import cz.cuni.mff.vopalenf.annotator.api.model.error.ErrorResponseItem;
 import cz.cuni.mff.vopalenf.annotator.exception.api.APIException;
+import cz.cuni.mff.vopalenf.annotator.exception.api.BadCredentialsException;
 import cz.cuni.mff.vopalenf.annotator.exception.api.BadRequestException;
 import cz.cuni.mff.vopalenf.annotator.exception.api.NotFoundException;
 import cz.cuni.mff.vopalenf.annotator.exception.api.UnprocessableContentException;
@@ -54,6 +55,18 @@ public class RestExceptionHandler {
     public ResponseEntity<ErrorResponse> handleUnprocessableContentException(UnprocessableContentException e) {
         ErrorResponse errorResponse = handleException(e, HttpStatus.UNPROCESSABLE_ENTITY);
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(errorResponse);
+    }
+
+    /**
+     * Handler for UnprocessableContentException
+     *
+     * @param e Thrown exception
+     * @return Error response with information about exception
+     */
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ErrorResponse> handleBadCredentialsException(BadCredentialsException e) {
+        ErrorResponse errorResponse = handleException(e, HttpStatus.BAD_REQUEST);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
     /**

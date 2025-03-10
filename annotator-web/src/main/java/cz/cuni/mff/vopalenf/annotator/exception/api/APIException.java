@@ -1,6 +1,6 @@
 package cz.cuni.mff.vopalenf.annotator.exception.api;
 
-import cz.cuni.mff.vopalenf.annotator.api.model.ErrorCode;
+import cz.cuni.mff.vopalenf.annotator.api.model.error.ErrorCode;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

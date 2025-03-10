@@ -6,12 +6,14 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import cz.cuni.mff.vopalenf.annotator.api.model.User;
 import cz.cuni.mff.vopalenf.annotator.api.request.UserRequest;
+import cz.cuni.mff.vopalenf.annotator.security.Role;
 import cz.cuni.mff.vopalenf.annotator.service.UserService;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import java.util.Base64;
@@ -58,9 +60,11 @@ public class UserAuthProvider {
                 .username(jwt.getSubject())
                 .firstName(jwt.getClaim("firstName").asString())
                 .lastName(jwt.getClaim("lastName").asString())
+                .role(Role.valueOf(jwt.getClaim("role").asString()))
                 .build();
 
-        return new UsernamePasswordAuthenticationToken(user, null, Collections.emptyList());
+        return new UsernamePasswordAuthenticationToken(user, null, Collections.singletonList(new SimpleGrantedAuthority(user.getRole().name())));
+
     }
 
     public Authentication validateAgainstDB(String token) {

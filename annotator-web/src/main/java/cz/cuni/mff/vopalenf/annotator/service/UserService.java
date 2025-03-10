@@ -1,18 +1,18 @@
 package cz.cuni.mff.vopalenf.annotator.service;
 
-import cz.cuni.mff.vopalenf.annotator.api.model.LoginCredentials;
-import cz.cuni.mff.vopalenf.annotator.api.model.SignupCredentials;
 import cz.cuni.mff.vopalenf.annotator.api.model.User;
+import cz.cuni.mff.vopalenf.annotator.api.model.auth.LoginCredentials;
+import cz.cuni.mff.vopalenf.annotator.api.model.auth.SignupCredentials;
 import cz.cuni.mff.vopalenf.annotator.api.request.UserRequest;
 import cz.cuni.mff.vopalenf.annotator.dao.model.UserEntity;
 import cz.cuni.mff.vopalenf.annotator.dao.repository.UserRepository;
+import cz.cuni.mff.vopalenf.annotator.exception.api.BadCredentialsException;
 import cz.cuni.mff.vopalenf.annotator.exception.api.BadRequestException;
 import cz.cuni.mff.vopalenf.annotator.exception.api.NotFoundException;
 import cz.cuni.mff.vopalenf.annotator.mapper.TeamMapper;
 import cz.cuni.mff.vopalenf.annotator.mapper.UserMapper;
 import cz.cuni.mff.vopalenf.annotator.security.Role;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -66,7 +66,7 @@ public class UserService {
         if (passwordEncoder.matches(CharBuffer.wrap(credentials.password()), userEntity.getPasswordHash())) {
             return userMapper.mapUser(userEntity);
         }
-        throw new BadCredentialsException("Invalid credentials");
+        throw new BadCredentialsException("Invalid credentials", UserService.class.getSimpleName());
     }
 
     public User signup(SignupCredentials credentials) {
@@ -89,7 +89,7 @@ public class UserService {
     /**
      * Update existing user in db
      *
-     * @param userId ID of a user to update
+     * @param userId      ID of a user to update
      * @param userRequest Update payload
      * @return updated user
      */

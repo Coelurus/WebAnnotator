@@ -1,8 +1,8 @@
 package cz.cuni.mff.vopalenf.annotator.mapper;
 
-import cz.cuni.mff.vopalenf.annotator.api.model.SignupCredentials;
 import cz.cuni.mff.vopalenf.annotator.api.model.Team;
 import cz.cuni.mff.vopalenf.annotator.api.model.User;
+import cz.cuni.mff.vopalenf.annotator.api.model.auth.SignupCredentials;
 import cz.cuni.mff.vopalenf.annotator.dao.model.UserEntity;
 import cz.cuni.mff.vopalenf.annotator.security.Role;
 import org.modelmapper.ModelMapper;

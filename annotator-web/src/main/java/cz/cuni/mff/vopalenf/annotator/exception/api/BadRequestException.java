@@ -2,7 +2,7 @@ package cz.cuni.mff.vopalenf.annotator.exception.api;
 
 import lombok.Getter;
 
-import static cz.cuni.mff.vopalenf.annotator.api.model.ErrorCode.BAD_REQUEST;
+import static cz.cuni.mff.vopalenf.annotator.api.model.error.ErrorCode.BAD_REQUEST;
 
 /**
  * Exception to be thrown when client error happens during request

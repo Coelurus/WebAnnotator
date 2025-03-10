@@ -13,3 +13,8 @@ export interface ProjectRequest {
   teamId?: number | null;
   file?: File;
 }
+
+export interface LabelRequest {
+  labelName?: string,
+  color?: string
+}

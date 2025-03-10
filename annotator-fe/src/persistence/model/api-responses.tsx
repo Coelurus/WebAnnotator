@@ -32,3 +32,19 @@ export interface UserApiResponse {
   role: string;
   team: ShortTeamApiResponse | null;
 }
+
+export interface LabelApiResponse {
+  id: number,
+  labelName: string,
+  color: string
+}
+
+export interface FrameCountApiResponse {
+  count: number,
+}
+
+export interface AnnotationApiResponse {
+  projectId: number,
+  frameId: number,
+  labelId: number,
+}

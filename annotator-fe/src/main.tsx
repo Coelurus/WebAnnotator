@@ -9,14 +9,14 @@ import {
 } from 'react-router-dom';
 
 import ErrorPage from './error-page';
-import Projects from './routes/listing/projects/projects';
-import Users from './routes/listing/users/users';
-import Teams from './routes/listing/teams';
-import Project, { loader as projectLoader } from './routes/project/annotator';
-import LoginPage from './routes/security/login/login-screen';
-import SignupPage from './routes/security/signup/signup-screen';
+import Projects from './screens/listing/projects/projects';
+import Users from './screens/listing/users/users';
+import Teams from './screens/listing/teams/teams';
+import Project, { loader as projectLoader } from './screens/editor/annotator';
+import LoginPage from './screens/security/login/login-screen';
+import SignupPage from './screens/security/signup/signup-screen';
 import { isUserAdmin, isUserLoggedIn } from './security/auth';
-import HomePage from './routes/home/home';
+import HomePage from './screens/root/menu';
 
 const AdminRoute = () => {
   const location = useLocation();
@@ -75,24 +75,21 @@ const router = createBrowserRouter([
             path: 'all',
             element: <Projects />
           },
-          {
-            path: ':projectId',
-            element: <Project />,
-            loader: projectLoader
-          }
-          // {
-          //   path: 'create',
-          //   element: <ProjectForm />
-          // }
         ]
       }
     ]
   },
   {
+    path: 'editor',
+    element: <SignedUserRoute />,
     errorElement: <ErrorPage />,
-    path: 'editor/:projectId',
-    element: <Project />,
-    loader: projectLoader
+    children: [
+      {
+        path: ':projectId',
+        element: <Project />,
+        loader: projectLoader,
+      }
+    ]
   }
 ]);
 

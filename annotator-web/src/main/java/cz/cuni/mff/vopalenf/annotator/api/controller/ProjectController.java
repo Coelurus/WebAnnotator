@@ -1,10 +1,11 @@
 package cz.cuni.mff.vopalenf.annotator.api.controller;
 
 import cz.cuni.mff.vopalenf.annotator.ai.PredictionTriple;
+import cz.cuni.mff.vopalenf.annotator.api.model.Annotation;
+import cz.cuni.mff.vopalenf.annotator.api.model.Label;
 import cz.cuni.mff.vopalenf.annotator.api.model.Project;
+import cz.cuni.mff.vopalenf.annotator.api.request.LabelRequest;
 import cz.cuni.mff.vopalenf.annotator.api.request.ProjectRequest;
-import cz.cuni.mff.vopalenf.annotator.dao.model.AnnotationEntity;
-import cz.cuni.mff.vopalenf.annotator.dao.model.LabelEntity;
 import cz.cuni.mff.vopalenf.annotator.enums.Priority;
 import cz.cuni.mff.vopalenf.annotator.service.ProjectService;
 import org.springframework.http.MediaType;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
@@ -38,7 +40,7 @@ public class ProjectController {
      */
     @GetMapping("/projects")
     public ResponseEntity<List<Project>> getAllProjects() {
-        return projectService.getAllProjects();
+        return ResponseEntity.ok(projectService.getAllProjects());
     }
 
     /**
@@ -49,7 +51,7 @@ public class ProjectController {
      */
     @GetMapping("/projects/{id}")
     public ResponseEntity<Project> getProjectById(@PathVariable Long id) {
-        return projectService.getProject(id);
+        return ResponseEntity.ok(projectService.getProject(id));
     }
 
     /**
@@ -71,7 +73,7 @@ public class ProjectController {
      */
     @GetMapping("/priorities")
     public ResponseEntity<List<Priority>> getAllProjectPriorities() {
-        return projectService.getAllProjectPriorities();
+        return ResponseEntity.ok(projectService.getAllProjectPriorities());
     }
 
     /**
@@ -81,13 +83,13 @@ public class ProjectController {
      */
     //@PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/labels")
-    public ResponseEntity<List<LabelEntity>> getAllLabels() {
-        return projectService.getAllLabels();
+    public ResponseEntity<List<Label>> getAllLabels() {
+        return ResponseEntity.ok(projectService.getAllLabels());
     }
 
-    @PostMapping("/labels/{label_name}")
-    public ResponseEntity<LabelEntity> addLabel(@PathVariable(name = "label_name") String labelName) {
-        return projectService.addLabel(labelName);
+    @PostMapping("/labels")
+    public ResponseEntity<Label> addLabel(@RequestBody LabelRequest label) {
+        return ResponseEntity.ok(projectService.addLabel(label));
     }
 
     /**
@@ -132,7 +134,8 @@ public class ProjectController {
             @PathVariable Long projectId,
             @PathVariable Long frameId,
             @PathVariable Long labelId) {
-        return projectService.annotateProjectFrame(projectId, frameId, labelId);
+        projectService.annotateProjectFrame(projectId, frameId, labelId);
+        return ResponseEntity.ok().build();
     }
 
     /**
@@ -150,7 +153,8 @@ public class ProjectController {
             @PathVariable Long startFrameId,
             @PathVariable Long endFrameId,
             @PathVariable Long labelId) {
-        return projectService.annotateProjectFramesInRange(projectId, startFrameId, endFrameId, labelId);
+        projectService.annotateProjectFramesInRange(projectId, startFrameId, endFrameId, labelId);
+        return ResponseEntity.ok().build();
     }
 
     /**
@@ -167,7 +171,8 @@ public class ProjectController {
             @PathVariable Long startFrameId,
             @PathVariable Long endFrameId
     ) {
-        return projectService.eraseAnnotationsInRange(projectId, startFrameId, endFrameId);
+        projectService.eraseAnnotationsInRange(projectId, startFrameId, endFrameId);
+        return ResponseEntity.ok().build();
     }
 
     /**
@@ -178,13 +183,13 @@ public class ProjectController {
      */
     @GetMapping(value = "/projects/{projectId}/annotations",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<AnnotationEntity>> getAllAnnotations(@PathVariable Long projectId) {
-        return projectService.getAllAnnotations(projectId);
+    public ResponseEntity<List<Annotation>> getAllAnnotations(@PathVariable Long projectId) {
+        return ResponseEntity.ok(projectService.getAllAnnotations(projectId));
     }
 
     @PostMapping("/projects/{projectId}/trainAI")
     public ResponseEntity<List<PredictionTriple>> trainAI(@PathVariable Long projectId) {
-        return projectService.trainAI(projectId);
+        return ResponseEntity.ok(projectService.trainAI(projectId));
     }
 
 }
