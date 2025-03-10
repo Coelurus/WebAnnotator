@@ -20,7 +20,7 @@ export default function AddUserModal({ showAddUserModal, setShowAddUserModal }: 
   const handleAddUserSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    createUserRequest(newUser, (message) => 
+    createUserRequest(newUser, (message) =>
       setToastMessage({ header: 'Error', body: message, variant: 'danger' })
     ).then(() => {
       setNewUser({});

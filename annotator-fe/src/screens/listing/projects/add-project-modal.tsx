@@ -60,8 +60,7 @@ export default function ProjectForm({
       }
     });
 
-    createProjectRequest(formData, (message) => alert(message))
-    .then(() => {
+    createProjectRequest(formData, (message) => alert(message)).then(() => {
       setNewProject({});
       handleAddProjectClose();
     });

@@ -34,17 +34,17 @@ export interface UserApiResponse {
 }
 
 export interface LabelApiResponse {
-  id: number,
-  labelName: string,
-  color: string
+  id: number;
+  labelName: string;
+  color: string;
 }
 
 export interface FrameCountApiResponse {
-  count: number,
+  count: number;
 }
 
 export interface AnnotationApiResponse {
-  projectId: number,
-  frameId: number,
-  labelId: number,
+  projectId: number;
+  frameId: number;
+  labelId: number;
 }

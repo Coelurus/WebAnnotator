@@ -114,7 +114,9 @@ export default function Users() {
                     >
                       <option value={undefined}>-</option>
                       {teams.map((team) => (
-                        <option value={team.id}>{team.name}</option>
+                        <option value={team.id} key="team-id">
+                          {team.name}
+                        </option>
                       ))}
                     </Form.Select>
                   </td>

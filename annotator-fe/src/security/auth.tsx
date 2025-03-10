@@ -14,10 +14,10 @@ export interface LoginCredentials {
 }
 
 export interface SignupCredentials {
-  username: string,
-  password: string,
-  firstName: string,
-  lastName: string,
+  username: string;
+  password: string;
+  firstName: string;
+  lastName: string;
 }
 
 export const isUserAdmin = () => {

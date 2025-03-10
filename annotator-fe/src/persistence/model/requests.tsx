@@ -15,6 +15,6 @@ export interface ProjectRequest {
 }
 
 export interface LabelRequest {
-  labelName?: string,
-  color?: string
+  labelName?: string;
+  color?: string;
 }

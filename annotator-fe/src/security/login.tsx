@@ -20,9 +20,8 @@ export const login = async (
       setAuthToken(response.data.token);
       onSuccess();
     })
-    .catch((error: ErrorResponse) => {      
+    .catch((error: ErrorResponse) => {
       invalidateToken();
       onError(error.response.data.errors[0]?.message);
     });
-
 };

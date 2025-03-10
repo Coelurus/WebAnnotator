@@ -24,8 +24,8 @@ export const signup = async (
       onSuccess();
     })
     .catch((error) => {
-      console.error(error)
+      console.error(error);
       invalidateToken();
-      onError("Signup failed")
+      onError('Signup failed');
     });
 };

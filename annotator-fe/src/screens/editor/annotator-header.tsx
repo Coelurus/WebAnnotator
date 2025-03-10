@@ -119,7 +119,7 @@ export default function AnnotatorHeader({
               type="text"
               placeholder="New label"
               onChange={handleLabelInputFieldChange}
-              value={newLabel.labelName ?? ""}
+              value={newLabel.labelName ?? ''}
               name="labelName"
               className="me-2"
             />
@@ -128,10 +128,12 @@ export default function AnnotatorHeader({
               title="Choose color for your label"
               onChange={handleLabelInputFieldChange}
               name="color"
-              value={newLabel.color ?? "#563d7c"}
+              value={newLabel.color ?? '#563d7c'}
               className="me-2"
             />
-            <Button variant="primary" onClick={handleAddLabel}>Add Label</Button>
+            <Button variant="primary" onClick={handleAddLabel}>
+              Add Label
+            </Button>
           </div>
 
           <Button variant="success" className="mt-3" onClick={() => trainAI(project.id, labels)}>

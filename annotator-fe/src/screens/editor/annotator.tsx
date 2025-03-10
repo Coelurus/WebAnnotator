@@ -1,6 +1,11 @@
 import React, { useEffect, useState, useRef, useLayoutEffect } from 'react';
 import { LoaderFunction, useLoaderData } from 'react-router-dom';
-import { fetchAnnotations, fetchFrameCount, fetchLabels, fetchProject } from '../../persistence/requests/fetcher';
+import {
+  fetchAnnotations,
+  fetchFrameCount,
+  fetchLabels,
+  fetchProject
+} from '../../persistence/requests/fetcher';
 import { Annotation, Label, Project as ProjectType } from '../../persistence/model/data';
 import '../../styles/galery.css';
 import AnnotatorHeader from './annotator-header';
@@ -23,7 +28,7 @@ export default function Project() {
   const [pageNum, setPageNum] = useState<number>(0);
   const [frameCount, setFrameCount] = useState<number>(0);
   const [startIndex, setStartIndex] = useState<number | null>(null);
-  const [endIndex, setEndIndex] = useState<number| null>(null);
+  const [endIndex, setEndIndex] = useState<number | null>(null);
   const [selectedFrames, setSelectedFrames] = useState<Annotation[]>([]);
   const [imagesPerPage, setImagesPerPage] = useState<number>(100);
   const [labels, setLabels] = useState<Label[]>([]);
@@ -41,7 +46,6 @@ export default function Project() {
 
   useLayoutEffect(() => {
     const updateImagesPerPage = () => {
-      
       if (gridRef.current) {
         const gridWidth = gridRef.current.clientWidth;
         const gridHeight =
@@ -64,7 +68,6 @@ export default function Project() {
   }, [imageSize]);
 
   useEffect(() => {
-    
     fetchFrameCount(project.id, (message) =>
       setToastMessage({ header: 'Error', body: message, variant: 'danger' })
     ).then(setFrameCount);
@@ -104,7 +107,7 @@ export default function Project() {
     }
 
     if (!currentLabel) {
-      setToastMessage({header: 'Error',body: 'Label not chosen',variant: 'danger'});
+      setToastMessage({ header: 'Error', body: 'Label not chosen', variant: 'danger' });
       return;
     }
 
@@ -120,7 +123,7 @@ export default function Project() {
 
     if (pressedButton === RIGHT_BUTTON) {
       console.log(lowerIndex, higherIndex);
-      
+
       postEraseAnnotations(project.id, lowerIndex, higherIndex, (message) =>
         setToastMessage({ header: 'Error', body: message, variant: 'danger' })
       );

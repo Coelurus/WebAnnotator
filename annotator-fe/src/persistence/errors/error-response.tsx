@@ -1,20 +1,19 @@
-
 export interface ErrorResponse {
-    response: ErrorPayload
+  response: ErrorPayload;
 }
 
 interface ErrorPayload {
-    data: Error
+  data: Error;
 }
 
 interface Error {
-    status: number,
-    errors: ErrorItem[],
-    stackTrace: string
+  status: number;
+  errors: ErrorItem[];
+  stackTrace: string;
 }
 
 interface ErrorItem {
-    error: string,
-    scope: string,
-    message: string
+  error: string;
+  scope: string;
+  message: string;
 }

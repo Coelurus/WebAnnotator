@@ -82,7 +82,7 @@ export function fetchFrameCount(
   onError: (message: string) => void
 ): Promise<number> {
   return request('GET', `/api/projects/${projectId}/frame/count`)
-    .then((response) => mapFrameCount(response.data) )
+    .then((response) => mapFrameCount(response.data))
     .catch((error) => {
       console.error(error);
       onError('Error fetching frame count');

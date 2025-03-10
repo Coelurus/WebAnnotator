@@ -74,7 +74,7 @@ const router = createBrowserRouter([
           {
             path: 'all',
             element: <Projects />
-          },
+          }
         ]
       }
     ]
@@ -87,7 +87,7 @@ const router = createBrowserRouter([
       {
         path: ':projectId',
         element: <Project />,
-        loader: projectLoader,
+        loader: projectLoader
       }
     ]
   }

@@ -45,7 +45,7 @@ export default function AnnotatorContent({
     );
   }, [frameCount, imagesPerPage, pageNum]);
 
-  const selectedImageStyle = (index: number) => {    
+  const selectedImageStyle = (index: number) => {
     const frame = selectedFrames.find((frame) => frame.frameId === index);
 
     return {

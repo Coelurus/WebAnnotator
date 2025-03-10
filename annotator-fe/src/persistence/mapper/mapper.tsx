@@ -86,7 +86,7 @@ export function mapLabels(data: LabelApiResponse[]): Label[] {
   return data.map((label) => ({
     id: label.id,
     label: label.labelName,
-    color: label.color,
+    color: label.color
   }));
 }
 
