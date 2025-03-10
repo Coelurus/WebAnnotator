@@ -21,11 +21,11 @@ public class User {
     @JsonView(Views.BothView.class)
     Long id;
 
-    @JsonProperty("first_name")
+    @JsonProperty("firstName")
     @JsonView(Views.BothView.class)
     String firstName;
 
-    @JsonProperty("last_name")
+    @JsonProperty("lastName")
     @JsonView(Views.BothView.class)
     String lastName;
 

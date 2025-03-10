@@ -20,12 +20,9 @@ export default function AddUserModal({ showAddUserModal, setShowAddUserModal }: 
   const handleAddUserSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    createUserRequest(newUser, (message) =>
-      setToastMessage({ header: 'Error', body: message, variant: 'danger' })
-    ).then(() => {
+    createUserRequest(newUser).then(() => {
       setNewUser({});
       handleAddUserClose();
-      window.location.reload();
     });
   };
 
@@ -42,7 +39,6 @@ export default function AddUserModal({ showAddUserModal, setShowAddUserModal }: 
               type="text"
               name="firstName"
               placeholder="First Name"
-              value={newUser.firstName}
               onChange={(e) => handleAddUserChange(e.target.value, e.target.name)}
               required
             />
@@ -53,7 +49,6 @@ export default function AddUserModal({ showAddUserModal, setShowAddUserModal }: 
               type="text"
               name="lastName"
               placeholder="Last Name"
-              value={newUser.lastName}
               onChange={(e) => handleAddUserChange(e.target.value, e.target.name)}
               required
             />
@@ -64,7 +59,6 @@ export default function AddUserModal({ showAddUserModal, setShowAddUserModal }: 
               type="text"
               name="username"
               placeholder="Username"
-              value={newUser.username}
               onChange={(e) => handleAddUserChange(e.target.value, e.target.name)}
               required
             />

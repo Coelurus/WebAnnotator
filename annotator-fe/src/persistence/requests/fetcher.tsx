@@ -11,12 +11,14 @@ import {
   mapProjectResponses
 } from '../mapper/mapper';
 import { request } from '../../security/auth';
+import { ErrorResponse } from '../errors/error-response';
+import generateErrorToasts from '../../screens/notifications/toast-util';
 
 export function fetchTeams(): Promise<LongTeam[]> {
   return request('GET', '/api/teams')
     .then((response) => mapTeamResponse(response.data))
-    .catch((error) => {
-      console.error('Error fetching teams:', error);
+    .catch((error: ErrorResponse) => {
+      generateErrorToasts(error);
       return [];
     });
 }
@@ -24,8 +26,8 @@ export function fetchTeams(): Promise<LongTeam[]> {
 export function fetchUsers(): Promise<LongUser[]> {
   return request('GET', '/api/users')
     .then((response) => mapUserResponse(response.data))
-    .catch((error) => {
-      console.error('Error fetching users:', error);
+    .catch((error: ErrorResponse) => {
+      generateErrorToasts(error);
       return [];
     });
 }
@@ -33,18 +35,17 @@ export function fetchUsers(): Promise<LongUser[]> {
 export function fetchPriorities(): Promise<Priority[]> {
   return request('GET', '/api/priorities')
     .then((response) => mapPriorityResponse(response.data))
-    .catch((error) => {
-      console.error('Error fetching priorities:', error);
+    .catch((error: ErrorResponse) => {
+      generateErrorToasts(error);
       return [];
     });
 }
 
-export function fetchProjects(onError: (message: string) => void): Promise<Project[]> {
+export function fetchProjects(): Promise<Project[]> {
   return request('GET', '/api/projects')
     .then((response) => mapProjectResponses(response.data))
-    .catch((error) => {
-      console.error(error);
-      onError('Error fetching projects');
+    .catch((error: ErrorResponse) => {
+      generateErrorToasts(error);
       return [];
     });
 }
@@ -52,8 +53,8 @@ export function fetchProjects(onError: (message: string) => void): Promise<Proje
 export function fetchProject(id: number): Promise<Project | null> {
   return request('GET', `/api/projects/${id}`)
     .then((response) => mapProjectResponse(response.data))
-    .catch((error) => {
-      console.error('Error fetching project:', error);
+    .catch((error: ErrorResponse) => {
+      generateErrorToasts(error);
       return null;
     });
 }
@@ -61,44 +62,35 @@ export function fetchProject(id: number): Promise<Project | null> {
 export function fetchRoles(): Promise<string[]> {
   return request('GET', '/api/users/roles')
     .then((response) => mapRoles(response.data))
-    .catch((error) => {
-      console.error('Error fetching roles:', error);
+    .catch((error: ErrorResponse) => {
+      generateErrorToasts(error);
       return [];
     });
 }
 
-export function fetchLabels(onError: (message: string) => void): Promise<Label[]> {
+export function fetchLabels(): Promise<Label[]> {
   return request('GET', '/api/labels')
     .then((response) => mapLabels(response.data))
-    .catch((error) => {
-      console.error(error);
-      onError('Error fetching labels');
+    .catch((error: ErrorResponse) => {
+      generateErrorToasts(error);
       return [];
     });
 }
 
-export function fetchFrameCount(
-  projectId: number,
-  onError: (message: string) => void
-): Promise<number> {
+export function fetchFrameCount(projectId: number): Promise<number> {
   return request('GET', `/api/projects/${projectId}/frame/count`)
     .then((response) => mapFrameCount(response.data))
-    .catch((error) => {
-      console.error(error);
-      onError('Error fetching frame count');
+    .catch((error: ErrorResponse) => {
+      generateErrorToasts(error);
       return 0;
     });
 }
 
-export function fetchAnnotations(
-  projectId: number,
-  onError: (message: string) => void
-): Promise<Annotation[]> {
+export function fetchAnnotations(projectId: number): Promise<Annotation[]> {
   return request('GET', `/api/projects/${projectId}/annotations`)
     .then((response) => mapAnnotations(response.data))
-    .catch((error) => {
-      console.error(error);
-      onError('Error fetching annotations');
+    .catch((error: ErrorResponse) => {
+      generateErrorToasts(error);
       return [];
     });
 }

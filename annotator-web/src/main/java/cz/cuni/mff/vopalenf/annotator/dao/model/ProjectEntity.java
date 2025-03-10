@@ -68,7 +68,7 @@ public class ProjectEntity {
      * Team to which the project was assigned
      */
     @ManyToOne
-    @JoinColumn(name = "team_id", nullable = false)
+    @JoinColumn(name = "team_id", nullable = true)
     private TeamEntity team;
-    
+
 }

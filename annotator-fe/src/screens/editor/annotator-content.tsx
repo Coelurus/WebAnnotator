@@ -99,10 +99,10 @@ export default function AnnotatorContent({
             alt={`Frame ${position}`}
             className="img-fluid"
             style={{
-              objectFit: "cover",
-              cursor: "pointer",
-              border: "5px solid rgba(0, 0, 0, 0)",
-              ...selectedImageStyle(position),
+              objectFit: 'cover',
+              cursor: 'pointer',
+              border: '5px solid rgba(0, 0, 0, 0)',
+              ...selectedImageStyle(position)
             }}
             src={imageSources[position]}
             onMouseDown={(event) => handleMouseDown(event, position)}

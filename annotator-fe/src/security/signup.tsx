@@ -1,3 +1,4 @@
+import generateErrorToasts from '../screens/notifications/toast-util';
 import { invalidateToken, setAuthToken, signupRequest } from './auth';
 
 export const signup = async (
@@ -24,7 +25,7 @@ export const signup = async (
       onSuccess();
     })
     .catch((error) => {
-      console.error(error);
+      generateErrorToasts(error);
       invalidateToken();
       onError('Signup failed');
     });

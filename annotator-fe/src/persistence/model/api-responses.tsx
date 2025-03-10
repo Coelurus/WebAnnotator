@@ -1,10 +1,10 @@
 export interface ProjectApiResponse<TeamResponse> {
   id: number;
-  project_name: string;
-  log_file_name: string;
-  dead_line: string;
+  projectName: string;
+  logFileName: string;
+  deadline: string;
   priority: number;
-  team: TeamResponse;
+  team: TeamResponse | null;
 }
 
 export interface LongTeamApiResponse {
@@ -20,14 +20,14 @@ export interface ShortTeamApiResponse {
 
 export interface ShortUserApiResponse {
   id: number;
-  first_name: string;
-  last_name: string;
+  firstName: string;
+  lastName: string;
 }
 
 export interface UserApiResponse {
   id: number;
-  first_name: string;
-  last_name: string;
+  firstName: string;
+  lastName: string;
   username: string;
   role: string;
   team: ShortTeamApiResponse | null;

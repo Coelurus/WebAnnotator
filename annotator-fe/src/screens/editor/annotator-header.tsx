@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Label, Project } from '../../persistence/model/data';
 import { trainAI } from './ai/train-ai';
-import { ToastParams } from '../../notifications/toasts';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Collapse from 'react-bootstrap/Collapse';
@@ -9,6 +8,7 @@ import { LabelRequest } from '../../persistence/model/requests';
 import { postCreateLabel } from '../../persistence/requests/poster';
 import { LabelApiResponse } from '../../persistence/model/api-responses';
 import { mapLabel } from '../../persistence/mapper/mapper';
+import toast from 'react-hot-toast';
 
 interface AnnotatorHeaderProps {
   imageSize: number;
@@ -19,7 +19,6 @@ interface AnnotatorHeaderProps {
   setLabels: React.Dispatch<React.SetStateAction<Label[]>>;
   project: Project;
   headerRef: React.RefObject<HTMLDivElement>;
-  setToastMessage: React.Dispatch<React.SetStateAction<ToastParams | null>>;
 }
 
 export default function AnnotatorHeader({
@@ -30,12 +29,11 @@ export default function AnnotatorHeader({
   labels,
   setLabels,
   project,
-  headerRef,
-  setToastMessage
+  headerRef
 }: AnnotatorHeaderProps) {
   const DEFAULT_COLOR_OPTION = '#563d7c';
 
-  const [newLabel, setNewLabel] = React.useState<LabelRequest>({color: DEFAULT_COLOR_OPTION});
+  const [newLabel, setNewLabel] = React.useState<LabelRequest>({ color: DEFAULT_COLOR_OPTION });
   const [showSettings, setShowSettings] = useState(false);
 
   const handleSliderChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -57,18 +55,12 @@ export default function AnnotatorHeader({
 
   const handleAddLabel = () => {
     if (!newLabel.labelName || newLabel.labelName.length === 0) {
-      setToastMessage({
-        header: 'Error creating label',
-        body: `Cannot create empty label.`,
-        variant: 'danger'
-      });
+      toast.error('Cannot create empty label');
     } else {
-      postCreateLabel(newLabel, (message) =>
-        setToastMessage({ header: 'Error creating label', body: message, variant: 'danger' })
-      ).then((createdLabel: LabelApiResponse) => {        
+      postCreateLabel(newLabel).then((createdLabel: LabelApiResponse) => {
         if (!createdLabel) return;
         setLabels([...labels, mapLabel(createdLabel)]);
-        
+
         setCurrentLabel(mapLabel(createdLabel));
         setNewLabel({});
       });

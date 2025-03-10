@@ -3,8 +3,8 @@ import React, { FormEvent, useEffect, useState } from 'react';
 import { fetchTeams } from '../../../persistence/requests/fetcher';
 import { Button, Form, Modal, Table } from 'react-bootstrap';
 import { Pencil, PersonAdd, Plus, Trash, X } from 'react-bootstrap-icons';
-import { LongTeamApiResponse } from '../../../persistence/model/api-responses';
 import { deleteTeamRequest } from '../../../persistence/requests/deleter';
+import { LongTeam } from '../../../persistence/model/data';
 
 interface TeamInfo {
   id: number;
@@ -12,7 +12,7 @@ interface TeamInfo {
 }
 
 export default function Teams() {
-  const [teams, setTeams] = useState<LongTeamApiResponse[]>([]);
+  const [teams, setTeams] = useState<LongTeam[]>([]);
   const [show, setShow] = useState(false);
   const [newTeam, setNewTeam] = useState({ teamName: '', leaderName: '' });
   const [teamToDelete, setTeamToDelete] = useState<TeamInfo | null>(null);
@@ -32,7 +32,7 @@ export default function Teams() {
 
   useEffect(() => {
     fetchTeams().then(setTeams);
-  }, []);
+  }, [!showDeleteTeamConfirmation, !teamToDelete]);
 
   const handleTeamEdit = (teamId: number) => {
     alert('TODO: Edit team: ' + teamId);
@@ -50,11 +50,10 @@ export default function Teams() {
   };
 
   const deleteTeam = async () => {
-    deleteTeamRequest(teamToDelete?.id ?? 0, (message) =>
-      setToastMessage({ header: 'Error', body: message, variant: 'danger' })
-    );
-    setTeamToDelete(null);
-    window.location.reload();
+    deleteTeamRequest(teamToDelete?.id ?? 0).then(() => {
+      setTeamToDelete(null);
+      setShowDeleteTeamConfirmation(false);
+    });
   };
 
   return (

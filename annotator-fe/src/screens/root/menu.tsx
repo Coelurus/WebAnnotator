@@ -7,6 +7,7 @@ import { Link, Outlet, useNavigate } from 'react-router-dom';
 import { isUserAdmin, isUserLoggedIn } from '../../security/auth';
 import { logout } from '../../security/logout';
 import { Nav } from 'react-bootstrap';
+import { Toaster } from 'react-hot-toast';
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -50,6 +51,8 @@ const HomePage = () => {
           </Navbar.Collapse>
         </Container>
       </Navbar>
+
+      <Toaster position="top-right" reverseOrder={false} />
 
       <Container className="d-flex flex-column align-items-center text-center mt-5">
         <h1 className="fw-bold">Welcome to Annotator</h1>

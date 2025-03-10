@@ -20,15 +20,15 @@ public class Project {
     @JsonProperty("id")
     Long id;
 
-    @JsonProperty("project_name")
+    @JsonProperty("projectName")
     @NotBlank
     String projectName;
 
-    @JsonProperty("log_file_name")
+    @JsonProperty("logFileName")
     @NotBlank
     String logFileName;
 
-    @JsonProperty("dead_line")
+    @JsonProperty("deadline")
     LocalDate deadline;
 
     @JsonProperty("priority")

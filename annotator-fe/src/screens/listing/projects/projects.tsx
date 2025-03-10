@@ -20,7 +20,7 @@ export default function Projects() {
   const [showAddProjectModal, setShowAddProjectModal] = useState(false);
 
   useEffect(() => {
-    fetchProjects((message) => console.error(message)).then(setProjects);
+    fetchProjects().then(setProjects);
   }, [showAddProjectModal, projectToDelete]);
 
   const handleProjectEdit = (id: number) => {
@@ -35,11 +35,9 @@ export default function Projects() {
   const handleDeleteProjectClose = () => setShowDeleteProjectConfirmation(false);
 
   const deleteProject = async () => {
-    deleteProjectRequest(projectToDelete?.id ?? 0, (message) =>
-      setToastMessage({ header: 'Error', body: message, variant: 'danger' })
-    ).then(() => {
+    deleteProjectRequest(projectToDelete?.id ?? 0).then(() => {
       setProjectToDelete(null);
-      window.location.reload();
+      handleDeleteProjectClose();
     });
   };
 
@@ -68,7 +66,7 @@ export default function Projects() {
               <td>{project.logFileName}</td>
               <td>{project.deadline}</td>
               <td>{project.priority}</td>
-              <td>{project.team.name}</td>
+              <td>{project.team?.name ?? '-'}</td>
               <td>
                 <Button
                   variant="warning"

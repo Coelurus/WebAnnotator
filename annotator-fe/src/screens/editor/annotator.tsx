@@ -10,8 +10,8 @@ import { Annotation, Label, Project as ProjectType } from '../../persistence/mod
 import AnnotatorHeader from './annotator-header';
 import AnnotatorFooter from './annotator-footer';
 import AnnotatorContent from './annotator-content';
-import { CreateToast, ToastParams } from '../../notifications/toasts';
 import { postAddAnnotations, postEraseAnnotations } from '../../persistence/requests/poster';
+import toast, { Toaster } from 'react-hot-toast';
 
 export const loader: LoaderFunction<ProjectType> = async ({ params }) => {
   const project = await fetchProject(Number(params.projectId));
@@ -34,7 +34,6 @@ export default function Project() {
   const [currentLabel, setCurrentLabel] = useState<Label>();
   const [pressedButton, setPressedButton] = useState<number | null>(null);
   const [imageSize, setImageSize] = useState<number>(DEFAULT_IMAGE_SIZE);
-  const [toastMessage, setToastMessage] = useState<ToastParams | null>(null);
 
   const project = useLoaderData() as ProjectType;
 
@@ -67,25 +66,13 @@ export default function Project() {
   }, [imageSize]);
 
   useEffect(() => {
-    fetchFrameCount(project.id, (message) =>
-      setToastMessage({ header: 'Error', body: message, variant: 'danger' })
-    ).then(setFrameCount);
+    fetchFrameCount(project.id).then(setFrameCount);
 
-    fetchAnnotations(project.id, (message) =>
-      setToastMessage({ header: 'Error', body: message, variant: 'danger' })
-    ).then(setSelectedFrames);
+    fetchAnnotations(project.id).then(setSelectedFrames);
   }, [project?.id]);
 
   useEffect(() => {
-    console.log("aaaa");
-    
-    fetchLabels((message) => {
-      setToastMessage({
-        header: 'Error',
-        body: message,
-        variant: 'danger'
-      });
-    }).then((labels) => {
+    fetchLabels().then((labels) => {
       if (labels.length > 0) {
         setLabels(labels);
         setCurrentLabel(labels[0]);
@@ -108,7 +95,7 @@ export default function Project() {
     }
 
     if (!currentLabel) {
-      setToastMessage({ header: 'Error', body: 'Label not chosen', variant: 'danger' });
+      toast.error('Label not chosen');
       return;
     }
 
@@ -123,12 +110,7 @@ export default function Project() {
     }
 
     if (pressedButton === RIGHT_BUTTON) {
-      console.log(lowerIndex, higherIndex);
-
-      postEraseAnnotations(project.id, lowerIndex, higherIndex, (message) =>
-        setToastMessage({ header: 'Error', body: message, variant: 'danger' })
-      );
-
+      postEraseAnnotations(project.id, lowerIndex, higherIndex);
       const withoutErased = selectedFrames.filter(
         (annotation) => annotation.frameId < lowerIndex || annotation.frameId > higherIndex
       );
@@ -136,9 +118,7 @@ export default function Project() {
     }
 
     if (currentLabel && pressedButton === LEFT_BUTTON) {
-      postAddAnnotations(project.id, lowerIndex, higherIndex, currentLabel?.id ?? 0, (message) =>
-        setToastMessage({ header: 'Error', body: message, variant: 'danger' })
-      );
+      postAddAnnotations(project.id, lowerIndex, higherIndex, currentLabel?.id ?? 0);
 
       const framesToAdd: Annotation[] = [];
       for (let index = lowerIndex; index <= higherIndex; index++) {
@@ -167,6 +147,8 @@ export default function Project() {
         event.preventDefault();
       }}
     >
+      <Toaster position="top-right" reverseOrder={false} />
+
       <div style={{ flex: '0 0 auto' }}>
         <AnnotatorHeader
           headerRef={headerRef}
@@ -177,7 +159,6 @@ export default function Project() {
           labels={labels}
           setLabels={setLabels}
           project={project}
-          setToastMessage={setToastMessage}
         />
       </div>
 
@@ -206,8 +187,6 @@ export default function Project() {
           setPageNum={setPageNum}
         />
       </div>
-
-      {toastMessage && <CreateToast {...toastMessage} />}
     </div>
   );
 }

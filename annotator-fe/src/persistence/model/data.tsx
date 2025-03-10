@@ -30,7 +30,7 @@ export interface Project {
   logFileName: string;
   deadline: string;
   priority: number;
-  team: ShortTeam;
+  team: ShortTeam | null;
 }
 
 export interface Priority {

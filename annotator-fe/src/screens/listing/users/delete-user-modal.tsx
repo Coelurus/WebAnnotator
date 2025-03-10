@@ -22,11 +22,10 @@ export default function DeleteUserModal({
     if (userToDelete) {
       await request('DELETE', `/api/users/${userToDelete.id}`);
       setUserToDelete(null);
-      setShowDeleteUserConfirmation(false);
       if (getUserUsername() === userToDelete.name) {
         invalidateToken();
       }
-      window.location.reload();
+      handleDeleteUserClose();
     }
   };
 

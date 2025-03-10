@@ -1,21 +1,18 @@
-import { useRouteError } from 'react-router-dom';
 import React from 'react';
-
-interface ErrorResponse {
-  statusText?: string;
-  message?: string;
-}
+import { useRouteError } from 'react-router-dom';
+import { ErrorResponse } from './persistence/errors/error-response';
 
 export default function ErrorPage() {
   const error = useRouteError() as ErrorResponse;
-  console.error(error);
 
   return (
     <div id="error-page">
       <h1>Oops!</h1>
-      <p>Sorry, an unexpected error has occurred.</p>
+      <p>Sorry, an unexpected {error.response.data.status} error has occurred.</p>
       <p>
-        <i>{error.statusText || error.message}</i>
+        {error.response.data.errors.map((error) => (
+          <i key={error.error}>{error.error}</i>
+        ))}
       </p>
     </div>
   );

@@ -44,8 +44,7 @@ export default function Users() {
   };
   const handleSubmitUserEdit = () => {
     request('PUT', `/api/users/${editMode}`, editValues);
-    setEditMode(null);
-    window.location.reload();
+    handleCancelUserEdit();
   };
   const handleCancelUserEdit = () => {
     setEditMode(null);
@@ -53,7 +52,7 @@ export default function Users() {
 
   useEffect(() => {
     fetchUsers().then(setUsers);
-  }, []);
+  }, [showAddUserModal, showDeleteUserConfirmation, !editMode]);
   useEffect(() => {
     fetchTeams().then(setTeams);
   }, []);
