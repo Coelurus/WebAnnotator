@@ -6,6 +6,11 @@ export interface UserRequest {
   teamId?: number | null;
 }
 
+export interface TeamRequest {
+  name?: string;
+  leaderId?: number;
+}
+
 export interface ProjectRequest {
   projectName?: string;
   deadline?: string;

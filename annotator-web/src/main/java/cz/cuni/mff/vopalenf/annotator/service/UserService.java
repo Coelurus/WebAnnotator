@@ -144,7 +144,7 @@ public class UserService {
     }
 
     /**
-     * Create new user and save it to the db
+     * Create new user and save it to the database
      *
      * @param userRequest User payload
      * @return newly created user

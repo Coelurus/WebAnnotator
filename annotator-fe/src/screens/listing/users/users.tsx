@@ -101,7 +101,7 @@ export default function Users() {
                     <Form.Select
                       defaultValue={
                         editValues.teamId !== null && editValues.teamId !== undefined
-                          ? `${editValues.teamId}`
+                          ? editValues.teamId
                           : undefined
                       }
                       onChange={(e) =>

@@ -4,6 +4,7 @@ import cz.cuni.mff.vopalenf.annotator.api.model.Team;
 import cz.cuni.mff.vopalenf.annotator.api.model.User;
 import cz.cuni.mff.vopalenf.annotator.api.model.auth.SignupCredentials;
 import cz.cuni.mff.vopalenf.annotator.dao.model.UserEntity;
+import cz.cuni.mff.vopalenf.annotator.dao.repository.UserRepository;
 import cz.cuni.mff.vopalenf.annotator.security.Role;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,10 +14,12 @@ import org.springframework.stereotype.Component;
 public class UserMapper {
 
     private final ModelMapper modelMapper;
+    private final UserRepository userRepository;
 
     @Autowired
-    public UserMapper(ModelMapper modelMapper) {
+    public UserMapper(ModelMapper modelMapper, UserRepository userRepository) {
         this.modelMapper = modelMapper;
+        this.userRepository = userRepository;
     }
 
     public User mapUser(UserEntity userEntity) {
@@ -59,5 +62,12 @@ public class UserMapper {
                 .team(null)
                 .role(Role.ROLE_USER)
                 .build();
+    }
+
+    public UserEntity mapUserEntity(Long leaderId) {
+        if (leaderId == null) {
+            return null;
+        }
+        return userRepository.findById(leaderId).orElse(null);
     }
 }

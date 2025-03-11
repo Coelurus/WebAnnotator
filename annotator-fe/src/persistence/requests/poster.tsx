@@ -2,8 +2,8 @@ import React from 'react';
 import toast from 'react-hot-toast';
 import { request } from '../../security/auth';
 import { ErrorResponse } from '../errors/error-response';
-import { LabelApiResponse, ProjectApiResponse, UserApiResponse } from '../model/api-responses';
-import { LabelRequest, UserRequest } from '../model/requests';
+import { LabelApiResponse, LongTeamApiResponse, ProjectApiResponse, UserApiResponse } from '../model/api-responses';
+import { LabelRequest, TeamRequest, UserRequest } from '../model/requests';
 import { ShortTeam } from '../model/data';
 import generateErrorToasts from '../../screens/notifications/toast-util';
 
@@ -70,5 +70,19 @@ export function createUserRequest(newUser: UserRequest): Promise<UserApiResponse
     loading: 'Adding user...',
     success: 'User added successfully!',
     error: 'Error adding user.'
+  });
+}
+
+export function createTeamRequest(newTeam: TeamRequest): Promise<LongTeamApiResponse> {
+  const requestPromise = request('POST', '/api/teams', newTeam)
+    .then((response) => response.data)
+    .catch(() => {
+      throw new Error(`Adding team failed.`);
+    });
+
+  return toast.promise(requestPromise, {
+    loading: 'Adding team...',
+    success: 'Team added successfully!',
+    error: 'Error adding team.'
   });
 }

@@ -1,6 +1,8 @@
 package cz.cuni.mff.vopalenf.annotator.service;
 
 import cz.cuni.mff.vopalenf.annotator.api.model.Team;
+import cz.cuni.mff.vopalenf.annotator.api.request.TeamRequest;
+import cz.cuni.mff.vopalenf.annotator.dao.model.TeamEntity;
 import cz.cuni.mff.vopalenf.annotator.dao.repository.TeamRepository;
 import cz.cuni.mff.vopalenf.annotator.exception.api.NotFoundException;
 import cz.cuni.mff.vopalenf.annotator.mapper.TeamMapper;
@@ -55,5 +57,19 @@ public class TeamService {
             throw new NotFoundException("Not found team with id " + teamId, TeamService.class.getSimpleName());
         }
         teamRepository.deleteById(teamId);
+    }
+
+    /**
+     * Create new user team save it to the database
+     *
+     * @param teamRequest Team payload
+     * @return newly created team
+     */
+    public Team createTeam(TeamRequest teamRequest) {
+        TeamEntity teamEntity = TeamEntity.builder()
+                .name(teamRequest.getName())
+                .leader(userMapper.mapUserEntity(teamRequest.getLeaderId()))
+                .build();
+        return teamMapper.mapTeam(teamRepository.save(teamEntity));
     }
 }

@@ -1,10 +1,11 @@
-import React, { FormEvent, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { fetchTeams } from '../../../persistence/requests/fetcher';
-import { Button, Form, Modal, Table } from 'react-bootstrap';
+import { Button, Modal, Table } from 'react-bootstrap';
 import { Pencil, PersonAdd, Plus, Trash, X } from 'react-bootstrap-icons';
 import { deleteTeamRequest } from '../../../persistence/requests/deleter';
 import { LongTeam } from '../../../persistence/model/data';
+import AddTeamModal from './add-team-modal';
 
 interface TeamInfo {
   id: number;
@@ -13,26 +14,15 @@ interface TeamInfo {
 
 export default function Teams() {
   const [teams, setTeams] = useState<LongTeam[]>([]);
-  const [show, setShow] = useState(false);
-  const [newTeam, setNewTeam] = useState({ teamName: '', leaderName: '' });
+  const [showAddTeamModal, setShowAddTeamModal] = useState(false);
   const [teamToDelete, setTeamToDelete] = useState<TeamInfo | null>(null);
   const [showDeleteTeamConfirmation, setShowDeleteTeamConfirmation] = useState(false);
 
-  const handleShow = () => setShow(true);
-  const handleClose = () => setShow(false);
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    alert('Here should happen smth like : handleTeamAdd(newTeam)');
-    setNewTeam({ teamName: '', leaderName: '' });
-    handleClose();
-  };
-  const handleChange = (value: string, name: string) => {
-    setNewTeam({ ...newTeam, [name]: value });
-  };
+  const handleShow = () => setShowAddTeamModal(true);
 
   useEffect(() => {
     fetchTeams().then(setTeams);
-  }, [!showDeleteTeamConfirmation, !teamToDelete]);
+  }, [!showDeleteTeamConfirmation, !teamToDelete, !showAddTeamModal]);
 
   const handleTeamEdit = (teamId: number) => {
     alert('TODO: Edit team: ' + teamId);
@@ -105,38 +95,11 @@ export default function Teams() {
       <Button variant="primary" className="mb-3" onClick={handleShow}>
         <Plus /> Add Team
       </Button>
-      <Modal show={show} onHide={handleClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>Add User</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form onSubmit={(e) => handleSubmit(e)}>
-            <Form.Group className="mb-3">
-              <Form.Label>Team Name</Form.Label>
-              <Form.Control
-                type="text"
-                name="teamName"
-                value={newTeam.teamName}
-                onChange={(e) => handleChange(e.target.value, e.target.name)}
-                required
-              />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Team Leader</Form.Label>
-              <Form.Control
-                type="text"
-                name="leaderName"
-                value={newTeam.leaderName}
-                onChange={(e) => handleChange(e.target.value, e.target.name)}
-                required
-              />
-            </Form.Group>
-            <Button variant="primary" type="submit">
-              Add Team
-            </Button>
-          </Form>
-        </Modal.Body>
-      </Modal>
+
+      <AddTeamModal 
+        showAddTeamModal={showAddTeamModal} 
+        setShowAddTeamModal={setShowAddTeamModal} 
+      />
 
       <Modal show={showDeleteTeamConfirmation} onHide={handleDeleteTeamClose}>
         <Modal.Header closeButton>
