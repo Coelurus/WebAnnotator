@@ -6,7 +6,7 @@ ALTER TABLE users ALTER COLUMN id RESTART WITH (SELECT MAX(id) + 1 FROM users);
 
 INSERT INTO teams (id, name, leader_id)
 VALUES (0, 'Fast', 1),
-       (1, 'Newcomers', 2);
+       (1, 'Newcomers', 0);
 ALTER TABLE teams ALTER COLUMN id RESTART WITH (SELECT MAX(id) + 1 FROM teams);
 
 INSERT INTO projects (id, project_name, log_file_name, deadline, priority, team_id)

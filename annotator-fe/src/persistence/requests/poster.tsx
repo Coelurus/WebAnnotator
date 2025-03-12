@@ -86,3 +86,16 @@ export function createTeamRequest(newTeam: TeamRequest): Promise<LongTeamApiResp
     error: 'Error adding team.'
   });
 }
+
+export function addTeamMember(userId: number, teamId: number): Promise<void> {
+  const requestPromise = request('POST', `/api/teams/${teamId}/members/${userId}`)
+    .then(() => {})
+    .catch(() => {throw new Error('Add member to team failed')})
+
+    return toast.promise(requestPromise, {
+      loading: 'Adding member to team...',
+      success: 'Member added successfully!',
+      error: 'Error adding member to team'
+    }
+    )
+}

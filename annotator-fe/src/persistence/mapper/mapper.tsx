@@ -1,4 +1,4 @@
-import { UserRequest } from '../model/requests';
+import { TeamRequest, UserRequest } from '../model/requests';
 import { Project, Priority, LongUser, LongTeam, Label, Annotation } from '../model/data';
 import {
   ProjectApiResponse,
@@ -80,6 +80,13 @@ export function mapUserRequest(data: LongUser): UserRequest {
     teamId: data.team?.id,
     role: data.role
   };
+}
+
+export function mapTeamRequest(data: LongTeam): TeamRequest {
+  return {
+    name: data.name,
+    leaderId: data.id,
+  }
 }
 
 export function mapRoles(data: string[]): string[] {

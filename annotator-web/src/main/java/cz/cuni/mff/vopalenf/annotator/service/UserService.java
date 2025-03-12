@@ -123,7 +123,7 @@ public class UserService {
     }
 
     /**
-     * Update existing user in db
+     * Update existing user in database
      *
      * @param userId      ID of a user to update
      * @param userRequest Update payload

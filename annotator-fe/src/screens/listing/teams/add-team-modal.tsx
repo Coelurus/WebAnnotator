@@ -1,7 +1,6 @@
 import React from 'react';
 import Button from 'react-bootstrap/esm/Button';
 import Form from 'react-bootstrap/esm/Form';
-
 import Modal from 'react-bootstrap/esm/Modal';
 import { TeamRequest } from '../../../persistence/model/requests';
 import { createTeamRequest } from '../../../persistence/requests/poster';
@@ -14,17 +13,20 @@ interface AddTeamModalProps {
 }
 
 export default function AddTeamModal({ showAddTeamModal, setShowAddTeamModal }: AddTeamModalProps) {
-  const [newTeam, setNewTeam] = React.useState<TeamRequest>({});
   const [users, setUsers] = React.useState<LongUser[]>([]);
+  const [newTeam, setNewTeam] = React.useState<TeamRequest>({});
 
   React.useEffect(() => {
-      fetchUsers().then(setUsers);
+      fetchUsers()
+        .then((response) => {
+          setUsers(response);
+          handleTeamLeaderChange('leaderId', response[0]);          
+        })
     }, []);
 
   const handleAddTeamClose = () => setShowAddTeamModal(false);
   const handleAddTeamSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     createTeamRequest(newTeam).then(() => {
         setNewTeam({});
         handleAddTeamClose();
@@ -34,7 +36,7 @@ export default function AddTeamModal({ showAddTeamModal, setShowAddTeamModal }: 
   const handleAddTeamChange = (value: string, name: string) => {
     setNewTeam({ ...newTeam, [name]: value });
   };
-  const handleSelectChange = (field: string, user: LongUser | undefined) => {
+  const handleTeamLeaderChange = (field: string, user: LongUser | undefined) => {
     setNewTeam({ ...newTeam, [field]: user ? user.id : null });
     };
 
@@ -59,7 +61,7 @@ export default function AddTeamModal({ showAddTeamModal, setShowAddTeamModal }: 
                 <Form.Select
                     defaultValue={users[0]?.id}
                     onChange={(e) =>
-                    handleSelectChange(
+                    handleTeamLeaderChange(
                         'leaderId',
                         users.find((u) => u.id === Number(e.target.value))
                     )

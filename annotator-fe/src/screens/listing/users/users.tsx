@@ -154,8 +154,8 @@ export default function Users() {
                   <td>
                     <Button
                       variant="warning"
-                      className="me-2"
                       size="sm"
+                      className="me-2"
                       onClick={() => handleUserEdit(user)}
                     >
                       <Pencil />
@@ -163,6 +163,7 @@ export default function Users() {
                     <Button
                       variant="danger"
                       size="sm"
+                      className="me-2"
                       onClick={() => handleUserDeleteShow(user.id, user.username)}
                     >
                       <Trash />

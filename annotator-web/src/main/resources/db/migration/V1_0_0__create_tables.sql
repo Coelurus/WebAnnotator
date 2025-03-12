@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS teams
 (
     id        BIGINT AUTO_INCREMENT PRIMARY KEY,
     name      VARCHAR(255) NOT NULL UNIQUE,
-    leader_id BIGINT       NOT NULL
+    leader_id BIGINT
 );
 
 CREATE TABLE IF NOT EXISTS colors
