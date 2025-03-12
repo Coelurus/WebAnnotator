@@ -14,10 +14,8 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Objects;
 
 import static cz.cuni.mff.vopalenf.annotator.constants.Constants.IMAGE_EXTENSION;
@@ -85,37 +83,6 @@ public class FileSystemService {
             throw new ServerException("Fetching image failed", FileSystemService.class.getSimpleName());
         }
         return resource;
-    }
-
-    /**
-     * Get frames of a project in range
-     *
-     * @param projectId    ID of a project
-     * @param fromPosition Order number of the frame from which to include
-     * @param toPosition   Order number of the frame to which to include
-     * @return images from a project at in a range
-     * @throws NotFoundException when projectId is invalid, or it does not have assigned directory
-     * @throws ServerException   when image fetching fails
-     */
-    public List<Resource> getFrames(Long projectId, Integer fromPosition, Integer toPosition) {
-        File[] imageFiles = getImageFiles(projectId);
-        Arrays.sort(imageFiles);
-        Arrays.sort(imageFiles, Comparator.comparingInt(f -> Integer.parseInt(f.getPath().substring(f.getPath().indexOf("frame_") + 6, f.getPath().indexOf("_msec.jpg")))));
-        List<Resource> resources = new ArrayList<>();
-        if (imageFiles.length <= toPosition) {
-            throw new NotFoundException(
-                    "Position " + toPosition + " of image for project with id " + projectId + "is out of range",
-                    FileSystemService.class.getSimpleName()
-            );
-        }
-        try {
-            for (int i = fromPosition; i < toPosition; i++) {
-                resources.add(new UrlResource(Path.of(imageFiles[i].getPath()).toUri()));
-            }
-        } catch (MalformedURLException e) {
-            throw new ServerException("Fetching images failed", FileSystemService.class.getSimpleName());
-        }
-        return resources;
     }
 
     /**

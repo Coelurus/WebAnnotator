@@ -20,8 +20,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 
 @Tag(name = "File System", description = "Endpoints for handling project frames and log files")
 @RestController
@@ -58,31 +56,6 @@ public class FileSystemController {
         return ResponseEntity.ok()
                 .contentType(MediaType.IMAGE_JPEG)
                 .body(fileSystemService.getFrame(projectId, position));
-    }
-
-    @Operation(
-            summary = "Get multiple frames from a project",
-            description = "Retrieves frames from the specified project between the given positions.",
-            parameters = {
-                    @Parameter(in = ParameterIn.PATH, name = "id", schema = @Schema(type = "integer"), description = "ID of the project"),
-                    @Parameter(in = ParameterIn.PATH, name = "fromPosition", schema = @Schema(type = "integer"), description = "Start position of frames"),
-                    @Parameter(in = ParameterIn.PATH, name = "toPosition", schema = @Schema(type = "integer"), description = "End position of frames")
-            },
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "Frames retrieved successfully", content = @Content(mediaType = "application/json")),
-                    @ApiResponse(responseCode = "404", description = "Frame or project not found", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-                    @ApiResponse(responseCode = "500", description = "Image fetching failure", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
-            }
-    )
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
-    @GetMapping(
-            value = "/projects/{id}/frame/{fromPosition}/{toPosition}",
-            produces = MediaType.APPLICATION_JSON_VALUE
-    )
-    public ResponseEntity<List<Resource>> getFrames(@PathVariable Long id, @PathVariable Integer fromPosition, @PathVariable Integer toPosition) {
-        return ResponseEntity.ok()
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(fileSystemService.getFrames(id, fromPosition, toPosition));
     }
 
     @Operation(
