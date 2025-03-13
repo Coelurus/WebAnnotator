@@ -1,0 +1,14 @@
+
+TEMP_SAVE_PATH = "/scripts/temp/"
+REL_TEMP_SAVE_PATH = "." + TEMP_SAVE_PATH
+VIDEO_PATH = ".\\scripts\\temp\\video.avi"
+OUT_PATH = ".\\scripts\\out"
+
+IMAGE_WIDTH = 50
+IMAGE_HEIGHT = 50
+
+MIN_IMAGE_SIZE = 10
+MAX_IMAGE_SIZE = 100
+IMAGE_SIZE_STEP = 5
+
+CAMERA_INDEX_RANGE = 10
