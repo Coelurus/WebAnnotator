@@ -9,7 +9,7 @@ import lombok.Getter;
  */
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public enum Priority {
+public enum PriorityEnum {
     CRITICAL(4, "critical"),
     HIGH(3, "high"),
     MEDIUM(2, "medium"),
@@ -31,7 +31,7 @@ public enum Priority {
      * @param value Integer representation of Priority
      * @return Priority for valid values. {@code NONE} otherwise
      */
-    public static Priority fromValue(int value) {
+    public static PriorityEnum fromValue(int value) {
         return switch (value) {
             case 4 -> CRITICAL;
             case 3 -> HIGH;
@@ -47,7 +47,7 @@ public enum Priority {
      * @param name Human-readable name of Priority
      * @return Priority for valid values. {@code NONE} otherwise
      */
-    public static Priority fromName(String name) {
+    public static PriorityEnum fromName(String name) {
         return switch (name) {
             case "critical" -> CRITICAL;
             case "high" -> HIGH;

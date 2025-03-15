@@ -111,8 +111,8 @@ public class TeamController {
     )
     @PutMapping("/{teamId}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<Team> updateUser(@PathVariable Long teamId, @RequestBody TeamRequest team) {
-        Team teamToUpdate = teamService.updateUser(teamId, team);
+    public ResponseEntity<Team> updateTeam(@PathVariable Long teamId, @RequestBody TeamRequest team) {
+        Team teamToUpdate = teamService.updateTeam(teamId, team);
         return ResponseEntity.ok(teamToUpdate);
     }
 

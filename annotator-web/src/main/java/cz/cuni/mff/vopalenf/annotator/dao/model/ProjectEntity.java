@@ -1,6 +1,7 @@
 package cz.cuni.mff.vopalenf.annotator.dao.model;
 
-import cz.cuni.mff.vopalenf.annotator.enums.Priority;
+import cz.cuni.mff.vopalenf.annotator.enums.PriorityEnum;
+import cz.cuni.mff.vopalenf.annotator.enums.ProgressEnum;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -54,7 +55,7 @@ public class ProjectEntity {
     /**
      * Date till which to project should be annotated.
      */
-    @Column(name = "deadline")
+    @Column(name = "deadline", nullable = true)
     private LocalDate deadline;
 
     /**
@@ -62,7 +63,14 @@ public class ProjectEntity {
      */
     @Enumerated(EnumType.STRING)
     @Column(name = "priority", columnDefinition = "enum")
-    private Priority priority;
+    private PriorityEnum priority;
+
+    /**
+     * Progress of the project
+     */
+    @Enumerated(EnumType.STRING)
+    @Column(name = "progress", columnDefinition = "enum")
+    private ProgressEnum progress;
 
     /**
      * Team to which the project was assigned
@@ -70,5 +78,6 @@ public class ProjectEntity {
     @ManyToOne
     @JoinColumn(name = "team_id", nullable = true)
     private TeamEntity team;
+
 
 }

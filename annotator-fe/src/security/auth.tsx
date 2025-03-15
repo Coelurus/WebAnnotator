@@ -1,6 +1,11 @@
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
-import { LabelRequest, TeamRequest, UserRequest } from '../persistence/model/requests';
+import {
+  LabelRequest,
+  ProjectRequest,
+  TeamRequest,
+  UserRequest
+} from '../persistence/model/requests';
 
 export default interface JwtPayload {
   sub: string;
@@ -69,7 +74,13 @@ export const setAuthToken = (token: string | null) => {
 export const request = (
   method: string,
   url: string,
-  data: Record<string, string> | UserRequest | FormData | LabelRequest | TeamRequest = {},
+  data:
+    | Record<string, string>
+    | UserRequest
+    | FormData
+    | LabelRequest
+    | TeamRequest
+    | ProjectRequest = {},
   contentType: string = '',
   responseType: string = ''
 ) => {

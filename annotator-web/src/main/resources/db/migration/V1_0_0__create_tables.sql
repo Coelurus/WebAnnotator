@@ -3,9 +3,10 @@ CREATE TABLE IF NOT EXISTS projects
     id            BIGINT AUTO_INCREMENT PRIMARY KEY,
     project_name  VARCHAR(255)                                       NOT NULL,
     log_file_name VARCHAR(255)                                       NOT NULL,
-    deadline      DATE,
-    priority      ENUM ('NONE', 'LOW', 'MEDIUM', 'HIGH', 'CRITICAL') NOT NULL,
-    team_id       INT                                                NOT NULL
+    deadline      DATE DEFAULT NULL,
+    priority      ENUM ('NONE', 'LOW', 'MEDIUM', 'HIGH', 'CRITICAL') NOT NULL  DEFAULT 'NONE',
+    progress      ENUM ('NOT_STARTED', 'IN_PROGRESS', 'FINISHED')    NOT NULL DEFAULT 'NOT_STARTED',
+    team_id       BIGINT
 );
 
 CREATE TABLE IF NOT EXISTS tags

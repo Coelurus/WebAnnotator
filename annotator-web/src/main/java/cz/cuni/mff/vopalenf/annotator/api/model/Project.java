@@ -1,7 +1,6 @@
 package cz.cuni.mff.vopalenf.annotator.api.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import cz.cuni.mff.vopalenf.annotator.enums.Priority;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -32,7 +31,10 @@ public class Project {
     LocalDate deadline;
 
     @JsonProperty("priority")
-    Priority priority;
+    String priority;
+
+    @JsonProperty("progress")
+    String progress;
 
     @JsonProperty("team")
     Team team;

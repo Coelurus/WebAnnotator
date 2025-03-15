@@ -7,6 +7,7 @@ import Form from 'react-bootstrap/esm/Form';
 import Button from 'react-bootstrap/esm/Button';
 import { ProjectRequest } from '../../../persistence/model/requests';
 import { createProjectRequest } from '../../../persistence/requests/poster';
+import { isUserAdmin } from '../../../security/auth';
 
 interface AddProjectModalProps {
   showAddProjectModal: boolean;
@@ -16,15 +17,15 @@ interface AddProjectModalProps {
 export default function ProjectForm({
   showAddProjectModal,
   setShowAddProjectModal
-}: AddProjectModalProps) {
+}: Readonly<AddProjectModalProps>) {
   const [teams, setTeams] = React.useState<LongTeam[]>([]);
   const [priorities, setPriorities] = React.useState<Priority[]>([]);
   const [newProject, setNewProject] = React.useState<ProjectRequest>({});
 
   React.useEffect(() => {
-    fetchTeams().then(setTeams);
-  }, []);
-  React.useEffect(() => {
+    if (isUserAdmin()) {
+      fetchTeams().then(setTeams);
+    }
     fetchPriorities().then(setPriorities);
   }, []);
 
@@ -60,10 +61,23 @@ export default function ProjectForm({
       }
     });
 
+    if (!newProject.priority) {
+      formData.append('priority', priorities[0]?.name);
+    }
+    if (!newProject.deadline) {
+      formData.append('deadline', defaultDeadlineInWeek());
+    }
+
     createProjectRequest(formData).then(() => {
       setNewProject({});
       handleAddProjectClose();
     });
+  };
+
+  const defaultDeadlineInWeek = () => {
+    const nextWeek = new Date();
+    nextWeek.setDate(nextWeek.getDate() + 7);
+    return nextWeek.toISOString().split('T')[0];
   };
 
   return (
@@ -91,6 +105,7 @@ export default function ProjectForm({
             <Form.Label>Deadline</Form.Label>
             <Form.Control
               type="date"
+              defaultValue={defaultDeadlineInWeek()}
               name="deadline"
               placeholder="Deadline"
               onChange={(e) => handleAddProjectChange(e.target.value, e.target.name)}
@@ -102,34 +117,38 @@ export default function ProjectForm({
               name="priority"
               required
               onChange={(e) => handleAddProjectChange(e.target.value, e.target.name)}
+              defaultValue={priorities[0]?.name}
             >
-              <option value="">None</option>
-              {priorities.map((priority) => (
-                <option value={priority.name} key={priority.name}>
-                  {priority.name}
-                </option>
-              ))}
+              {priorities
+                .sort((a, b) => a.value - b.value)
+                .map((priority) => (
+                  <option value={priority.name} key={priority.name}>
+                    {priority.name}
+                  </option>
+                ))}
             </Form.Select>
           </Form.Group>
-          <Form.Group className="mb-3">
-            <Form.Label>Team</Form.Label>
-            <Form.Select
-              required
-              onChange={(e) =>
-                handleSelectChange(
-                  'teamId',
-                  teams.find((t) => t.id === Number(e.target.value))
-                )
-              }
-            >
-              <option value="">All</option>
-              {teams.map((team) => (
-                <option value={team.id} key={team.id}>
-                  {team.name}
-                </option>
-              ))}
-            </Form.Select>
-          </Form.Group>
+          {isUserAdmin() && (
+            <Form.Group className="mb-3">
+              <Form.Label>Team</Form.Label>
+              <Form.Select
+                required
+                onChange={(e) =>
+                  handleSelectChange(
+                    'teamId',
+                    teams.find((t) => t.id === Number(e.target.value))
+                  )
+                }
+              >
+                <option value={undefined}>All</option>
+                {teams.map((team) => (
+                  <option value={team.id} key={team.id}>
+                    {team.name}
+                  </option>
+                ))}
+              </Form.Select>
+            </Form.Group>
+          )}
           <Button variant="primary" type="submit">
             Upload
           </Button>

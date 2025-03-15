@@ -99,16 +99,15 @@ public class StorageManagerImpl implements StorageManager {
      * Delete directory based on name in file system root
      *
      * @param dirToDelete Name of the dir in root of filesystem
-     *
-     * @throws StorageException When folder with such name does not exist
+     * @throws StorageException When failure occurred during deleting files
      */
-    private void deleteDirIfExists(String dirToDelete){
+    private void deleteDirIfExists(String dirToDelete) {
         Path targetDir = this.rootLocation.resolve(dirToDelete);
 
         if (Files.exists(targetDir) && Files.isDirectory(targetDir)) {
             deleteDirRecursively(targetDir);
         } else {
-            throw new StorageException("Folder does not exist!");
+            // Do nothing as the directory is already 'deleted'
         }
     }
 
@@ -116,7 +115,6 @@ public class StorageManagerImpl implements StorageManager {
      * Delete directory and everything inside it
      *
      * @param targetDir Path to a directory to delete
-     *
      * @throws StorageException When exception occurs during file deleting
      */
     private void deleteDirRecursively(Path targetDir) {

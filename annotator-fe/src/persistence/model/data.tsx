@@ -29,11 +29,13 @@ export interface Project {
   projectName: string;
   logFileName: string;
   deadline: string;
-  priority: number;
+  priority: string;
+  progress: string;
   team: ShortTeam | null;
 }
 
 export interface Priority {
+  value: number;
   name: string;
 }
 
@@ -52,4 +54,9 @@ export interface PredictionTriple {
   projectId: number;
   frameId: number;
   label: string;
+}
+
+export interface Progress {
+  value: number;
+  name: string;
 }

@@ -38,18 +38,17 @@ export default function Teams() {
   }, [!showAddTeamModal, !showAddMemberModal]);
 
   const handleTeamEdit = (team: LongTeam) => {
-    setEditTeamId(team.id)
-    setEditTeamValues({...mapTeamRequest(team)})
+    setEditTeamId(team.id);
+    setEditTeamValues({ ...mapTeamRequest(team) });
   };
   const handleTeamFieldChange = (
     field: string,
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
-    setEditTeamValues({ ...editTeamValues, [field]: e.target.value })
-  }
+    setEditTeamValues({ ...editTeamValues, [field]: e.target.value });
+  };
   const handleSubmitTeamEdit = () => {
-      request('PUT', `/api/teams/${editTeamId}`, editTeamValues)
-        .then(() => handleCancelTeamEdit());
+    request('PUT', `/api/teams/${editTeamId}`, editTeamValues).then(() => handleCancelTeamEdit());
   };
   const handleCancelTeamEdit = () => {
     setEditTeamId(null);
@@ -64,7 +63,7 @@ export default function Teams() {
 
   const handleAddTeamMember = (team: LongTeam) => {
     setShowAddMemberModal(true);
-    setTeamToAddMemberTo(team)
+    setTeamToAddMemberTo(team);
   };
 
   const deleteTeam = async () => {
@@ -90,126 +89,119 @@ export default function Teams() {
           {teams.map((team) => (
             <tr key={team.id}>
               {editTeamId === team.id ? (
-              <>
-                <td>
-                  <Form.Control
-                    type="text"
-                    value={editTeamValues.name}
-                    onChange={(e) => handleTeamFieldChange('name', e)}
-                  />
-                </td>
-                <td>
-                  <Form.Select
-                    defaultValue={
-                      team.leader?.id !== null && team.leader?.id !== undefined
-                        ? team.leader?.id
-                        : undefined
-                    }
-                    //value={editTeamValues.leaderId ?? ''}
-                    onChange={(e) => handleTeamFieldChange('leaderId', e)}
-                  >
-                    <option value="">-</option>
-                    {users.filter((u) => u.team?.id === team.id).map((user) => (
-                      <option key={user.id} value={user.id}>
-                        {user.firstName} {user.lastName}
-                      </option>
-                    ))}
-                  </Form.Select>
-                </td>
-                <td>-</td>
-                <td>
-                  <Button variant="success" size="sm" onClick={handleSubmitTeamEdit}>
-                    <Check />
-                  </Button>
-                  <Button variant="outline-danger" size="sm" onClick={handleCancelTeamEdit}>
-                    <X />
-                  </Button>
-                </td>
-              </>
-            ) : (<>
-                <td>{team.name}</td>
-                <td>{team.leader ? team.leader.firstName + ' ' + team.leader.lastName : '-'}</td>
-                <td>
-                  {(() => {
-                    const teamMembers = users.filter((u) => u.team?.id === team.id);
-                    return (
-                      <>
-                        {teamMembers.length}
-                        {teamMembers.length > 0 && (
-                          <OverlayTrigger
-                            placement="top"
-                            overlay={
-                              <Tooltip id={`tooltip-${team.id}`}>
-                                {teamMembers.map((u) => (
-                                  <div key={u.id}>{u.firstName} {u.lastName}</div>
-                                ))}
-                              </Tooltip>
-                            }
-                          >
-                            <InfoCircle className="ms-2 text-primary" />
-                          </OverlayTrigger>
-                        )}
-                      </>
-                    );
-                  })()}
-                </td>
-                <td>
-
-                  <OverlayTrigger
-                    placement="top"
-                    overlay={
-                      <Tooltip id={`tooltip-${team.id}`}>
-                        Add team member
-                      </Tooltip>
-                    }
-                  >
-                    <Button
-                      variant="success"
-                      size="sm"
-                      className="me-2"
-                      onClick={() => handleAddTeamMember(team)}
+                <>
+                  <td>
+                    <Form.Control
+                      type="text"
+                      value={editTeamValues.name}
+                      onChange={(e) => handleTeamFieldChange('name', e)}
+                    />
+                  </td>
+                  <td>
+                    <Form.Select
+                      defaultValue={
+                        team.leader?.id !== null && team.leader?.id !== undefined
+                          ? team.leader?.id
+                          : undefined
+                      }
+                      //value={editTeamValues.leaderId ?? ''}
+                      onChange={(e) => handleTeamFieldChange('leaderId', e)}
                     >
-                      <PersonAdd />
-                    </Button>                
-                  </OverlayTrigger>
-
-                  <OverlayTrigger
-                    placement="top"
-                    overlay={
-                      <Tooltip id={`tooltip-${team.id}`}>
-                        Edit team
-                      </Tooltip>
-                    }
-                  >
-                    <Button
-                      variant="warning"
-                      className="me-2"
-                      size="sm"
-                      onClick={() => handleTeamEdit(team)}
-                    >
-                      <Pencil />
+                      <option value="">-</option>
+                      {users
+                        .filter((u) => u.team?.id === team.id)
+                        .map((user) => (
+                          <option key={user.id} value={user.id}>
+                            {user.firstName} {user.lastName}
+                          </option>
+                        ))}
+                    </Form.Select>
+                  </td>
+                  <td>-</td>
+                  <td>
+                    <Button variant="success" size="sm" onClick={handleSubmitTeamEdit}>
+                      <Check />
                     </Button>
-                  </OverlayTrigger>
-
-                  <OverlayTrigger
-                    placement="top"
-                    overlay={
-                      <Tooltip id={`tooltip-${team.id}`}>
-                        Delete team
-                      </Tooltip>
-                    }
-                  >
-                    <Button
-                      variant="danger"
-                      size="sm"
-                      className="me-2"
-                      onClick={() => handleTeamDelete(team.id, team.name)}
-                    >
-                      <Trash />
+                    <Button variant="outline-danger" size="sm" onClick={handleCancelTeamEdit}>
+                      <X />
                     </Button>
-                  </OverlayTrigger>              
-                </td>
-              </>)}
+                  </td>
+                </>
+              ) : (
+                <>
+                  <td>{team.name}</td>
+                  <td>{team.leader ? team.leader.firstName + ' ' + team.leader.lastName : '-'}</td>
+                  <td>
+                    {(() => {
+                      const teamMembers = users.filter((u) => u.team?.id === team.id);
+                      return (
+                        <>
+                          {teamMembers.length}
+                          {teamMembers.length > 0 && (
+                            <OverlayTrigger
+                              placement="top"
+                              overlay={
+                                <Tooltip id={`tooltip-${team.id}`}>
+                                  {teamMembers.map((u) => (
+                                    <div key={u.id}>
+                                      {u.firstName} {u.lastName}
+                                    </div>
+                                  ))}
+                                </Tooltip>
+                              }
+                            >
+                              <InfoCircle className="ms-2 text-primary" />
+                            </OverlayTrigger>
+                          )}
+                        </>
+                      );
+                    })()}
+                  </td>
+                  <td>
+                    <OverlayTrigger
+                      placement="top"
+                      overlay={<Tooltip id={`tooltip-${team.id}`}>Add team member</Tooltip>}
+                    >
+                      <Button
+                        variant="success"
+                        size="sm"
+                        className="me-2"
+                        onClick={() => handleAddTeamMember(team)}
+                      >
+                        <PersonAdd />
+                      </Button>
+                    </OverlayTrigger>
+
+                    <OverlayTrigger
+                      placement="top"
+                      overlay={<Tooltip id={`tooltip-${team.id}`}>Edit team</Tooltip>}
+                    >
+                      <Button
+                        variant="warning"
+                        className="me-2"
+                        size="sm"
+                        onClick={() => handleTeamEdit(team)}
+                      >
+                        <Pencil />
+                      </Button>
+                    </OverlayTrigger>
+
+                    <OverlayTrigger
+                      placement="top"
+                      overlay={<Tooltip id={`tooltip-${team.id}`}>Delete team</Tooltip>}
+                    >
+                      <Button
+                        variant="danger"
+                        size="sm"
+                        className="me-2"
+                        onClick={() => handleTeamDelete(team.id, team.name)}
+                      >
+                        <Trash />
+                      </Button>
+                    </OverlayTrigger>
+                  </td>
+                </>
+              )}
             </tr>
           ))}
         </tbody>
@@ -218,15 +210,12 @@ export default function Teams() {
         <Plus /> Add Team
       </Button>
 
-      <AddTeamModal 
-        showAddTeamModal={showAddTeamModal} 
-        setShowAddTeamModal={setShowAddTeamModal} 
-      />
+      <AddTeamModal showAddTeamModal={showAddTeamModal} setShowAddTeamModal={setShowAddTeamModal} />
 
-      <AddMemberModal 
-        showAddMemberModal={showAddMemberModal} 
-        setShowAddMemberModal={setShowAddMemberModal} 
-        users={users} 
+      <AddMemberModal
+        showAddMemberModal={showAddMemberModal}
+        setShowAddMemberModal={setShowAddMemberModal}
+        users={users}
         teamToAddMemberTo={teamToAddMemberTo}
       />
 

@@ -3,10 +3,11 @@ package cz.cuni.mff.vopalenf.annotator.api.controller;
 import cz.cuni.mff.vopalenf.annotator.ai.PredictionTriple;
 import cz.cuni.mff.vopalenf.annotator.api.model.Annotation;
 import cz.cuni.mff.vopalenf.annotator.api.model.Label;
+import cz.cuni.mff.vopalenf.annotator.api.model.Progress;
 import cz.cuni.mff.vopalenf.annotator.api.model.Project;
 import cz.cuni.mff.vopalenf.annotator.api.request.LabelRequest;
 import cz.cuni.mff.vopalenf.annotator.api.request.ProjectRequest;
-import cz.cuni.mff.vopalenf.annotator.enums.Priority;
+import cz.cuni.mff.vopalenf.annotator.dao.model.Priority;
 import cz.cuni.mff.vopalenf.annotator.service.ProjectService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -92,6 +94,29 @@ public class ProjectController {
     }
 
     @Operation(
+            summary = "Update project by ID",
+            description = "Updates a project based on the given ID and request body.",
+            parameters = {
+                    @Parameter(in = ParameterIn.PATH, name = "projectId", description = "ID of the project", required = true)
+            },
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Project request object containing necessary details",
+                    required = true,
+                    content = @Content(schema = @Schema(implementation = ProjectRequest.class))
+            ),
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Project updated successfully"),
+                    @ApiResponse(responseCode = "400", description = "Invalid request data"),
+                    @ApiResponse(responseCode = "404", description = "Project not found")
+            }
+    )
+    @PutMapping("/projects/{projectId}")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
+    public ResponseEntity<Project> updateProject(@RequestBody ProjectRequest project, @PathVariable Long projectId) {
+        return ResponseEntity.ok(projectService.updateProject(projectId, project));
+    }
+
+    @Operation(
             summary = "Get all priorities",
             description = "Retrieves a list of all available priorities.",
             responses = {
@@ -157,16 +182,16 @@ public class ProjectController {
             @RequestPart("deadline") String deadline,
             @Parameter(description = "Project priority (HIGH, MEDIUM, LOW)", required = true)
             @RequestPart("priority") String priority,
-            @Parameter(description = "Team ID associated with the project", required = true)
-            @RequestPart("teamId") String teamId,
+            @Parameter(description = "Team ID associated with the project", required = false)
+            @RequestPart(value = "teamId", required = false) String teamId,
             @Parameter(description = "Compressed ZIP file containing log files and images", required = true)
             @RequestPart("file") MultipartFile file
     ) {
         ProjectRequest projectRequest = ProjectRequest.builder()
                 .projectName(projectName)
                 .deadline(LocalDate.parse(deadline))
-                .priority(Priority.valueOf(priority))
-                .teamId(Long.valueOf(teamId))
+                .priority(priority)
+                .teamId(teamId != null ? Long.valueOf(teamId) : null)
                 .file(file)
                 .build();
         Project newProject = projectService.manageFileUpload(projectRequest);
@@ -262,6 +287,19 @@ public class ProjectController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<Annotation>> getAllAnnotations(@PathVariable Long projectId) {
         return ResponseEntity.ok(projectService.getAllAnnotations(projectId));
+    }
+
+    @Operation(
+            summary = "Get all project progresses",
+            description = "Retrieves a list of all progress statuses for projects.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "List of progresses retrieved successfully")
+            }
+    )
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
+    @GetMapping("/projects/progresses")
+    public ResponseEntity<List<Progress>> getAllProjectProgresses() {
+        return ResponseEntity.ok(projectService.getAllProjectProgresses());
     }
 
     @Operation(

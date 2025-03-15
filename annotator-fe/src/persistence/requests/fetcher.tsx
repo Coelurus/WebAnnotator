@@ -1,4 +1,4 @@
-import { LongTeam, LongUser, Project, Priority, Label, Annotation } from '../model/data';
+import { LongTeam, LongUser, Project, Priority, Label, Annotation, Progress } from '../model/data';
 import {
   mapTeamResponse,
   mapUserResponse,
@@ -8,7 +8,8 @@ import {
   mapLabels,
   mapFrameCount,
   mapAnnotations,
-  mapProjectResponses
+  mapProjectResponses,
+  mapProgresses
 } from '../mapper/mapper';
 import { request } from '../../security/auth';
 import { ErrorResponse } from '../errors/error-response';
@@ -89,6 +90,15 @@ export function fetchFrameCount(projectId: number): Promise<number> {
 export function fetchAnnotations(projectId: number): Promise<Annotation[]> {
   return request('GET', `/api/projects/${projectId}/annotations`)
     .then((response) => mapAnnotations(response.data))
+    .catch((error: ErrorResponse) => {
+      generateErrorToasts(error);
+      return [];
+    });
+}
+
+export function fetchProgresses(): Promise<Progress[]> {
+  return request('GET', '/api/projects/progresses')
+    .then((response) => mapProgresses(response.data))
     .catch((error: ErrorResponse) => {
       generateErrorToasts(error);
       return [];

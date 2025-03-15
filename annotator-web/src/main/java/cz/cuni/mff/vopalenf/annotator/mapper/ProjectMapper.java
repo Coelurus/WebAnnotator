@@ -31,7 +31,8 @@ public class ProjectMapper {
                 .projectName(projectEntity.getProjectName())
                 .logFileName(projectEntity.getLogFileName())
                 .deadline(projectEntity.getDeadline())
-                .priority(projectEntity.getPriority())
+                .priority(projectEntity.getPriority().getName())
+                .progress(projectEntity.getProgress().getName())
                 .team(team)
                 .build();
     }

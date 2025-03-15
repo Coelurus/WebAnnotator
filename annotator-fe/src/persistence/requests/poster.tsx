@@ -2,7 +2,12 @@ import React from 'react';
 import toast from 'react-hot-toast';
 import { request } from '../../security/auth';
 import { ErrorResponse } from '../errors/error-response';
-import { LabelApiResponse, LongTeamApiResponse, ProjectApiResponse, UserApiResponse } from '../model/api-responses';
+import {
+  LabelApiResponse,
+  LongTeamApiResponse,
+  ProjectApiResponse,
+  UserApiResponse
+} from '../model/api-responses';
 import { LabelRequest, TeamRequest, UserRequest } from '../model/requests';
 import { ShortTeam } from '../model/data';
 import generateErrorToasts from '../../screens/notifications/toast-util';
@@ -90,12 +95,13 @@ export function createTeamRequest(newTeam: TeamRequest): Promise<LongTeamApiResp
 export function addTeamMember(userId: number, teamId: number): Promise<void> {
   const requestPromise = request('POST', `/api/teams/${teamId}/members/${userId}`)
     .then(() => {})
-    .catch(() => {throw new Error('Add member to team failed')})
+    .catch(() => {
+      throw new Error('Add member to team failed');
+    });
 
-    return toast.promise(requestPromise, {
-      loading: 'Adding member to team...',
-      success: 'Member added successfully!',
-      error: 'Error adding member to team'
-    }
-    )
+  return toast.promise(requestPromise, {
+    loading: 'Adding member to team...',
+    success: 'Member added successfully!',
+    error: 'Error adding member to team'
+  });
 }

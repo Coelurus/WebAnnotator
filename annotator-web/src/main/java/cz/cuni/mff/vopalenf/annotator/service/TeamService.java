@@ -93,7 +93,7 @@ public class TeamService {
      * @param team   Team payload
      * @return updated team
      */
-    public Team updateUser(Long teamId, TeamRequest team) {
+    public Team updateTeam(Long teamId, TeamRequest team) {
         TeamEntity teamToUpdate = teamRepository.findById(teamId)
                 .orElseThrow(() -> new NotFoundException("Team not found", TeamService.class.getSimpleName()));
 

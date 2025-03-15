@@ -14,6 +14,7 @@ export interface TeamRequest {
 export interface ProjectRequest {
   projectName?: string;
   deadline?: string;
+  progress?: string;
   priority?: string;
   teamId?: number | null;
   file?: File;

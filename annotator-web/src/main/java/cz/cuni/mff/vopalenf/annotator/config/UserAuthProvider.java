@@ -49,6 +49,10 @@ public class UserAuthProvider {
                 .withClaim("firstName", user.getFirstName())
                 .withClaim("lastName", user.getLastName())
                 .withClaim("role", user.getRole())
+                .withClaim("teamId", user.getTeam() != null
+                        ? user.getTeam().getId()
+                        : null
+                )
                 .sign(Algorithm.HMAC256(secretKey));
     }
 
@@ -60,6 +64,7 @@ public class UserAuthProvider {
                 .username(jwt.getSubject())
                 .firstName(jwt.getClaim("firstName").asString())
                 .lastName(jwt.getClaim("lastName").asString())
+                .teamId(jwt.getClaim("teamId").asLong())
                 .role(Role.valueOf(jwt.getClaim("role").asString()))
                 .build();
 

@@ -68,7 +68,7 @@ public class UserService {
     public User getUserByUsername(String username) {
         UserEntity user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new NotFoundException("User with " + username + " not found", UserService.class.getSimpleName()));
-        return userMapper.mapUser(user);
+        return userMapper.mapUser(user, teamMapper.mapTeam(user.getTeam()));
     }
 
     /**
@@ -84,7 +84,7 @@ public class UserService {
                 .orElseThrow(() -> new NotFoundException("Unknown user", UserService.class.getSimpleName()));
 
         if (passwordEncoder.matches(CharBuffer.wrap(credentials.password()), userEntity.getPasswordHash())) {
-            return userMapper.mapUser(userEntity);
+            return userMapper.mapUser(userEntity, teamMapper.mapTeam(userEntity.getTeam()));
         }
         throw new BadCredentialsException("Invalid credentials", UserService.class.getSimpleName());
     }

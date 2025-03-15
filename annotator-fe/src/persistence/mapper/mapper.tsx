@@ -1,5 +1,5 @@
-import { TeamRequest, UserRequest } from '../model/requests';
-import { Project, Priority, LongUser, LongTeam, Label, Annotation } from '../model/data';
+import { ProjectRequest, TeamRequest, UserRequest } from '../model/requests';
+import { Project, Priority, LongUser, LongTeam, Label, Annotation, Progress } from '../model/data';
 import {
   ProjectApiResponse,
   ShortTeamApiResponse,
@@ -7,7 +7,9 @@ import {
   UserApiResponse,
   LabelApiResponse,
   FrameCountApiResponse,
-  AnnotationApiResponse
+  AnnotationApiResponse,
+  ProgressApiResponse,
+  PriorityApiResponse
 } from '../model/api-responses';
 
 export function mapProjectResponse(project: ProjectApiResponse<ShortTeamApiResponse>): Project {
@@ -17,6 +19,7 @@ export function mapProjectResponse(project: ProjectApiResponse<ShortTeamApiRespo
     logFileName: project.logFileName,
     deadline: project.deadline,
     priority: project.priority,
+    progress: project.progress,
     team: project.team
       ? {
           id: project.team.id,
@@ -33,6 +36,7 @@ export function mapProjectResponses(data: ProjectApiResponse<LongTeamApiResponse
     logFileName: project.logFileName,
     deadline: project.deadline,
     priority: project.priority,
+    progress: project.progress,
     team: project.team
       ? {
           id: project.team.id,
@@ -68,8 +72,11 @@ export function mapUserResponse(data: UserApiResponse[]): LongUser[] {
   }));
 }
 
-export function mapPriorityResponse(data: string[]): Priority[] {
-  return data.map((priority) => ({ name: priority }));
+export function mapPriorityResponse(data: PriorityApiResponse[]): Priority[] {
+  return data.map((priority) => ({
+    name: priority.name,
+    value: priority.value
+  }));
 }
 
 export function mapUserRequest(data: LongUser): UserRequest {
@@ -85,8 +92,18 @@ export function mapUserRequest(data: LongUser): UserRequest {
 export function mapTeamRequest(data: LongTeam): TeamRequest {
   return {
     name: data.name,
-    leaderId: data.id,
-  }
+    leaderId: data.id
+  };
+}
+
+export function mapProjectRequest(data: Project): ProjectRequest {
+  return {
+    projectName: data.projectName,
+    deadline: data.deadline,
+    priority: data.priority,
+    progress: data.progress,
+    teamId: data.team?.id
+  };
 }
 
 export function mapRoles(data: string[]): string[] {
@@ -118,4 +135,11 @@ export function mapLabel(data: LabelApiResponse): Label {
     label: data.labelName,
     color: data.color
   };
+}
+
+export function mapProgresses(data: ProgressApiResponse[]): Progress[] {
+  return data.map((progress) => ({
+    value: progress.value,
+    name: progress.name
+  }));
 }

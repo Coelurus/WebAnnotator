@@ -1,12 +1,10 @@
 package cz.cuni.mff.vopalenf.annotator.api.request;
 
-import cz.cuni.mff.vopalenf.annotator.enums.Priority;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.Nullable;
 import java.time.LocalDate;
 
 @Data
@@ -14,8 +12,9 @@ import java.time.LocalDate;
 public class ProjectRequest {
     private String projectName;
     private LocalDate deadline;
-    @Enumerated(EnumType.STRING)
-    private Priority priority;
+    private String priority;
+    private String progress;
+    @Nullable
     private Long teamId;
     private MultipartFile file;
 }

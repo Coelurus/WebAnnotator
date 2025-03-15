@@ -3,7 +3,8 @@ export interface ProjectApiResponse<TeamResponse> {
   projectName: string;
   logFileName: string;
   deadline: string;
-  priority: number;
+  priority: string;
+  progress: string;
   team: TeamResponse | null;
 }
 
@@ -47,4 +48,14 @@ export interface AnnotationApiResponse {
   projectId: number;
   frameId: number;
   labelId: number;
+}
+
+export interface ProgressApiResponse {
+  value: number;
+  name: string;
+}
+
+export interface PriorityApiResponse {
+  value: number;
+  name: string;
 }

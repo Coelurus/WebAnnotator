@@ -5,19 +5,23 @@ import cz.cuni.mff.vopalenf.annotator.ai.PredictionTriple;
 import cz.cuni.mff.vopalenf.annotator.api.model.Annotation;
 import cz.cuni.mff.vopalenf.annotator.api.model.Label;
 import cz.cuni.mff.vopalenf.annotator.api.model.LogData;
+import cz.cuni.mff.vopalenf.annotator.api.model.Progress;
 import cz.cuni.mff.vopalenf.annotator.api.model.Project;
+import cz.cuni.mff.vopalenf.annotator.api.model.User;
 import cz.cuni.mff.vopalenf.annotator.api.request.LabelRequest;
 import cz.cuni.mff.vopalenf.annotator.api.request.ProjectRequest;
 import cz.cuni.mff.vopalenf.annotator.constants.Constants;
 import cz.cuni.mff.vopalenf.annotator.dao.model.AnnotationEntity;
 import cz.cuni.mff.vopalenf.annotator.dao.model.LabelEntity;
+import cz.cuni.mff.vopalenf.annotator.dao.model.Priority;
 import cz.cuni.mff.vopalenf.annotator.dao.model.ProjectEntity;
 import cz.cuni.mff.vopalenf.annotator.dao.model.TeamEntity;
 import cz.cuni.mff.vopalenf.annotator.dao.repository.AnnotationRepository;
 import cz.cuni.mff.vopalenf.annotator.dao.repository.LabelRepository;
 import cz.cuni.mff.vopalenf.annotator.dao.repository.ProjectRepository;
 import cz.cuni.mff.vopalenf.annotator.dao.repository.TeamRepository;
-import cz.cuni.mff.vopalenf.annotator.enums.Priority;
+import cz.cuni.mff.vopalenf.annotator.enums.PriorityEnum;
+import cz.cuni.mff.vopalenf.annotator.enums.ProgressEnum;
 import cz.cuni.mff.vopalenf.annotator.exception.StorageException;
 import cz.cuni.mff.vopalenf.annotator.exception.api.BadRequestException;
 import cz.cuni.mff.vopalenf.annotator.exception.api.NotFoundException;
@@ -25,8 +29,12 @@ import cz.cuni.mff.vopalenf.annotator.manager.DataLoaderManager;
 import cz.cuni.mff.vopalenf.annotator.manager.storage.StorageManager;
 import cz.cuni.mff.vopalenf.annotator.mapper.AnnotationMapper;
 import cz.cuni.mff.vopalenf.annotator.mapper.LabelMapper;
+import cz.cuni.mff.vopalenf.annotator.mapper.PriorityMapper;
+import cz.cuni.mff.vopalenf.annotator.mapper.ProgressMapper;
 import cz.cuni.mff.vopalenf.annotator.mapper.ProjectMapper;
 import cz.cuni.mff.vopalenf.annotator.mapper.TeamMapper;
+import cz.cuni.mff.vopalenf.annotator.security.Role;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.Path;
@@ -39,6 +47,8 @@ import java.util.Objects;
  */
 @Service
 public class ProjectService {
+
+    private static final String PROJECT_NOT_FOUND_MSG = "PROJECT_NOT_FOUND";
 
     private static final Long DEFAULT_ID = 0L;
 
@@ -53,6 +63,10 @@ public class ProjectService {
     private final ProjectMapper projectMapper;
 
     private final TeamMapper teamMapper;
+
+    private final ProgressMapper progressMapper;
+
+    private final PriorityMapper priorityMapper;
 
     private final StorageManager storageManager;
 
@@ -77,7 +91,9 @@ public class ProjectService {
                           GestureMagic gestureMagic,
                           LabelMapper labelMapper,
                           AnnotationMapper annotationMapper,
-                          FileSystemService fileSystemService) {
+                          FileSystemService fileSystemService,
+                          ProgressMapper progressMapper,
+                          PriorityMapper priorityMapper) {
         this.projectRepository = projectRepository;
         this.teamRepository = teamRepository;
         this.storageManager = storageManager;
@@ -90,6 +106,8 @@ public class ProjectService {
         this.labelMapper = labelMapper;
         this.annotationMapper = annotationMapper;
         this.fileSystemService = fileSystemService;
+        this.progressMapper = progressMapper;
+        this.priorityMapper = priorityMapper;
     }
 
     /**
@@ -134,7 +152,8 @@ public class ProjectService {
      * @return List of all available priorities
      */
     public List<Priority> getAllProjectPriorities() {
-        return Arrays.stream(Priority.class.getEnumConstants()).toList();
+        return Arrays.stream(PriorityEnum.values()).map(priorityMapper::mapPriority)
+                .toList();
     }
 
     /**
@@ -148,7 +167,7 @@ public class ProjectService {
      */
     public void annotateProjectFrame(Long projectId, Long frameId, Long labelId) {
         if (!projectRepository.existsById(projectId)) {
-            throw new NotFoundException("PROJECT ID NOT FOUND", ProjectService.class.getSimpleName());
+            throw new NotFoundException(PROJECT_NOT_FOUND_MSG, ProjectService.class.getSimpleName());
         }
         if (fileSystemService.getFramesCount(projectId).getCount() <= frameId) {
             throw new BadRequestException("Frame position is out of range", ProjectService.class.getSimpleName());
@@ -167,7 +186,7 @@ public class ProjectService {
      */
     public void annotateProjectFramesInRange(Long projectId, Long startFrameId, Long endFrameId, Long labelId) {
         if (!projectRepository.existsById(projectId)) {
-            throw new NotFoundException("PROJECT ID NOT FOUND", ProjectService.class.getSimpleName());
+            throw new NotFoundException(PROJECT_NOT_FOUND_MSG, ProjectService.class.getSimpleName());
         }
         for (Long frameIdx = startFrameId; frameIdx <= endFrameId; frameIdx++) {
             annotateFrameInProject(projectId, frameIdx, labelId, true);
@@ -184,7 +203,7 @@ public class ProjectService {
      */
     public void eraseAnnotationsInRange(Long projectId, Long startFrameId, Long endFrameId) {
         if (!projectRepository.existsById(projectId)) {
-            throw new NotFoundException("PROJECT ID NOT FOUND", ProjectService.class.getSimpleName());
+            throw new NotFoundException(PROJECT_NOT_FOUND_MSG, ProjectService.class.getSimpleName());
         }
         for (Long frameIdx = startFrameId; frameIdx <= endFrameId; frameIdx++) {
             eraseFrameAnnotation(projectId, frameIdx);
@@ -233,7 +252,7 @@ public class ProjectService {
      */
     public List<Annotation> getAllAnnotations(Long projectId) {
         if (!projectRepository.existsById(projectId)) {
-            throw new NotFoundException("PROJECT ID NOT FOUND", ProjectService.class.getSimpleName());
+            throw new NotFoundException(PROJECT_NOT_FOUND_MSG, ProjectService.class.getSimpleName());
         }
         return annotationRepository.findByProjectId(projectId).stream()
                 .map(annotationMapper::mapAnnotation)
@@ -259,7 +278,8 @@ public class ProjectService {
      * @throws BadRequestException when label already exists or color is not valid
      */
     public Label addLabel(LabelRequest label) {
-        if (labelRepository.existsByLabel(label.getLabelName())) {
+        boolean existsByLabel = labelRepository.existsByLabel(label.getLabelName());
+        if (existsByLabel) {
             throw new BadRequestException("Label already exists", ProjectService.class.getSimpleName());
         }
         if (label.getColor() == null) {
@@ -284,10 +304,15 @@ public class ProjectService {
      * @throws StorageException when error occurs during file saving
      */
     public Project manageFileUpload(ProjectRequest projectRequest) {
-
-        TeamEntity teamEntity = teamRepository
-                .findById(projectRequest.getTeamId())
-                .orElse(null);
+        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        TeamEntity teamEntity;
+        if (Objects.equals(currentUser.getRole(), Role.ROLE_ADMIN.name())) {
+            teamEntity = projectRequest.getTeamId() != null
+                    ? teamRepository.findById(projectRequest.getTeamId()).orElse(null)
+                    : null;
+        } else {
+            teamEntity = teamMapper.mapTeamEntity(currentUser.getTeam());
+        }
 
         String compressedFileName = projectRequest.getFile().getOriginalFilename();
         String shortenedFileName = Objects.requireNonNull(compressedFileName)
@@ -297,7 +322,8 @@ public class ProjectService {
                 .projectName(projectRequest.getProjectName())
                 .logFileName(shortenedFileName)
                 .deadline(projectRequest.getDeadline())
-                .priority(projectRequest.getPriority())
+                .priority(PriorityEnum.fromName(projectRequest.getPriority()))
+                .progress(ProgressEnum.fromName(projectRequest.getProgress()))
                 .team(teamEntity)
                 .build();
 
@@ -309,10 +335,10 @@ public class ProjectService {
         Path pathToFS = Path.of(Constants.FILE_SYSTEM_PATH);
         Path projectPath = Arrays.stream(Objects.requireNonNull(pathToFS.toFile().listFiles()))
                 .filter(file -> Objects.equals(projectRepository.findById(projectId)
-                        .orElseThrow(() -> new NotFoundException("PROJECT_NOT_FOUND", ProjectService.class.getSimpleName()))
+                        .orElseThrow(() -> new NotFoundException(PROJECT_NOT_FOUND_MSG, ProjectService.class.getSimpleName()))
                         .getLogFileName(), file.getName()))
                 .findFirst()
-                .orElseThrow(() -> new NotFoundException("PROJECT_NOT_FOUND", ProjectService.class.getSimpleName()))
+                .orElseThrow(() -> new NotFoundException(PROJECT_NOT_FOUND_MSG, ProjectService.class.getSimpleName()))
                 .toPath();
 
         projectPath = Path.of(projectPath.toString(), projectPath.getFileName().toString() + ".log");
@@ -336,9 +362,43 @@ public class ProjectService {
      */
     public void deleteProject(Long id) {
         String logFileName = projectRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("PROJECT_NOT_FOUND", ProjectEntity.class.getSimpleName()))
+                .orElseThrow(() -> new NotFoundException(PROJECT_NOT_FOUND_MSG, ProjectEntity.class.getSimpleName()))
                 .getLogFileName();
         storageManager.delete(logFileName);
         projectRepository.deleteById(id);
+    }
+
+    /**
+     * Get list of all progress states
+     *
+     * @return List of all progress states
+     */
+    public List<Progress> getAllProjectProgresses() {
+        return Arrays.stream(ProgressEnum.values()).map(progressMapper::mapProgress)
+                .toList();
+    }
+
+    /**
+     * Update project with new information
+     *
+     * @param projectId ID of project to update
+     * @param project   Project payload
+     * @return Updated project
+     */
+    public Project updateProject(Long projectId, ProjectRequest project) {
+        ProjectEntity projectToUpdate = projectRepository.findById(projectId)
+                .orElseThrow(() -> new NotFoundException("Project not found", ProjectService.class.getSimpleName()));
+
+        projectToUpdate.setProjectName(project.getProjectName());
+        projectToUpdate.setPriority(PriorityEnum.fromName(project.getPriority()));
+        projectToUpdate.setDeadline(project.getDeadline());
+        projectToUpdate.setProgress(ProgressEnum.fromName(project.getProgress()));
+        projectToUpdate.setTeam(
+                project.getTeamId() != null
+                        ? teamRepository.findById(project.getTeamId()).orElse(null)
+                        : null
+        );
+
+        return projectMapper.mapProject(projectRepository.save(projectToUpdate));
     }
 }
