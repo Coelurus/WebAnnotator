@@ -1,28 +1,23 @@
 package cz.cuni.mff.vopalenf.annotator.api.controller;
 
-import cz.cuni.mff.vopalenf.annotator.config.UserAuthProvider;
-import cz.cuni.mff.vopalenf.annotator.dao.model.TeamEntity;
-import cz.cuni.mff.vopalenf.annotator.dao.model.UserEntity;
-import cz.cuni.mff.vopalenf.annotator.dao.repository.TeamRepository;
-import cz.cuni.mff.vopalenf.annotator.dao.repository.UserRepository;
+import cz.cuni.mff.vopalenf.annotator.api.model.Team;
+import cz.cuni.mff.vopalenf.annotator.api.model.User;
 import cz.cuni.mff.vopalenf.annotator.security.Role;
-import org.junit.jupiter.api.BeforeAll;
+import cz.cuni.mff.vopalenf.annotator.service.TeamService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.Collections;
+import java.util.List;
 
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -35,72 +30,50 @@ class TeamControllerTest {
     private static final String USERNAME = "testuser";
     private static final String FIRST_NAME = "test";
     private static final String LAST_NAME = "user";
-    private static final String PASSWORD = "testpassword";
     private static final String TEAM_NAME = "testteam";
-    private static final String BEARER_PREFIX = "Bearer ";
-    private static final String BEARER_TOKEN_ADMIN_PART = "adminToken";
-    private static final String BEARER_TOKEN_USER_PART = "userToken";
+    private static final String TEAM_NAME_2 = "testteam2";
     @MockBean
-    UserAuthProvider userAuthProvider;
+    TeamService teamService;
     @Autowired
     private MockMvc mockMvc;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private TeamRepository teamRepository;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @BeforeAll
-    void setup() {
-        Mockito.when(userAuthProvider.validate(BEARER_TOKEN_ADMIN_PART)).thenReturn(
-                new UsernamePasswordAuthenticationToken(USERNAME, null, Collections.singletonList(new SimpleGrantedAuthority(Role.ROLE_ADMIN.name())))
-        );
-        Mockito.when(userAuthProvider.validate(BEARER_TOKEN_USER_PART)).thenReturn(
-                new UsernamePasswordAuthenticationToken(USERNAME, null, Collections.singletonList(new SimpleGrantedAuthority(Role.ROLE_USER.name())))
-        );
-    }
 
     @Test
+    @WithMockUser(authorities = {"ROLE_ADMIN"})
     @DisplayName("Should return all teams when requested by admin")
-    void testGetAllTeamsSucceedsWhenAdmin() throws Exception {
-        mockMvc.perform(get("/api/teams")
-                        .header("Authorization", BEARER_PREFIX + BEARER_TOKEN_ADMIN_PART))
+    void getTeams_ShouldReturnTeams_WhenRoleAdmin() throws Exception {
+        when(teamService.getAllTeams())
+                .thenReturn(List.of(
+                        createTeam(TEAM_NAME),
+                        createTeam(TEAM_NAME_2)
+                ));
+        mockMvc.perform(get("/api/teams"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2))
-                .andExpect(jsonPath("$[*].name").value(containsInAnyOrder("Fast", "Newcomers")));
+                .andExpect(jsonPath("$[*].name").value(containsInAnyOrder(TEAM_NAME, TEAM_NAME_2)));
     }
 
     @Test
-    @DisplayName("Should return 403 on get all users when requested by user")
-    void testGetAllTeamsFailsWhenUser() throws Exception {
-        mockMvc.perform(get("/api/teams")
-                        .header("Authorization", BEARER_PREFIX + BEARER_TOKEN_USER_PART))
+    @WithMockUser(authorities = {"ROLE_USER"})
+    @DisplayName("Should return forbidden on get all users when requested by user")
+    void getTeams_ShouldReturnForbidden_WhenRoleUser() throws Exception {
+        mockMvc.perform(get("/api/teams"))
                 .andExpect(status().isForbidden());
     }
 
-    public void createTeamEntity() {
-        UserEntity leader = createUserEntity();
-        TeamEntity team = TeamEntity.builder()
-                .leader(leader)
-                .name(TEAM_NAME)
+    public Team createTeam(String name) {
+        return Team.builder()
+                .name(name)
                 .build();
-
-        teamRepository.save(team);
     }
 
-    public UserEntity createUserEntity() {
-        {
-            UserEntity user = UserEntity.builder()
-                    .id(USER_ID)
-                    .username(USERNAME)
-                    .firstName(FIRST_NAME)
-                    .lastName(LAST_NAME)
-                    .role(Role.ROLE_USER)
-                    .passwordHash(passwordEncoder.encode(PASSWORD))
-                    .build();
+    public User createUser() {
+        return User.builder()
+                .id(USER_ID)
+                .username(USERNAME)
+                .firstName(FIRST_NAME)
+                .lastName(LAST_NAME)
+                .role(Role.ROLE_USER.getName())
+                .build();
 
-            return userRepository.save(user);
-        }
     }
 }

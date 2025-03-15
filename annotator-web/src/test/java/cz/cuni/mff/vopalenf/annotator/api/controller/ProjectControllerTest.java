@@ -1,28 +1,21 @@
 package cz.cuni.mff.vopalenf.annotator.api.controller;
 
-import cz.cuni.mff.vopalenf.annotator.config.UserAuthProvider;
-import cz.cuni.mff.vopalenf.annotator.dao.repository.TeamRepository;
-import cz.cuni.mff.vopalenf.annotator.dao.repository.UserRepository;
-import cz.cuni.mff.vopalenf.annotator.security.Role;
-import org.junit.jupiter.api.BeforeAll;
+import cz.cuni.mff.vopalenf.annotator.api.model.Project;
+import cz.cuni.mff.vopalenf.annotator.service.ProjectService;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.Collections;
+import java.util.List;
 
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -30,47 +23,36 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class ProjectControllerTest {
-    private static final Long USER_ID = 1L;
-    private static final String USERNAME = "testuser";
-    private static final String FIRST_NAME = "test";
-    private static final String LAST_NAME = "user";
-    private static final String PASSWORD = "testpassword";
-    private static final String TEAM_NAME = "testteam";
-    private static final String BEARER_PREFIX = "Bearer ";
-    private static final String BEARER_TOKEN_ADMIN_PART = "adminToken";
-    private static final String BEARER_TOKEN_USER_PART = "userToken";
+
+    private static final String PROJECT_NAME = "projectName";
+    private static final String PROJECT_NAME_2 = "projectName2";
+
     @MockBean
-    UserAuthProvider userAuthProvider;
+    ProjectService projectService;
     @Autowired
     private MockMvc mockMvc;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private TeamRepository teamRepository;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
 
-    @BeforeAll
-    void setup() {
-        Mockito.when(userAuthProvider.validate(BEARER_TOKEN_USER_PART)).thenReturn(
-                new UsernamePasswordAuthenticationToken(USERNAME, null, Collections.singletonList(new SimpleGrantedAuthority(Role.ROLE_USER.name())))
-        );
-        Mockito.when(userAuthProvider.validate(BEARER_TOKEN_ADMIN_PART)).thenReturn(
-                new UsernamePasswordAuthenticationToken(USERNAME, null, Collections.singletonList(new SimpleGrantedAuthority(Role.ROLE_ADMIN.name())))
-        );
+
+    @Test
+    @DisplayName("Should return all projects")
+    @WithMockUser(authorities = {"ROLE_USER"})
+    void getTeam_ShouldReturnTeam_WhenAuthenticated() throws Exception {
+        when(projectService.getAllProjects())
+                .thenReturn(List.of(
+                        createProject(PROJECT_NAME),
+                        createProject(PROJECT_NAME_2)
+                ));
+
+        mockMvc.perform(get("/api/projects"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[*].projectName").value(containsInAnyOrder(PROJECT_NAME, PROJECT_NAME_2)));
     }
 
-
-    @ParameterizedTest
-    @ValueSource(strings = {BEARER_TOKEN_USER_PART})
-    @DisplayName("Should return all projects")
-    void testGetAllProjectFailsWhenUser(String token) throws Exception {
-        mockMvc.perform(get("/api/projects")
-                        .header("Authorization", BEARER_PREFIX + token))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(3))
-                .andExpect(jsonPath("$[*].projectName").value(containsInAnyOrder("AI Test", "Project Beta", "Project Gamma")));
+    Project createProject(String name) {
+        return Project.builder()
+                .projectName(name)
+                .build();
     }
 }

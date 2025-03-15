@@ -1,5 +1,6 @@
 package cz.cuni.mff.vopalenf.annotator.api.controller.advice;
 
+import cz.cuni.mff.vopalenf.annotator.api.model.error.ErrorCode;
 import cz.cuni.mff.vopalenf.annotator.api.model.error.ErrorResponse;
 import cz.cuni.mff.vopalenf.annotator.api.model.error.ErrorResponseItem;
 import cz.cuni.mff.vopalenf.annotator.exception.api.APIException;
@@ -11,6 +12,9 @@ import cz.cuni.mff.vopalenf.annotator.exception.api.UnprocessableContentExceptio
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -21,6 +25,8 @@ import java.util.Collections;
  */
 @RestControllerAdvice
 public class RestExceptionHandler {
+
+    private static final String CONTROLLER_SCOPE = "APIController";
 
     /**
      * Handler for NotFoundException
@@ -80,6 +86,27 @@ public class RestExceptionHandler {
     public ResponseEntity<ErrorResponse> handleServerException(ServerException e) {
         ErrorResponse errorResponse = handleException(e, HttpStatus.INTERNAL_SERVER_ERROR);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidJson(HttpMessageNotReadableException e) {
+        APIException apiException = new APIException(ErrorCode.BAD_REQUEST, e.getMessage(), CONTROLLER_SCOPE);
+        ErrorResponse errorResponse = handleException(apiException, HttpStatus.BAD_REQUEST);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> handleValidationException(MethodArgumentNotValidException e) {
+        APIException apiException = new APIException(ErrorCode.BAD_REQUEST, e.getBody().getDetail(), CONTROLLER_SCOPE);
+        ErrorResponse errorResponse = handleException(apiException, HttpStatus.BAD_REQUEST);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleAccessDenied(AccessDeniedException e) {
+        APIException apiException = new APIException(ErrorCode.FORBIDDEN, e.getMessage(), CONTROLLER_SCOPE);
+        ErrorResponse errorResponse = handleException(apiException, HttpStatus.FORBIDDEN);
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
     }
 
     /**

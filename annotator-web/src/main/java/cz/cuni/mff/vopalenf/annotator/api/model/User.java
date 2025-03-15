@@ -31,7 +31,7 @@ public class User {
 
     @JsonProperty("username")
     @JsonView(Views.BothView.class)
-    String userName;
+    String username;
 
     @JsonProperty("team")
     @JsonView(Views.ShowTeamsInUsers.class)

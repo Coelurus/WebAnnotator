@@ -9,4 +9,5 @@ public enum ErrorCode {
     UNPROCESSABLE_CONTENT,
     BAD_CREDENTIALS,
     RUNTIME_EXCEPTION,
+    FORBIDDEN,
 }

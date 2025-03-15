@@ -43,7 +43,7 @@ public class UserAuthProvider {
         Date expiresAt = new Date(issuedAt.getTime() + 1000 * 60 * 60);
 
         return JWT.create()
-                .withSubject(user.getUserName())
+                .withSubject(user.getUsername())
                 .withIssuedAt(issuedAt)
                 .withExpiresAt(expiresAt)
                 .withClaim("firstName", user.getFirstName())
