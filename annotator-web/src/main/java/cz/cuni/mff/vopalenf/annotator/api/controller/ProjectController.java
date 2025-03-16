@@ -1,6 +1,5 @@
 package cz.cuni.mff.vopalenf.annotator.api.controller;
 
-import cz.cuni.mff.vopalenf.annotator.ai.PredictionTriple;
 import cz.cuni.mff.vopalenf.annotator.api.model.Annotation;
 import cz.cuni.mff.vopalenf.annotator.api.model.Label;
 import cz.cuni.mff.vopalenf.annotator.api.model.Progress;
@@ -301,22 +300,4 @@ public class ProjectController {
     public ResponseEntity<List<Progress>> getAllProjectProgresses() {
         return ResponseEntity.ok(projectService.getAllProjectProgresses());
     }
-
-    @Operation(
-            summary = "Train AI model on a project",
-            description = "Trains an AI model based on the annotations in a project.",
-            parameters = {
-                    @Parameter(name = "projectId", description = "Project ID", required = true, in = ParameterIn.PATH)
-            },
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "AI model trained successfully"),
-                    @ApiResponse(responseCode = "404", description = "Project not found"),
-            }
-    )
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
-    @PostMapping("/projects/{projectId}/trainAI")
-    public ResponseEntity<List<PredictionTriple>> trainAI(@PathVariable Long projectId) {
-        return ResponseEntity.ok(projectService.trainAI(projectId));
-    }
-
 }

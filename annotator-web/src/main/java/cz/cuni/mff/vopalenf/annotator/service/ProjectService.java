@@ -1,10 +1,7 @@
 package cz.cuni.mff.vopalenf.annotator.service;
 
-import cz.cuni.mff.vopalenf.annotator.ai.GestureMagic;
-import cz.cuni.mff.vopalenf.annotator.ai.PredictionTriple;
 import cz.cuni.mff.vopalenf.annotator.api.model.Annotation;
 import cz.cuni.mff.vopalenf.annotator.api.model.Label;
-import cz.cuni.mff.vopalenf.annotator.api.model.LogData;
 import cz.cuni.mff.vopalenf.annotator.api.model.Progress;
 import cz.cuni.mff.vopalenf.annotator.api.model.Project;
 import cz.cuni.mff.vopalenf.annotator.api.model.User;
@@ -37,7 +34,6 @@ import cz.cuni.mff.vopalenf.annotator.security.Role;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -72,8 +68,6 @@ public class ProjectService {
 
     private final DataLoaderManager dataLoaderManager;
 
-    private final GestureMagic gestureMagic;
-
     private final LabelMapper labelMapper;
 
     private final AnnotationMapper annotationMapper;
@@ -88,7 +82,6 @@ public class ProjectService {
                           ProjectMapper projectMapper,
                           TeamMapper teamMapper,
                           DataLoaderManager dataLoaderManager,
-                          GestureMagic gestureMagic,
                           LabelMapper labelMapper,
                           AnnotationMapper annotationMapper,
                           FileSystemService fileSystemService,
@@ -102,7 +95,6 @@ public class ProjectService {
         this.projectMapper = projectMapper;
         this.teamMapper = teamMapper;
         this.dataLoaderManager = dataLoaderManager;
-        this.gestureMagic = gestureMagic;
         this.labelMapper = labelMapper;
         this.annotationMapper = annotationMapper;
         this.fileSystemService = fileSystemService;
@@ -330,28 +322,6 @@ public class ProjectService {
         storageManager.store(projectRequest.getFile());
         return projectMapper.mapProject(projectRepository.save(projectEntity));
     }
-
-    public List<PredictionTriple> trainAI(Long projectId) {
-        Path pathToFS = Path.of(Constants.FILE_SYSTEM_PATH);
-        Path projectPath = Arrays.stream(Objects.requireNonNull(pathToFS.toFile().listFiles()))
-                .filter(file -> Objects.equals(projectRepository.findById(projectId)
-                        .orElseThrow(() -> new NotFoundException(PROJECT_NOT_FOUND_MSG, ProjectService.class.getSimpleName()))
-                        .getLogFileName(), file.getName()))
-                .findFirst()
-                .orElseThrow(() -> new NotFoundException(PROJECT_NOT_FOUND_MSG, ProjectService.class.getSimpleName()))
-                .toPath();
-
-        projectPath = Path.of(projectPath.toString(), projectPath.getFileName().toString() + ".log");
-
-        List<LogData> data = dataLoaderManager.loadLogFile(projectId, projectPath, false);
-
-        gestureMagic.train(data, projectId);
-
-        data = dataLoaderManager.loadLogFile(projectId, projectPath, true);
-
-        return gestureMagic.test(data);
-    }
-
 
     /**
      * Delete project by its ID

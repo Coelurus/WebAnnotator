@@ -2,7 +2,7 @@ package cz.cuni.mff.vopalenf.annotator.manager.storage;
 
 import cz.cuni.mff.vopalenf.annotator.config.StorageConfig;
 import cz.cuni.mff.vopalenf.annotator.exception.StorageException;
-import org.apache.commons.io.FileUtils;
+import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;

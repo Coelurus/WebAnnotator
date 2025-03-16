@@ -1,6 +1,7 @@
-package cz.cuni.mff.vopalenf.annotator.ai;
+package cz.cuni.mff.vopalenf.aimock.service;
 
-import cz.cuni.mff.vopalenf.annotator.api.model.LogData;
+import cz.cuni.mff.vopalenf.aimock.api.model.LogData;
+import lombok.Getter;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.dataset.DataSet;
 import org.nd4j.linalg.factory.Nd4j;
@@ -14,9 +15,12 @@ import java.util.Map;
 public class DataPreprocessor {
 
     private static final int FEATURES_COUNT = 10;
-    public static List<String> uniqueLabels;
 
-    private DataPreprocessor() {
+    @Getter
+    private static List<String> uniqueLabels;
+
+    public DataPreprocessor() {
+        // empty constructor
     }
 
     public static DataSet preprocessTrainData(List<LogData> logDataList) {
@@ -24,6 +28,7 @@ public class DataPreprocessor {
                 .map(LogData::getLabel)
                 .distinct()
                 .toList();
+
 
         Map<String, double[]> labelMap = new HashMap<>();
         for (int i = 0; i < uniqueLabels.size(); i++) {

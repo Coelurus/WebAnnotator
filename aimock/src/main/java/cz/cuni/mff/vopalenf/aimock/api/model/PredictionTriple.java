@@ -1,4 +1,4 @@
-package cz.cuni.mff.vopalenf.annotator.ai;
+package cz.cuni.mff.vopalenf.aimock.api.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,6 +1,7 @@
-package cz.cuni.mff.vopalenf.annotator.ai;
+package cz.cuni.mff.vopalenf.aimock.service;
 
-import cz.cuni.mff.vopalenf.annotator.api.model.LogData;
+import cz.cuni.mff.vopalenf.aimock.api.model.LogData;
+import cz.cuni.mff.vopalenf.aimock.api.model.PredictionTriple;
 import org.deeplearning4j.nn.conf.MultiLayerConfiguration;
 import org.deeplearning4j.nn.conf.NeuralNetConfiguration;
 import org.deeplearning4j.nn.conf.layers.DenseLayer;
@@ -11,24 +12,25 @@ import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.dataset.DataSet;
 import org.nd4j.linalg.dataset.api.preprocessor.NormalizerMinMaxScaler;
 import org.nd4j.linalg.lossfunctions.LossFunctions;
-import org.springframework.stereotype.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Component
-public class GestureMagic {
+@Service
+public class AIService {
 
+    private final Logger log = LoggerFactory.getLogger(AIService.class);
     NormalizerMinMaxScaler scaler;
     private MultiLayerNetwork model;
     private Long projectId;
-
 
     private void initModel(INDArray features, INDArray labels) {
         int inputSize = features.columns();
         int outputSize = labels.columns();
 
-        // Neural network configuration
         MultiLayerConfiguration config = new NeuralNetConfiguration.Builder()
                 .seed(123)
                 .updater(new org.nd4j.linalg.learning.config.Adam(0.01))
@@ -45,10 +47,11 @@ public class GestureMagic {
         model.init();
     }
 
-    public void train(List<LogData> logDataList, Long projectId) {
+    public void trainAI(Long projectId, List<LogData> logData) {
         this.projectId = projectId;
+        log.atInfo().log("Training AI with project: " + projectId);
 
-        DataSet dataSet = DataPreprocessor.preprocessTrainData(logDataList);
+        DataSet dataSet = DataPreprocessor.preprocessTrainData(logData);
 
         scaler = new NormalizerMinMaxScaler();
         scaler.fit(dataSet);
@@ -65,12 +68,11 @@ public class GestureMagic {
     }
 
     public List<PredictionTriple> test(List<LogData> testDataList) {
+        log.atInfo().log("Testing AI on data");
         INDArray testFeatures = DataPreprocessor.preprocessTestData(testDataList);
         scaler.transform(testFeatures);
-
         INDArray predictions = model.output(testFeatures);
-
-        return returnPredictedLabels(predictions, DataPreprocessor.uniqueLabels);
+        return returnPredictedLabels(predictions, DataPreprocessor.getUniqueLabels());
     }
 
     private List<PredictionTriple> returnPredictedLabels(INDArray predictions, List<String> labels) {
@@ -93,10 +95,6 @@ public class GestureMagic {
 
             PredictionTriple prediction = new PredictionTriple(projectId, (long) i, predictedLabel);
             resultingPredictions.add(prediction);
-
-            // TODO send result data at BE endpoint
-
-            //System.out.println("Sample " + i + ": Predicted label = " + predictedLabel);
         }
         return resultingPredictions;
     }

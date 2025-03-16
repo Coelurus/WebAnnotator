@@ -1,10 +1,10 @@
 package cz.cuni.mff.vopalenf.annotator.api.request;
 
+import jakarta.annotation.Nullable;
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.annotation.Nullable;
 import java.time.LocalDate;
 
 @Data
