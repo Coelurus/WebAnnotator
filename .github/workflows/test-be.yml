@@ -22,14 +22,13 @@ jobs:
         with:
           java-version: '21'
           distribution: 'oracle'
-
-      - name: Enter BE project
-        run: cd annotator-be
-
+          
       - name: Build
+        working-directory: annotator-be
         run: mvn --batch-mode -DskipTests package
 
       - name: Test
+        working-directory: annotator-be
         run: mvn --batch-mode -Dmaven.test.failure.ignore=true test
 
       - name: Report
@@ -37,6 +36,6 @@ jobs:
         if: always()
         with:
           name: Maven Tests
-          path: target/surefire-reports/*.xml
+          path: annotator-be/target/surefire-reports/*.xml
           reporter: java-junit
           fail-on-error: true
