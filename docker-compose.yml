@@ -1,0 +1,24 @@
+version: '3.8'
+services:
+  frontend:
+    build: ./annotator-fe
+    ports:
+      - "80:80"
+    environment:
+      SERVER_URL: http://backend:8080/api
+    restart: always
+    depends_on:
+      backend:
+        condition: service_healthy
+
+  backend:
+    build: ./annotator-be
+    ports:
+      - "8080:8080"
+      - "8088:8088"
+    restart: always
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8088/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
