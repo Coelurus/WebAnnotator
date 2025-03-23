@@ -18,7 +18,11 @@ class App:
         b2 = ttk.Button(self.root, text="Button 2", bootstyle=(INFO, OUTLINE))
         b2.pack(side=LEFT, padx=5, pady=10)
 
+        print("xx")
+
         self.prepare_recording_settings()
+
+        print("lol")
 
         self.prepare_cam()
 
@@ -46,6 +50,7 @@ class App:
     def findAvailableCameraIndexes(self) -> list[int]:
         """Looks through possible indexes and returns list with indices of found cameras"""
         found_cameras: list[int] = []
+        print("lxxxl")
         for i in range(CAMERA_INDEX_RANGE):
             cap = cv2.VideoCapture(i)
             if cap.read()[0]:
@@ -79,4 +84,5 @@ class App:
         camera_combobox.pack()
 
 if __name__ == "__main__":
+    print("huh")
     app = App()

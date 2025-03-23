@@ -2,6 +2,7 @@
 !.gitignore
 !annotator-web/.gitignore
 !annotator-fe/.gitignore
+!annotator-web/.mvn
 annotator-web/file_system/*
 out/
 gs-rest-service/
