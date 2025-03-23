@@ -1,0 +1,51 @@
+spring:
+  application:
+    name: annotator
+
+  servlet:
+    multipart:
+      max-file-size: 400MB
+      max-request-size: 400MB
+
+  datasource:
+    # url: jdbc:h2:file:./database/database
+    driverClassName: org.h2.Driver
+    username: admin
+    password: password
+
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+      settings:
+        trace: false
+        web-allow-others: false
+
+  security:
+    jwt:
+      secret-key: "secret"
+      # secret-key: ${JWT_SECRET}
+
+management:
+  server:
+    port: 8088
+  endpoints:
+    web:
+      exposure:
+        include: info, health, swaggerui, openapi
+  health:
+    db:
+      enabled: true
+    defaults:
+      enabled: true
+  observations:
+    annotations:
+      enabled: true
+
+springdoc:
+  use-management-port: true
+  override-with-generic-response: false
+  default-produces-media-type: application/json
