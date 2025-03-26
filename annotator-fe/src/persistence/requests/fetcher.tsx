@@ -16,7 +16,7 @@ import {ErrorResponse} from '../errors/error-response';
 import generateErrorToasts from '../../screens/notifications/toast-util';
 
 export function fetchTeams(): Promise<LongTeam[]> {
-    return request('GET', './api/teams')
+    return request('GET', '/api/teams')
         .then((response) => mapTeamResponse(response.data))
         .catch((error: ErrorResponse) => {
             generateErrorToasts(error);
@@ -25,7 +25,7 @@ export function fetchTeams(): Promise<LongTeam[]> {
 }
 
 export function fetchUsers(): Promise<LongUser[]> {
-    return request('GET', './api/users')
+    return request('GET', '/api/users')
         .then((response) => mapUserResponse(response.data))
         .catch((error: ErrorResponse) => {
             generateErrorToasts(error);
@@ -34,7 +34,7 @@ export function fetchUsers(): Promise<LongUser[]> {
 }
 
 export function fetchPriorities(): Promise<Priority[]> {
-    return request('GET', './api/priorities')
+    return request('GET', '/api/priorities')
         .then((response) => mapPriorityResponse(response.data))
         .catch((error: ErrorResponse) => {
             generateErrorToasts(error);
@@ -43,7 +43,7 @@ export function fetchPriorities(): Promise<Priority[]> {
 }
 
 export function fetchProjects(): Promise<Project[]> {
-    return request('GET', './api/projects')
+    return request('GET', '/api/projects')
         .then((response) => mapProjectResponses(response.data))
         .catch((error: ErrorResponse) => {
             generateErrorToasts(error);
@@ -52,7 +52,7 @@ export function fetchProjects(): Promise<Project[]> {
 }
 
 export function fetchProject(id: number): Promise<Project | null> {
-    return request('GET', `./api/projects/${id}`)
+    return request('GET', `/api/projects/${id}`)
         .then((response) => mapProjectResponse(response.data))
         .catch((error: ErrorResponse) => {
             generateErrorToasts(error);
@@ -61,7 +61,7 @@ export function fetchProject(id: number): Promise<Project | null> {
 }
 
 export function fetchRoles(): Promise<string[]> {
-    return request('GET', './api/users/roles')
+    return request('GET', '/api/users/roles')
         .then((response) => mapRoles(response.data))
         .catch((error: ErrorResponse) => {
             generateErrorToasts(error);
@@ -70,7 +70,7 @@ export function fetchRoles(): Promise<string[]> {
 }
 
 export function fetchLabels(): Promise<Label[]> {
-    return request('GET', './api/labels')
+    return request('GET', '/api/labels')
         .then((response) => mapLabels(response.data))
         .catch((error: ErrorResponse) => {
             generateErrorToasts(error);
@@ -79,7 +79,7 @@ export function fetchLabels(): Promise<Label[]> {
 }
 
 export function fetchFrameCount(projectId: number): Promise<number> {
-    return request('GET', `./api/projects/${projectId}/frame/count`)
+    return request('GET', `/api/projects/${projectId}/frame/count`)
         .then((response) => mapFrameCount(response.data))
         .catch((error: ErrorResponse) => {
             generateErrorToasts(error);
@@ -88,7 +88,7 @@ export function fetchFrameCount(projectId: number): Promise<number> {
 }
 
 export function fetchAnnotations(projectId: number): Promise<Annotation[]> {
-    return request('GET', `./api/projects/${projectId}/annotations`)
+    return request('GET', `/api/projects/${projectId}/annotations`)
         .then((response) => mapAnnotations(response.data))
         .catch((error: ErrorResponse) => {
             generateErrorToasts(error);
@@ -97,7 +97,7 @@ export function fetchAnnotations(projectId: number): Promise<Annotation[]> {
 }
 
 export function fetchProgresses(): Promise<Progress[]> {
-    return request('GET', './api/projects/progresses')
+    return request('GET', '/api/projects/progresses')
         .then((response) => mapProgresses(response.data))
         .catch((error: ErrorResponse) => {
             generateErrorToasts(error);

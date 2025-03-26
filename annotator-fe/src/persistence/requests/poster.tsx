@@ -7,7 +7,7 @@ import {ShortTeam} from '../model/data';
 import generateErrorToasts from '../../screens/notifications/toast-util';
 
 export function postEraseAnnotations(projectId: number, lowerIndex: number, higherIndex: number) {
-    request('POST', `./api/projects/${projectId}/erase/${lowerIndex}/${higherIndex}`).catch(
+    request('POST', `/api/projects/${projectId}/erase/${lowerIndex}/${higherIndex}`).catch(
         (error: ErrorResponse) => {
             generateErrorToasts(error);
         }
@@ -22,14 +22,14 @@ export function postAddAnnotations(
 ) {
     request(
         'POST',
-        `./api/projects/${projectId}/annotate/${lowerIndex}/${higherIndex}/label/${labelId}`
+        `/api/projects/${projectId}/annotate/${lowerIndex}/${higherIndex}/label/${labelId}`
     ).catch((error: ErrorResponse) => {
         generateErrorToasts(error);
     });
 }
 
 export function postCreateLabel(newLabel: LabelRequest): Promise<LabelApiResponse> {
-    const requestPromise = request('POST', './api/labels', newLabel)
+    const requestPromise = request('POST', '/api/labels', newLabel)
         .then((response) => response.data)
         .catch(() => {
             throw new Error(`Label with name ${newLabel.labelName} already exists.`);
@@ -45,7 +45,7 @@ export function postCreateLabel(newLabel: LabelRequest): Promise<LabelApiRespons
 }
 
 export function createProjectRequest(formData: FormData): Promise<ProjectApiResponse<ShortTeam>> {
-    const requestPromise = request('POST', './api/projects', formData)
+    const requestPromise = request('POST', '/api/projects', formData)
         .then((response) => response.data)
         .catch((error: ErrorResponse) => {
             generateErrorToasts(error);
@@ -59,7 +59,7 @@ export function createProjectRequest(formData: FormData): Promise<ProjectApiResp
 }
 
 export function createUserRequest(newUser: UserRequest): Promise<UserApiResponse> {
-    const requestPromise = request('POST', './api/users', newUser)
+    const requestPromise = request('POST', '/api/users', newUser)
         .then((response) => response.data)
         .catch((error: ErrorResponse) => {
             generateErrorToasts(error);
@@ -73,7 +73,7 @@ export function createUserRequest(newUser: UserRequest): Promise<UserApiResponse
 }
 
 export function createTeamRequest(newTeam: TeamRequest): Promise<LongTeamApiResponse> {
-    const requestPromise = request('POST', './api/teams', newTeam)
+    const requestPromise = request('POST', '/api/teams', newTeam)
         .then((response) => response.data)
         .catch(() => {
             throw new Error(`Adding team failed.`);
@@ -87,7 +87,7 @@ export function createTeamRequest(newTeam: TeamRequest): Promise<LongTeamApiResp
 }
 
 export function addTeamMember(userId: number, teamId: number): Promise<void> {
-    const requestPromise = request('POST', `./api/teams/${teamId}/members/${userId}`)
+    const requestPromise = request('POST', `/api/teams/${teamId}/members/${userId}`)
         .then(() => {
         })
         .catch(() => {

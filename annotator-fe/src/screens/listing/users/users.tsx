@@ -2,12 +2,13 @@ import React, {useEffect, useState} from 'react';
 import {Button, Form, Table} from 'react-bootstrap';
 import {Check, Pencil, Plus, Trash, X} from 'react-bootstrap-icons';
 import {fetchRoles, fetchTeams, fetchUsers} from '../../../persistence/requests/fetcher';
-import {getUserUsername, request} from '../../../security/auth';
+import {getUserUsername} from '../../../security/auth';
 import AddUserModal from './add-user-modal';
 import DeleteUserModal from './delete-user-modal';
 import {UserRequest} from '../../../persistence/model/requests';
 import {mapUserRequest} from '../../../persistence/mapper/mapper';
 import {LongTeam, LongUser} from '../../../persistence/model/data';
+import { updateUser } from '../../../persistence/requests/updater';
 
 export interface UserInfo {
     id: number;
@@ -19,8 +20,8 @@ export default function Users() {
     const [showAddUserModal, setShowAddUserModal] = useState(false);
     const [showDeleteUserConfirmation, setShowDeleteUserConfirmation] = useState(false);
     const [userToDelete, setUserToDelete] = useState<UserInfo | null>(null);
-    const [editMode, setEditMode] = useState<number | null>(null);
-    const [editValues, setEditValues] = useState<UserRequest>({});
+    const [editUserId, setEditUserId] = useState<number | null>(null);
+    const [editUserValues, setEditUserValues] = useState<UserRequest>({});
     const [teams, setTeams] = useState<LongTeam[]>([]);
     const [roles, setRoles] = useState<string[]>([]);
 
@@ -30,29 +31,29 @@ export default function Users() {
         setShowDeleteUserConfirmation(true);
     };
     const handleUserEdit = (user: LongUser) => {
-        setEditMode(user.id);
-        setEditValues({...mapUserRequest(user)});
+        setEditUserId(user.id);
+        setEditUserValues({...mapUserRequest(user)});
     };
     const handleFieldChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
         field: string
     ) => {
-        setEditValues({...editValues, [field]: e.target.value});
+        setEditUserValues({...editUserValues, [field]: e.target.value});
     };
     const handleSelectChange = (field: string, team: LongTeam | undefined) => {
-        setEditValues({...editValues, [field]: team ? team.id : null});
+        setEditUserValues({...editUserValues, [field]: team ? team.id : null});
     };
     const handleSubmitUserEdit = () => {
-        request('PUT', `./api/users/${editMode}`, editValues);
-        handleCancelUserEdit();
+        if (editUserId === null) return;
+        updateUser(editUserId, editUserValues).then(handleCancelUserEdit);
     };
     const handleCancelUserEdit = () => {
-        setEditMode(null);
+        setEditUserId(null);
     };
 
     useEffect(() => {
         fetchUsers().then(setUsers);
-    }, [showAddUserModal, showDeleteUserConfirmation, !editMode]);
+    }, [showAddUserModal, showDeleteUserConfirmation, !editUserId]);
     useEffect(() => {
         fetchTeams().then(setTeams);
     }, []);
@@ -76,32 +77,32 @@ export default function Users() {
                 <tbody>
                 {users.map((user) => (
                     <tr key={user.id} className="align-middle">
-                        {editMode === user.id ? (
+                        {editUserId === user.id ? (
                             <>
                                 <td>
                                     <Form.Control
                                         type="text"
-                                        value={editValues.firstName}
+                                        value={editUserValues.firstName}
                                         onChange={(e) => handleFieldChange(e, 'firstName')}
                                     />
                                     <Form.Control
                                         type="text"
-                                        value={editValues.lastName}
+                                        value={editUserValues.lastName}
                                         onChange={(e) => handleFieldChange(e, 'lastName')}
                                     />
                                 </td>
                                 <td>
                                     <Form.Control
                                         type="datalist"
-                                        value={editValues.username}
+                                        value={editUserValues.username}
                                         onChange={(e) => handleFieldChange(e, 'username')}
                                     />
                                 </td>
                                 <td>
                                     <Form.Select
                                         defaultValue={
-                                            editValues.teamId !== null && editValues.teamId !== undefined
-                                                ? editValues.teamId
+                                            editUserValues.teamId !== null && editUserValues.teamId !== undefined
+                                                ? editUserValues.teamId
                                                 : undefined
                                         }
                                         onChange={(e) =>
@@ -121,7 +122,7 @@ export default function Users() {
                                 </td>
                                 <td>
                                     <Form.Select
-                                        defaultValue={editValues.role}
+                                        defaultValue={editUserValues.role}
                                         onChange={(e) => handleFieldChange(e, 'role')}
                                     >
                                         {roles.map((role) => (

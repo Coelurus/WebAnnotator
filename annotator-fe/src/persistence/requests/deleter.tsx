@@ -3,7 +3,7 @@ import {ErrorResponse} from '../errors/error-response';
 import generateErrorToasts from '../../screens/notifications/toast-util';
 
 export function deleteTeamRequest(teamId: number): Promise<void> {
-    return request('DELETE', `./api/teams/${teamId}`)
+    return request('DELETE', `/api/teams/${teamId}`)
         .then(() => {
         })
         .catch((error: ErrorResponse) => {
@@ -12,7 +12,7 @@ export function deleteTeamRequest(teamId: number): Promise<void> {
 }
 
 export function deleteProjectRequest(projectId: number): Promise<void> {
-    return request('DELETE', `./api/projects/${projectId}`)
+    return request('DELETE', `/api/projects/${projectId}`)
         .then(() => {
         })
         .catch((error: ErrorResponse) => {

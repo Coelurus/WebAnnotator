@@ -96,7 +96,7 @@ export const request = (
 export const loginRequest = (data: LoginCredentials) => {
     return axios({
         method: 'POST',
-        url: './api/auth/login',
+        url: '/api/auth/login',
         data: data
     });
 };
@@ -104,7 +104,7 @@ export const loginRequest = (data: LoginCredentials) => {
 export const signupRequest = (data: SignupCredentials) => {
     return axios({
         method: 'POST',
-        url: './api/auth/signup',
+        url: '/api/auth/signup',
         data: data
     });
 };

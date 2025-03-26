@@ -8,8 +8,8 @@ import {LongTeam, LongUser} from '../../../persistence/model/data';
 import AddTeamModal from './add-team-modal';
 import {TeamRequest} from '../../../persistence/model/requests';
 import {mapTeamRequest} from '../../../persistence/mapper/mapper';
-import {request} from '../../../security/auth';
 import AddMemberModal from './add-team-member-modal';
+import { updateTeam } from '../../../persistence/requests/updater';
 
 interface TeamInfo {
     id: number;
@@ -48,7 +48,8 @@ export default function Teams() {
         setEditTeamValues({...editTeamValues, [field]: e.target.value});
     };
     const handleSubmitTeamEdit = () => {
-        request('PUT', `./api/teams/${editTeamId}`, editTeamValues).then(() => handleCancelTeamEdit());
+        if(editTeamId === null) return;
+        updateTeam(editTeamId, editTeamValues).then(() => handleCancelTeamEdit());
     };
     const handleCancelTeamEdit = () => {
         setEditTeamId(null);
