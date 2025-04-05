@@ -1,0 +1,33 @@
+name: Generate and Deploy Javadoc
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: 'oracle'
+
+      - name: Generate Javadoc
+        working-directory: annotator-be
+        run: mvn javadoc:javadoc
+
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: gh-pages
+          folder: annotator-be/target/site/apidocs
+          clean: true
