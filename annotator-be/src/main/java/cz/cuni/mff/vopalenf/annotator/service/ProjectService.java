@@ -22,7 +22,6 @@ import cz.cuni.mff.vopalenf.annotator.enums.ProgressEnum;
 import cz.cuni.mff.vopalenf.annotator.exception.StorageException;
 import cz.cuni.mff.vopalenf.annotator.exception.api.BadRequestException;
 import cz.cuni.mff.vopalenf.annotator.exception.api.NotFoundException;
-import cz.cuni.mff.vopalenf.annotator.manager.DataLoaderManager;
 import cz.cuni.mff.vopalenf.annotator.manager.storage.StorageManager;
 import cz.cuni.mff.vopalenf.annotator.mapper.AnnotationMapper;
 import cz.cuni.mff.vopalenf.annotator.mapper.LabelMapper;
@@ -66,8 +65,6 @@ public class ProjectService {
 
     private final StorageManager storageManager;
 
-    private final DataLoaderManager dataLoaderManager;
-
     private final LabelMapper labelMapper;
 
     private final AnnotationMapper annotationMapper;
@@ -81,7 +78,6 @@ public class ProjectService {
                           StorageManager storageManager,
                           ProjectMapper projectMapper,
                           TeamMapper teamMapper,
-                          DataLoaderManager dataLoaderManager,
                           LabelMapper labelMapper,
                           AnnotationMapper annotationMapper,
                           FileSystemService fileSystemService,
@@ -94,7 +90,6 @@ public class ProjectService {
         this.labelRepository = labelRepository;
         this.projectMapper = projectMapper;
         this.teamMapper = teamMapper;
-        this.dataLoaderManager = dataLoaderManager;
         this.labelMapper = labelMapper;
         this.annotationMapper = annotationMapper;
         this.fileSystemService = fileSystemService;
