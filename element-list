@@ -13,7 +13,6 @@ cz.cuni.mff.vopalenf.annotator.dao.repository
 cz.cuni.mff.vopalenf.annotator.enums
 cz.cuni.mff.vopalenf.annotator.exception
 cz.cuni.mff.vopalenf.annotator.exception.api
-cz.cuni.mff.vopalenf.annotator.manager
 cz.cuni.mff.vopalenf.annotator.manager.storage
 cz.cuni.mff.vopalenf.annotator.mapper
 cz.cuni.mff.vopalenf.annotator.security
