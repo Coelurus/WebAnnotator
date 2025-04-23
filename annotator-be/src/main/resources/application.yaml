@@ -15,6 +15,11 @@ spring:
 
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
+    show-sql: false
+    properties:
+      hibernate:
+        show_sql: false
+        generate_statistics: false
 
   h2:
     console:
@@ -28,6 +33,15 @@ spring:
     jwt:
       secret-key: "secret"
       # secret-key: ${JWT_SECRET}
+
+logging:
+  level:
+    root: info
+    org:
+      springframework: INFO
+      hibernate:
+        sql: INFO
+
 
 management:
   server:
