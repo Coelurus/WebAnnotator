@@ -31,25 +31,30 @@ def on_click(x, y, button, pressed):
             pyautogui.press("enter")
 
             print("Recording started")
-            fourcc = cv2.VideoWriter_fourcc(*"XVID")
+            fourcc = cv2.VideoWriter_fourcc(*'XVID')
             out = cv2.VideoWriter(VIDEO_PATH, fourcc, 20.0, (IMAGE_WIDTH, IMAGE_HEIGHT))
+            if not out.isOpened():
+                print("Error: Could not create video writer")
+                recording = False
+                return
         else:
             print("Recording stopped")
-            out.release()
-            out = None
+            if out is not None:
+                out.release()
+                out = None
             running = False
 
-def record_video():
+def record_video(camera_index=0):
     """Starts the webcam and records video when enabled."""
     global out, recording, running
 
-    cap = cv2.VideoCapture(0)
-
+    cap = cv2.VideoCapture(camera_index)
     if not cap.isOpened():
         print("Error: Could not open camera.")
         return
 
-    cv2.namedWindow("Camera")
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, IMAGE_WIDTH)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, IMAGE_HEIGHT)
 
     while running:
         ret, frame = cap.read()
@@ -58,15 +63,19 @@ def record_video():
             print("Error: Could not read frame.")
             break
 
-        if recording and out is not None:
-            out.write(frame)
+        frame = cv2.resize(frame, (IMAGE_WIDTH, IMAGE_HEIGHT))
 
-        cv2.imshow("Camera", frame)
+        if recording and out is not None:
+            if frame.shape[2] == 3:
+                out.write(frame)
+            else:
+                print("Warning: Frame format incorrect")
 
         if cv2.waitKey(1) & 0xFF == ord("q"):
             break
 
     cap.release()
+    print("Releasing camera")
     if out is not None:
         out.release()
     cv2.destroyAllWindows()
