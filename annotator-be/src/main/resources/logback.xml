@@ -1,7 +1,7 @@
 <configuration>
 
     <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-        <file>events.log</file>
+        <file>/logs/events.log</file>
         <append>true</append>
         <encoder>
             <pattern>%d{ss.SSS} [%thread] %-5level %logger{36}#%M - %msg%n</pattern>
