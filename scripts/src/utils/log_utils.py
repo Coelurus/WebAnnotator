@@ -2,13 +2,14 @@
 from io import TextIOWrapper
 from typing import List
 import csv
-from constants import  TEMP_SAVE_PATH, REL_TEMP_SAVE_PATH
+from .constants import  TEMP_SAVE_PATH, REL_TEMP_SAVE_PATH
 
 class LogFileParser:
 
     def __init__(self, log_file_path, csv_file_path):
         self.log_file_path = log_file_path
         self.csv_file_path = csv_file_path
+        self.timestamps = set()
 
     def parse(self):
         print(self.log_file_path)
@@ -48,8 +49,11 @@ class LogFileParser:
                     [lineParts[0]] + 
                     lineParts[7:-5] +
                     [f"frame_{int(1000 * float(lineParts[0]))}_msec.jpg"])
+                self.timestamps.add(float(lineParts[0]))
                     
-
+    def get_timestamps(self) -> set[float]:
+        """Extract timestamps from log files.""" 
+        return self.timestamps
 
 if __name__ == "__main__":
     log_file_parser = LogFileParser(REL_TEMP_SAVE_PATH + "gestic_20250312_182248.log", REL_TEMP_SAVE_PATH + "output.csv")

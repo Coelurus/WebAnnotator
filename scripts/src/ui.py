@@ -6,9 +6,10 @@ from pynput import mouse
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 
+from utils.log_utils import LogFileParser
 from utils.video_utils import on_click, record_video, save_frames
-from utils.file_utils import get_timestamps, zip_files, clean_temp
-from utils.constants import CAMERA_INDEX_RANGE, MIN_IMAGE_SIZE, MAX_IMAGE_SIZE, IMAGE_SIZE_STEP
+from utils.file_utils import get_log_file_name, zip_files, clean_temp
+from utils.constants import CAMERA_INDEX_RANGE, MIN_IMAGE_SIZE, MAX_IMAGE_SIZE, IMAGE_SIZE_STEP, REL_TEMP_SAVE_PATH, OUT_PATH
 
 class App:
     def __init__(self):
@@ -72,6 +73,26 @@ class App:
         listener.join()
         self.camera_changed()
         self.progress_label.config(text="Finished...")
+
+        log_file_name = get_log_file_name(REL_TEMP_SAVE_PATH)
+
+        print("Video and log file created")
+        print("Parsing log file into csv")
+        log_file_parser = LogFileParser(REL_TEMP_SAVE_PATH + log_file_name, REL_TEMP_SAVE_PATH + "output.csv")
+        log_file_parser.parse()
+
+        print("Loading timestamps from log file")
+        timestamps = log_file_parser.get_timestamps()
+
+        print("Extracting matching frames")
+        save_frames(timestamps)
+
+        print("Creating ZIP file")
+        zip_files(log_file_name, OUT_PATH, REL_TEMP_SAVE_PATH)
+
+        print("Cleaning debris")
+        clean_temp()
+        print("Getting data was successful")
 
     def prepare_cam(self):
         self.chosen_camera_idx = tk.IntVar()

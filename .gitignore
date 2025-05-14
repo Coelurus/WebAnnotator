@@ -12,3 +12,5 @@ database/*
 !file_system/test
 node_modules/
 events.log
+__pycache__/
+temp/

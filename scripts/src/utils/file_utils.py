@@ -16,31 +16,23 @@ def ensure_directory_exists(path: str):
     if not os.path.exists(path):
         os.makedirs(path)
 
-def get_timestamps() -> tuple[set[float], str]:
+def get_log_file_name(path: str) -> str:
     """Extract timestamps from log files.""" 
 
-    timestamps = set()
-    for file in os.listdir(REL_TEMP_SAVE_PATH):
+    for file in os.listdir(path):
         if file.endswith(".log"):
-            with open(os.path.join(REL_TEMP_SAVE_PATH, file)) as my_file:
-                for line in my_file:
-                    line_fragments = line.split("\t")
-                    if len(line_fragments) == 0 or not is_float(line_fragments[0]):
-                        continue
-                    timestamps.add(float(line_fragments[0]))
-                return timestamps, file
-    return set(), ""
+            return file
+    return None
 
-
-def zip_files(file_name: str):
+def zip_files(file_name: str, out_path: str, rel_temp_path: str):
     """Zip relevant files into an archive."""
-    ensure_directory_exists(OUT_PATH)
+    ensure_directory_exists(out_path)
 
-    zip_path = os.path.join(OUT_PATH, file_name.replace(".log", ".zip"))
+    zip_path = os.path.join(out_path, file_name.replace(".log", ".zip"))
     with ZipFile(zip_path, "w", ZIP_DEFLATED) as zipf:
-        for file in os.listdir(REL_TEMP_SAVE_PATH):
-            if file.endswith(".jpg") or file.endswith(".log"):
-                zipf.write(os.path.join(REL_TEMP_SAVE_PATH, file), arcname=file)
+        for file in os.listdir(rel_temp_path):
+            if file.endswith(".jpg") or file.endswith(".log") or file.endswith(".csv"):
+                zipf.write(os.path.join(rel_temp_path, file), arcname=file)
 
 
 def clean_temp():
