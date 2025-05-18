@@ -14,3 +14,4 @@ node_modules/
 events.log
 __pycache__/
 temp/
+venv/

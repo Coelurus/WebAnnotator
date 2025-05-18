@@ -1,14 +1,17 @@
 
-TEMP_SAVE_PATH = "/scripts/temp/"
+TEMP_SAVE_PATH = "/temp/"
 REL_TEMP_SAVE_PATH = "." + TEMP_SAVE_PATH
-VIDEO_PATH = ".\\scripts\\temp\\video.avi"
-OUT_PATH = ".\\scripts\\out"
-
-IMAGE_WIDTH = 50
-IMAGE_HEIGHT = 50
+VIDEO_PATH = ".\\temp\\video.avi"
+OUT_PATH = ".\\out"
 
 MIN_IMAGE_SIZE = 30
 MAX_IMAGE_SIZE = 100
 IMAGE_SIZE_STEP = 5
 
 CAMERA_INDEX_RANGE = 10
+
+MIN_PERIOD_MS = 1
+MAX_PERIOD_MS = 20
+
+SENSOR_FAILURE_EXIT_CODE = 1
+NO_CAMERA_EXIT_CODE = 2

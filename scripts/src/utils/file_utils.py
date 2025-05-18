@@ -1,6 +1,5 @@
 import os
 from zipfile import ZipFile, ZIP_DEFLATED
-from .constants import REL_TEMP_SAVE_PATH, OUT_PATH
 
 def is_float(string):
     """Check if a string can be converted to a float."""
@@ -28,14 +27,14 @@ def zip_files(file_name: str, out_path: str, rel_temp_path: str):
     """Zip relevant files into an archive."""
     ensure_directory_exists(out_path)
 
-    zip_path = os.path.join(out_path, file_name.replace(".log", ".zip"))
+    zip_path = os.path.join(out_path, file_name + ".zip")
     with ZipFile(zip_path, "w", ZIP_DEFLATED) as zipf:
         for file in os.listdir(rel_temp_path):
-            if file.endswith(".jpg") or file.endswith(".log") or file.endswith(".csv"):
+            if file.endswith(".webp") or file.endswith(".png") or file.endswith(".jpg") or file.endswith(".log") or file.endswith(".csv"):
                 zipf.write(os.path.join(rel_temp_path, file), arcname=file)
 
 
-def clean_temp():
+def clean_folder(path: str):
     """Remove temporary files."""
-    for file in os.listdir(REL_TEMP_SAVE_PATH):
-         os.remove(os.path.join(REL_TEMP_SAVE_PATH, file))
+    for file in os.listdir(path):
+         os.remove(os.path.join(path, file))

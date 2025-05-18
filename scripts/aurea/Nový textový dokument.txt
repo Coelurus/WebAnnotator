@@ -1,9 +1,0 @@
-@echo off
-:: Set the path to your exe file
-set EXE_PATH=".\Aurea.exe"
-
-:: Run the exe
-start "" %EXE_PATH%
-
-:: Wait for key press to close the batch script (optional)
-pause
