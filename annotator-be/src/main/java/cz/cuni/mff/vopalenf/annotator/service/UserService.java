@@ -12,6 +12,8 @@ import cz.cuni.mff.vopalenf.annotator.exception.api.NotFoundException;
 import cz.cuni.mff.vopalenf.annotator.mapper.TeamMapper;
 import cz.cuni.mff.vopalenf.annotator.mapper.UserMapper;
 import cz.cuni.mff.vopalenf.annotator.security.Role;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -22,6 +24,8 @@ import java.util.Optional;
 
 @Service
 public class UserService {
+
+    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
     private final UserRepository userRepository;
 
@@ -97,6 +101,8 @@ public class UserService {
      * @throws BadRequestException when username already exists
      */
     public User signup(SignupCredentials credentials) {
+        logger.info("New user signing up with username: {}", credentials.username());
+
         Optional<UserEntity> existingUser = userRepository.findByUsername(credentials.username());
         if (existingUser.isPresent()) {
             throw new BadRequestException("Username already exists", UserService.class.getSimpleName());
@@ -106,6 +112,7 @@ public class UserService {
         user.setPasswordHash(passwordEncoder.encode(CharBuffer.wrap(credentials.password())));
 
         UserEntity createdUser = userRepository.save(user);
+        logger.info("Signed up new user with username: {}", createdUser.getUsername());
         return userMapper.mapUser(createdUser);
     }
 
@@ -116,10 +123,14 @@ public class UserService {
      * @throws NotFoundException when user with given ID does not exist
      */
     public void deleteUser(Long userId) {
+        logger.info("Deleting user with id: {}", userId);
+
         if (!userRepository.existsById(userId)) {
             throw new NotFoundException("User not found", UserService.class.getSimpleName());
         }
-        userRepository.deleteById(userId);
+
+        UserEntity removedUser = userRepository.removeById(userId);
+        logger.info("Deleted user with username: {}", removedUser.getUsername());
     }
 
     /**
@@ -131,6 +142,8 @@ public class UserService {
      * @throws NotFoundException when user with given ID does not exist
      */
     public User updateUser(Long userId, UserRequest userRequest) {
+        logger.info("Updating user with id: {}", userId);
+
         UserEntity userToUpdate = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User not found", UserService.class.getSimpleName()));
 
@@ -140,7 +153,9 @@ public class UserService {
         userToUpdate.setRole(userRequest.getRole());
         userToUpdate.setTeam(teamMapper.mapTeamEntity(userRequest.getTeamId()));
 
-        return userMapper.mapUser(userRepository.save(userToUpdate));
+        User updatedUser = userMapper.mapUser(userRepository.save(userToUpdate));
+        logger.info("Updated user with username: {}", updatedUser.getUsername());
+        return updatedUser;
     }
 
     /**
@@ -151,6 +166,8 @@ public class UserService {
      * @throws BadRequestException when username already exists
      */
     public User createUser(UserRequest userRequest) {
+        logger.info("Creating new user with username: {}", userRequest.getUsername());
+
         if (userRepository.findByUsername(userRequest.getUsername()).isPresent()) {
             throw new BadRequestException("Username already exists", UserService.class.getSimpleName());
         }
@@ -163,7 +180,10 @@ public class UserService {
                 .team(teamMapper.mapTeamEntity(userRequest.getTeamId()))
                 .role(userRequest.getRole() != null ? userRequest.getRole() : Role.ROLE_USER)
                 .build();
-        return userMapper.mapUser(userRepository.save(newUser));
+
+        User createdUser = userMapper.mapUser(userRepository.save(newUser));
+        logger.info("Created new user with username: {}", createdUser.getUsername());
+        return createdUser;
     }
 
     /**

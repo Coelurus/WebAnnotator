@@ -1,7 +1,5 @@
 package cz.cuni.mff.vopalenf.annotator.config;
 
-import cz.cuni.mff.vopalenf.annotator.dao.repository.UserRepository;
-import cz.cuni.mff.vopalenf.annotator.security.UserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -16,15 +14,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    private final UserRepository userRepository;
-    private final UserDetailsServiceImpl userDetailsService;
     private final UserAuthProvider userAuthProvider;
 
-    public SecurityConfig(UserRepository userRepository,
-                          UserDetailsServiceImpl userDetailsService,
-                          UserAuthProvider userAuthProvider) {
-        this.userRepository = userRepository;
-        this.userDetailsService = userDetailsService;
+    public SecurityConfig(UserAuthProvider userAuthProvider) {
         this.userAuthProvider = userAuthProvider;
     }
 

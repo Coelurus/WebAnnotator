@@ -22,7 +22,6 @@ import cz.cuni.mff.vopalenf.annotator.enums.ProgressEnum;
 import cz.cuni.mff.vopalenf.annotator.exception.StorageException;
 import cz.cuni.mff.vopalenf.annotator.exception.api.BadRequestException;
 import cz.cuni.mff.vopalenf.annotator.exception.api.NotFoundException;
-import cz.cuni.mff.vopalenf.annotator.manager.DataLoaderManager;
 import cz.cuni.mff.vopalenf.annotator.manager.storage.StorageManager;
 import cz.cuni.mff.vopalenf.annotator.mapper.AnnotationMapper;
 import cz.cuni.mff.vopalenf.annotator.mapper.LabelMapper;
@@ -31,6 +30,8 @@ import cz.cuni.mff.vopalenf.annotator.mapper.ProgressMapper;
 import cz.cuni.mff.vopalenf.annotator.mapper.ProjectMapper;
 import cz.cuni.mff.vopalenf.annotator.mapper.TeamMapper;
 import cz.cuni.mff.vopalenf.annotator.security.Role;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -44,34 +45,20 @@ import java.util.Objects;
 @Service
 public class ProjectService {
 
+    private static final Logger logger = LoggerFactory.getLogger(ProjectService.class);
     private static final String PROJECT_NOT_FOUND_MSG = "PROJECT_NOT_FOUND";
-
     private static final Long DEFAULT_ID = 0L;
-
     private final ProjectRepository projectRepository;
-
     private final TeamRepository teamRepository;
-
     private final AnnotationRepository annotationRepository;
-
     private final LabelRepository labelRepository;
-
     private final ProjectMapper projectMapper;
-
     private final TeamMapper teamMapper;
-
     private final ProgressMapper progressMapper;
-
     private final PriorityMapper priorityMapper;
-
     private final StorageManager storageManager;
-
-    private final DataLoaderManager dataLoaderManager;
-
     private final LabelMapper labelMapper;
-
     private final AnnotationMapper annotationMapper;
-
     private final FileSystemService fileSystemService;
 
     public ProjectService(ProjectRepository projectRepository,
@@ -81,7 +68,6 @@ public class ProjectService {
                           StorageManager storageManager,
                           ProjectMapper projectMapper,
                           TeamMapper teamMapper,
-                          DataLoaderManager dataLoaderManager,
                           LabelMapper labelMapper,
                           AnnotationMapper annotationMapper,
                           FileSystemService fileSystemService,
@@ -94,7 +80,6 @@ public class ProjectService {
         this.labelRepository = labelRepository;
         this.projectMapper = projectMapper;
         this.teamMapper = teamMapper;
-        this.dataLoaderManager = dataLoaderManager;
         this.labelMapper = labelMapper;
         this.annotationMapper = annotationMapper;
         this.fileSystemService = fileSystemService;
@@ -296,6 +281,8 @@ public class ProjectService {
      * @throws StorageException when error occurs during file saving
      */
     public Project manageFileUpload(ProjectRequest projectRequest) {
+        logger.info("Uploading file: {}", projectRequest.getFile().getOriginalFilename());
+
         User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         TeamEntity teamEntity;
         if (Objects.equals(currentUser.getRole(), Role.ROLE_ADMIN.name())) {
@@ -320,6 +307,8 @@ public class ProjectService {
                 .build();
 
         storageManager.store(projectRequest.getFile());
+
+        logger.info("Stored file: {}", projectRequest.getFile().getOriginalFilename());
         return projectMapper.mapProject(projectRepository.save(projectEntity));
     }
 
@@ -331,6 +320,7 @@ public class ProjectService {
      * @throws StorageException  when folder does not exist or when deleting files fails
      */
     public void deleteProject(Long id) {
+        logger.info("Deleting project: {}", id);
         String logFileName = projectRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(PROJECT_NOT_FOUND_MSG, ProjectEntity.class.getSimpleName()))
                 .getLogFileName();

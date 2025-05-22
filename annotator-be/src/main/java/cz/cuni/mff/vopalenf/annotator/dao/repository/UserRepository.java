@@ -20,4 +20,7 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     @Transactional
     @Modifying
     void updateTeamIdById(Long teamId, Long id);
+
+
+    UserEntity removeById(Long id);
 }

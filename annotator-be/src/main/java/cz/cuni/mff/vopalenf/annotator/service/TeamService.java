@@ -9,6 +9,8 @@ import cz.cuni.mff.vopalenf.annotator.dao.repository.UserRepository;
 import cz.cuni.mff.vopalenf.annotator.exception.api.NotFoundException;
 import cz.cuni.mff.vopalenf.annotator.mapper.TeamMapper;
 import cz.cuni.mff.vopalenf.annotator.mapper.UserMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +18,8 @@ import java.util.List;
 
 @Service
 public class TeamService {
+
+    private static final Logger logger = LoggerFactory.getLogger(TeamService.class);
 
     private final TeamRepository teamRepository;
 
@@ -59,10 +63,15 @@ public class TeamService {
      * @throws NotFoundException when such team ID does not exist
      */
     public void deleteTeam(Long teamId) {
+        logger.info("Deleting team with id: {}", teamId);
+
         if (!teamRepository.existsById(teamId)) {
+            logger.error("Team with id {} does not exist", teamId);
             throw new NotFoundException("Not found team with id " + teamId, TeamService.class.getSimpleName());
         }
         teamRepository.deleteById(teamId);
+
+        logger.info("Deleted team with id: {}", teamId);
     }
 
     /**
@@ -72,6 +81,8 @@ public class TeamService {
      * @return newly created team
      */
     public Team createTeam(TeamRequest teamRequest) {
+        logger.info("Creating new team with name: {}", teamRequest.getName());
+
         TeamEntity teamEntity = TeamEntity.builder()
                 .name(teamRequest.getName())
                 .leader(userMapper.mapUserEntity(teamRequest.getLeaderId()))
@@ -83,6 +94,7 @@ public class TeamService {
             userRepository.updateTeamIdById(savedTeamEntity.getId(), teamRequest.getLeaderId());
         }
 
+        logger.info("Created new team named {}", savedTeamEntity.getName());
         return teamMapper.mapTeam(savedTeamEntity);
     }
 
@@ -94,12 +106,15 @@ public class TeamService {
      * @return updated team
      */
     public Team updateTeam(Long teamId, TeamRequest team) {
+        logger.info("Updating team with id: {}", teamId);
+
         TeamEntity teamToUpdate = teamRepository.findById(teamId)
                 .orElseThrow(() -> new NotFoundException("Team not found", TeamService.class.getSimpleName()));
 
         teamToUpdate.setName(team.getName());
         teamToUpdate.setLeader(userMapper.mapUserEntity(team.getLeaderId()));
 
+        logger.info("Updated team with id: {}", teamId);
         return teamMapper.mapTeam(teamRepository.save(teamToUpdate));
     }
 
@@ -111,11 +126,15 @@ public class TeamService {
      * @throws NotFoundException when the team ID or user ID does not exist
      */
     public void addTeamMember(Long teamId, Long userId) {
+        logger.info("Adding user with id {} into team with id {}", userId, teamId);
+
         TeamEntity teamEntity = teamRepository.findById(teamId)
                 .orElseThrow(() -> new NotFoundException("Team not found", TeamService.class.getSimpleName()));
         UserEntity userEntity = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User not found", TeamService.class.getSimpleName()));
         userEntity.setTeam(teamEntity);
         userRepository.save(userEntity);
+
+        logger.info("Added user {} to team named {}", userEntity.getUsername(), teamEntity.getName());
     }
 }

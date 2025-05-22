@@ -1,5 +1,6 @@
 .*
 !.gitignore
+!.github
 !annotator-web/.gitignore
 !annotator-fe/.gitignore
 !annotator-web/.mvn
@@ -10,3 +11,4 @@ file_system/*
 database/*
 !file_system/test
 node_modules/
+events.log
