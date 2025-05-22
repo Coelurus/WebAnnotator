@@ -1,5 +1,3 @@
-import ctypes
-import numpy as np
 import pyqtgraph as pg
 from PyQt5 import QtCore, QtWidgets
 from utils.sensor_utils import SensorUtils

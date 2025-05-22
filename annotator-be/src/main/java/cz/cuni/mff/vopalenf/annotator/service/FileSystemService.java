@@ -67,7 +67,6 @@ public class FileSystemService {
     public Resource getFrame(Long projectId, Integer position) {
         File[] imageFiles = getImageFiles(projectId);
         Arrays.sort(imageFiles);
-        Arrays.sort(imageFiles, Comparator.comparingInt(f -> Integer.parseInt(f.getPath().substring(f.getPath().indexOf("frame_") + 6, f.getPath().indexOf("_msec.jpg")))));
         Resource resource;
 
         if (imageFiles.length <= position) {

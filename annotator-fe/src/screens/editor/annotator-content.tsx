@@ -34,7 +34,8 @@ export default function AnnotatorContent({
   };
 
   const [imagePositions, setImagePositions] = React.useState<number[]>([]);
-  const [imageSources, setImageSources] = React.useState<{ [key: number]: string }>({});
+  const [imageSources, setImageSources] = React.useState<Map<number, string>>(new Map());
+  const [imageCache] = React.useState<Map<number, string>>(new Map());
 
   React.useEffect(() => {
     const startPosition = pageNum * imagesPerPage + 1;
@@ -65,20 +66,41 @@ export default function AnnotatorContent({
 
   React.useEffect(() => {
     const loadImages = async () => {
-      const newImageSources: { [key: number]: string } = {};
+      const newImageSources = new Map();
+
+      await Promise.all(       
+        imagePositions.map(async (position) => {
+          if (imageCache.has(position)) {
+            newImageSources.set(position, imageCache.get(position)!);
+          } else {
+            const response = await blobRequest(`/api/projects/${project.id}/frame/${position - 1}`);
+            const blob = new Blob([response.data], { type: response.headers['content-type'] });
+            const imageUrl = URL.createObjectURL(blob);
+  
+            imageCache.set(position, imageUrl);
+            newImageSources.set(position, imageUrl);
+          }
+        })
+      );     
+
+      setImageSources(newImageSources);
 
       await Promise.all(
         imagePositions.map(async (position) => {
-          const response = await blobRequest(`/api/projects/${project.id}/frame/${position - 1}`);
-
-          const blob = new Blob([response.data], { type: response.headers['content-type'] });
-          const imageUrl = URL.createObjectURL(blob);
-
-          newImageSources[position] = imageUrl;
-        })
-      );
-
-      setImageSources(newImageSources);
+          const toCache = position + imagesPerPage
+          if (toCache >= frameCount) return
+          if (!imageCache.has(toCache)) {
+            console.log(`Caching image for position: ${toCache}`);
+            
+            const response = await blobRequest(`/api/projects/${project.id}/frame/${toCache - 1}`);
+            const blob = new Blob([response.data], { type: response.headers['content-type'] });
+            const imageUrl = URL.createObjectURL(blob);
+            
+            imageCache.set(toCache, imageUrl);
+          }
+        }
+      )
+      )
     };
 
     loadImages();
@@ -96,7 +118,6 @@ export default function AnnotatorContent({
           <img
             id={`image-frame-${position}`}
             key={position}
-            alt={`Frame ${position}`}
             className="img-fluid"
             style={{
               objectFit: 'cover',
@@ -104,7 +125,7 @@ export default function AnnotatorContent({
               border: '5px solid rgba(0, 0, 0, 0)',
               ...selectedImageStyle(position)
             }}
-            src={imageSources[position]}
+            src={imageSources.get(position)}
             onMouseDown={(event) => handleMouseDown(event, position)}
             onMouseOver={() => handleMouseOver(position)}
             onDragStart={() => preventDragHandler}

@@ -16,3 +16,4 @@ events.log
 __pycache__/
 temp/
 venv/
+file_system/

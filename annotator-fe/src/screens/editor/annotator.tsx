@@ -22,7 +22,7 @@ export default function Project() {
   const LEFT_BUTTON = 0;
   const RIGHT_BUTTON = 2;
   const DEFAULT_IMAGE_SIZE = 50;
-  const GAP_SIZE = 5;
+  const GAP_SIZE = 4;
 
   const [pageNum, setPageNum] = useState<number>(0);
   const [frameCount, setFrameCount] = useState<number>(0);
@@ -50,7 +50,7 @@ export default function Project() {
           (screenRef.current?.clientHeight ?? 500) -
           ((headerRef.current?.clientHeight ?? 0) + (footerRef.current?.clientHeight ?? 0));
         const columns = Math.floor((gridWidth + GAP_SIZE) / (imageSize + GAP_SIZE));
-        const rows = Math.floor((gridHeight + GAP_SIZE) / (imageSize + GAP_SIZE));
+        const rows = Math.floor((gridHeight + GAP_SIZE) / (imageSize + GAP_SIZE));       
 
         setImagesPerPage(columns * rows);
       }
