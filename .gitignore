@@ -6,9 +6,13 @@
 !annotator-web/.mvn
 annotator-web/file_system/*
 out/
+!docs/examples/out/
 gs-rest-service/
 file_system/*
 database/*
 !file_system/test
 node_modules/
 events.log
+__pycache__/
+temp/
+venv/

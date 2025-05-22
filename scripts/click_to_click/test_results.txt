@@ -1,7 +1,0 @@
-// Output when all tests are run
-[PASSED]: test/utils/test_file_utils.py
-[FAILED]: test/utils/test_video_utils.py
-
-
-// Output after src/utils/file_utils.py was updated
-[PASSED]: test/utils/test_file_utils.py
