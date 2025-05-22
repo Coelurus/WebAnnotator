@@ -6,6 +6,7 @@
 !annotator-web/.mvn
 annotator-web/file_system/*
 out/
+!docs/examples/out/
 gs-rest-service/
 file_system/*
 database/*
