@@ -1,4 +1,10 @@
 services:
+  aimock:
+    build: ./aimock
+    ports:
+      - "8081:8081"
+    restart: always
+  
   frontend:
     build: ./annotator-fe
     ports:

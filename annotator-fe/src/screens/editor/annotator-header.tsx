@@ -9,6 +9,7 @@ import { postCreateLabel } from '../../persistence/requests/poster';
 import { LabelApiResponse } from '../../persistence/model/api-responses';
 import { mapLabel } from '../../persistence/mapper/mapper';
 import toast from 'react-hot-toast';
+import { Link } from 'react-router-dom';
 
 interface AnnotatorHeaderProps {
   imageSize: number;
@@ -74,7 +75,18 @@ export default function AnnotatorHeader({
   return (
     <div ref={headerRef} className="p-3 border rounded">
       <div className="d-flex align-items-center justify-content-between">
-        <h5 className="m-0">{project ? project.projectName : 'No project found'}</h5>
+        <div className="d-flex align-items-center">
+          <Link to="../../" className="p-2 d-inline-block me-2">
+            <svg width="24" height="48" viewBox="0 0 60 120" xmlns="http://www.w3.org/2000/svg">
+              <path d="M30,0 L60,20 L60,120 L0,120 L0,20 Z" fill="#f7f7f7" stroke="#333" strokeWidth="3" />
+              <circle cx="30" cy="10" r="5" fill="#fff" stroke="#333" strokeWidth="2" />
+              <text x="30" y="75" textAnchor="middle" fontFamily="Arial, sans-serif" fontSize="36" fill="#333" dominantBaseline="middle">
+                A
+              </text>
+            </svg>
+          </Link>
+          <h5 className="m-0">{project ? project.projectName : 'No project found'}</h5>
+        </div>
         <Form.Select
           className="form-select w-auto ms-2"
           name="label"

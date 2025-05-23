@@ -19,4 +19,12 @@ public interface StorageManager {
      * @param filename Name of file to be deleted
      */
     void delete(String filename);
+
+    /**
+     * Load file from a local disk.
+     *
+     * @param filename Name of file to be loaded
+     * @return File as byte array
+     */
+    byte[] load(String filename);
 }

@@ -90,7 +90,6 @@ export default function AnnotatorContent({
           const toCache = position + imagesPerPage
           if (toCache >= frameCount) return
           if (!imageCache.has(toCache)) {
-            console.log(`Caching image for position: ${toCache}`);
             
             const response = await blobRequest(`/api/projects/${project.id}/frame/${toCache - 1}`);
             const blob = new Blob([response.data], { type: response.headers['content-type'] });
@@ -109,11 +108,24 @@ export default function AnnotatorContent({
   return (
     <div className="d-flex flex-wrap gap-1 image-grid" ref={gridRef}>
       {imagePositions.map((position) => (
-        <div id={`image-frame-wrapper-${position}`} key={`image-frame-wrapper-${position}`}>
+        <div 
+        id={`image-frame-wrapper-${position}`} 
+        key={`image-frame-wrapper-${position}`}
+        style={{
+          position: 'relative',
+        }}>
           <div
             className="image-frame-indicator"
             id={`image-frame-indicator-${position}`}
             key={`image-frame-indicator-${position}`}
+            style={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              fontSize: '2rem',
+              pointerEvents: 'none',
+            }}
           ></div>
           <img
             id={`image-frame-${position}`}

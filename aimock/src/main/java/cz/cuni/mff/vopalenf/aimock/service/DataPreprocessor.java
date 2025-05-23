@@ -14,7 +14,7 @@ import java.util.Map;
 @Component
 public class DataPreprocessor {
 
-    private static final int FEATURES_COUNT = 10;
+    private static final int FEATURES_COUNT = 3;
 
     @Getter
     private static List<String> uniqueLabels;
@@ -47,10 +47,7 @@ public class DataPreprocessor {
             LogData data = logDataList.get(i);
 
             featureArray[i] = new double[]{
-                    data.getCicS(), data.getCicW(), data.getCicN(),
-                    data.getCicE(), data.getCicC(),
-                    data.getSdS(), data.getSdW(), data.getSdN(),
-                    data.getSdE(), data.getSdC()
+                    data.getPosX(), data.getPosY(), data.getPosZ()
             };
 
             labelArray[i] = labelMap.get(data.getLabel());
@@ -71,10 +68,7 @@ public class DataPreprocessor {
             LogData data = testDataList.get(i);
 
             featureArray[i] = new double[]{
-                    data.getCicS(), data.getCicW(), data.getCicN(),
-                    data.getCicE(), data.getCicC(),
-                    data.getSdS(), data.getSdW(), data.getSdN(),
-                    data.getSdE(), data.getSdC()
+                    data.getPosX(), data.getPosY(), data.getPosZ()
             };
         }
 

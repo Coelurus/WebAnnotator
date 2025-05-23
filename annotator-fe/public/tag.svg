@@ -1,0 +1,12 @@
+<svg width="60" height="120" viewBox="0 0 60 120" xmlns="http://www.w3.org/2000/svg">
+  <!-- Tag shape with triangular taper on top -->
+  <path d="M30,0 L60,20 L60,120 L0,120 L0,20 Z" fill="#f7f7f7" stroke="#333" stroke-width="3"></path>
+
+  <!-- Hole in the center of the triangular top -->
+  <circle cx="30" cy="10" r="5" fill="#fff" stroke="#333" stroke-width="2"></circle>
+
+  <!-- Centered letter A -->
+  <text x="30" y="75" text-anchor="middle" font-family="Arial, sans-serif" font-size="36" fill="#333" dominant-baseline="middle">
+    A
+  </text>
+</svg>

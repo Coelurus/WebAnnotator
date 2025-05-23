@@ -17,3 +17,4 @@ __pycache__/
 temp/
 venv/
 file_system/
+!/file_system/recording_20250522_230912

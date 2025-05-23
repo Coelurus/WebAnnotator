@@ -2,6 +2,7 @@ package cz.cuni.mff.vopalenf.annotator.api.controller;
 
 import cz.cuni.mff.vopalenf.annotator.api.model.Annotation;
 import cz.cuni.mff.vopalenf.annotator.api.model.Label;
+import cz.cuni.mff.vopalenf.annotator.api.model.PredictionTriple;
 import cz.cuni.mff.vopalenf.annotator.api.model.Progress;
 import cz.cuni.mff.vopalenf.annotator.api.model.Project;
 import cz.cuni.mff.vopalenf.annotator.api.request.LabelRequest;
@@ -299,5 +300,11 @@ public class ProjectController {
     @GetMapping("/projects/progresses")
     public ResponseEntity<List<Progress>> getAllProjectProgresses() {
         return ResponseEntity.ok(projectService.getAllProjectProgresses());
+    }
+
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
+    @PostMapping("/projects/{projectId}/trainAI")
+    public ResponseEntity<List<PredictionTriple>> trainAI(@PathVariable Long projectId) {
+        return ResponseEntity.ok(projectService.trainAI(projectId));
     }
 }

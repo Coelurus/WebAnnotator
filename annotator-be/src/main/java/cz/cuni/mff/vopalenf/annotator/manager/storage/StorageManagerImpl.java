@@ -111,6 +111,19 @@ public class StorageManagerImpl implements StorageManager {
         }
     }
 
+    @Override
+    public byte[] load(String filename) {
+        if (filename.isEmpty()) {
+            throw new StorageException("Filename must not be empty!");
+        }
+        Path filePath = this.rootLocation.resolve(filename);
+        try {
+            return Files.readAllBytes(filePath);
+        } catch (IOException e) {
+            throw new StorageException("Failure occurred during loading files...", e);
+        }
+    }
+
     /**
      * Delete directory and everything inside it
      *

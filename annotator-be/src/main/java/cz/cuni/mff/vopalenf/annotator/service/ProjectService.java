@@ -2,11 +2,14 @@ package cz.cuni.mff.vopalenf.annotator.service;
 
 import cz.cuni.mff.vopalenf.annotator.api.model.Annotation;
 import cz.cuni.mff.vopalenf.annotator.api.model.Label;
+import cz.cuni.mff.vopalenf.annotator.api.model.LogData;
+import cz.cuni.mff.vopalenf.annotator.api.model.PredictionTriple;
 import cz.cuni.mff.vopalenf.annotator.api.model.Progress;
 import cz.cuni.mff.vopalenf.annotator.api.model.Project;
 import cz.cuni.mff.vopalenf.annotator.api.model.User;
 import cz.cuni.mff.vopalenf.annotator.api.request.LabelRequest;
 import cz.cuni.mff.vopalenf.annotator.api.request.ProjectRequest;
+import cz.cuni.mff.vopalenf.annotator.client.AIClient;
 import cz.cuni.mff.vopalenf.annotator.constants.Constants;
 import cz.cuni.mff.vopalenf.annotator.dao.model.AnnotationEntity;
 import cz.cuni.mff.vopalenf.annotator.dao.model.LabelEntity;
@@ -35,9 +38,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+
+import static cz.cuni.mff.vopalenf.annotator.constants.Constants.NO_GESTURE;
 
 /**
  * Service taking care of projects
@@ -60,6 +70,7 @@ public class ProjectService {
     private final LabelMapper labelMapper;
     private final AnnotationMapper annotationMapper;
     private final FileSystemService fileSystemService;
+    private final AIClient aiClient;
 
     public ProjectService(ProjectRepository projectRepository,
                           TeamRepository teamRepository,
@@ -72,7 +83,8 @@ public class ProjectService {
                           AnnotationMapper annotationMapper,
                           FileSystemService fileSystemService,
                           ProgressMapper progressMapper,
-                          PriorityMapper priorityMapper) {
+                          PriorityMapper priorityMapper,
+                          AIClient aiClient) {
         this.projectRepository = projectRepository;
         this.teamRepository = teamRepository;
         this.storageManager = storageManager;
@@ -85,6 +97,7 @@ public class ProjectService {
         this.fileSystemService = fileSystemService;
         this.progressMapper = progressMapper;
         this.priorityMapper = priorityMapper;
+        this.aiClient = aiClient;
     }
 
     /**
@@ -360,5 +373,55 @@ public class ProjectService {
         );
 
         return projectMapper.mapProject(projectRepository.save(projectToUpdate));
+    }
+
+    public List<PredictionTriple> trainAI(Long projectId) {
+        Project project = getProject(projectId);
+        byte[] logData = storageManager.load(project.getLogFileName() + "\\" + project.getLogFileName() + ".csv");
+        String csv = new String(logData, StandardCharsets.UTF_8);
+
+        List<LogData> logDataList = new ArrayList<>();
+        String[] lines = csv.split("\n");
+
+        for (Long i = 1L; i < lines.length; i++) {
+            String line = lines[Math.toIntExact(i)].trim();
+            if (line.isEmpty()) continue;
+
+            String[] parts = line.split(",");
+            if (parts.length < 5) continue;
+
+            String timestampStr = parts[0];
+            double x = Double.parseDouble(parts[2]);
+            double y = Double.parseDouble(parts[3]);
+            double z = Double.parseDouble(parts[4]);
+
+            double timeInSeconds = parseTimeToSeconds(timestampStr);
+
+            String label;
+            AnnotationEntity annotationEntity = annotationRepository.findByProjectIdAndFrameId(projectId, i-1);
+            if (annotationEntity != null) {
+                label = labelRepository.findById(annotationEntity.getLabelId()).orElse(NO_GESTURE).getLabel();
+            } else {
+                label = "NO_GESTURE";
+            }
+
+            logDataList.add(
+                    LogData.builder()
+                            .time(timeInSeconds)
+                            .posX(x)
+                            .posY(y)
+                            .posZ(z)
+                            .label(label)
+                            .build()
+            );
+        }
+
+
+        return aiClient.sendLogData(projectId, logDataList);
+    }
+
+    private double parseTimeToSeconds(String timestamp) {
+        LocalTime time = LocalDateTime.parse(timestamp, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).toLocalTime();
+        return time.toSecondOfDay();
     }
 }
