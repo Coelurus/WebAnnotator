@@ -36,7 +36,8 @@ public enum ProgressEnum {
     /**
      * Get ProgressEnum object based on its integer representation
      *
-     * @param value Integer representation of ProgressEnum
+     * @param value
+     *            Integer representation of ProgressEnum
      * @return ProgressEnum for valid values. {@code NOT_STARTED} otherwise
      */
     public static ProgressEnum fromValue(int value) {
@@ -50,7 +51,8 @@ public enum ProgressEnum {
     /**
      * Get ProgressEnum object based on its name
      *
-     * @param name Human-readable name of ProgressEnum
+     * @param name
+     *            Human-readable name of ProgressEnum
      * @return ProgressEnum for valid values. {@code NOT_STARTED} otherwise
      */
     public static ProgressEnum fromName(String name) {

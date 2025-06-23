@@ -58,18 +58,12 @@ class UserControllerTest {
     @WithMockUser(authorities = {"ROLE_USER"})
     @DisplayName("Should return forbidden on get all users when requested by user")
     void getUsers_ShouldReturnForbidden_WhenRoleUser() throws Exception {
-        mockMvc.perform(get("/api/users"))
-                .andExpect(status().isForbidden())
+        mockMvc.perform(get("/api/users")).andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.errors[0].message").exists());
     }
 
     public User createUser(String username) {
-        return User.builder()
-                .username(username)
-                .password(PASSWORD)
-                .firstName(FIRST_NAME)
-                .lastName(LAST_NAME)
-                .role(Role.ROLE_USER.getName())
-                .build();
+        return User.builder().username(username).password(PASSWORD).firstName(FIRST_NAME).lastName(LAST_NAME)
+                .role(Role.ROLE_USER.getName()).build();
     }
 }

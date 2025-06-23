@@ -30,12 +30,14 @@ public class ProjectRequest {
      */
     private String progress;
     /**
-     * ID of the team to which the project belongs. Can be null if the project is not associated with any team.
+     * ID of the team to which the project belongs. Can be null if the project is
+     * not associated with any team.
      */
     @Nullable
     private Long teamId;
     /**
-     * Zip file containing the log file with sensor data and frames captured by the camera.
+     * Zip file containing the log file with sensor data and frames captured by the
+     * camera.
      */
     private MultipartFile file;
 }

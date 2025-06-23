@@ -17,8 +17,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 /**
- * Service for managing teams in the application.
- * Provides methods to create, update, delete, and retrieve teams.
+ * Service for managing teams in the application. Provides methods to create,
+ * update, delete, and retrieve teams.
  */
 @Service
 public class TeamService {
@@ -36,16 +36,18 @@ public class TeamService {
     /**
      * Constructor for TeamService.
      *
-     * @param teamRepository    TeamRepository instance to use for database operations
-     * @param userRepository    UserRepository instance to use for user operations
-     * @param userMapper        UserMapper instance to map UserEntity to User
-     * @param teamMapper        TeamMapper instance to map TeamEntity to Team
+     * @param teamRepository
+     *            TeamRepository instance to use for database operations
+     * @param userRepository
+     *            UserRepository instance to use for user operations
+     * @param userMapper
+     *            UserMapper instance to map UserEntity to User
+     * @param teamMapper
+     *            TeamMapper instance to map TeamEntity to Team
      */
     @Autowired
-    public TeamService(TeamRepository teamRepository,
-                       UserRepository userRepository,
-                       UserMapper userMapper,
-                       TeamMapper teamMapper) {
+    public TeamService(TeamRepository teamRepository, UserRepository userRepository, UserMapper userMapper,
+            TeamMapper teamMapper) {
         this.teamRepository = teamRepository;
         this.userMapper = userMapper;
         this.teamMapper = teamMapper;
@@ -59,20 +61,16 @@ public class TeamService {
      */
     public List<Team> getAllTeams() {
         return teamRepository.findAll().stream()
-                .map(teamEntity -> teamMapper.mapTeam(
-                        teamEntity,
-                        userMapper.mapUser(
-                                teamEntity.getLeader()
-                        )
-                ))
-                .toList();
+                .map(teamEntity -> teamMapper.mapTeam(teamEntity, userMapper.mapUser(teamEntity.getLeader()))).toList();
     }
 
     /**
      * Delete team by its ID
      *
-     * @param teamId ID of a team to delete
-     * @throws NotFoundException when such team ID does not exist
+     * @param teamId
+     *            ID of a team to delete
+     * @throws NotFoundException
+     *             when such team ID does not exist
      */
     public void deleteTeam(Long teamId) {
         logger.info("Deleting team with id: {}", teamId);
@@ -87,18 +85,18 @@ public class TeamService {
     }
 
     /**
-     * Create new team and save it to the database. If leaderId is not null, make the leader member of the new team and remove his leadership from other teams.
+     * Create new team and save it to the database. If leaderId is not null, make
+     * the leader member of the new team and remove his leadership from other teams.
      *
-     * @param teamRequest Team payload
+     * @param teamRequest
+     *            Team payload
      * @return newly created team
      */
     public Team createTeam(TeamRequest teamRequest) {
         logger.info("Creating new team with name: {}", teamRequest.getName());
 
-        TeamEntity teamEntity = TeamEntity.builder()
-                .name(teamRequest.getName())
-                .leader(userMapper.mapUserEntity(teamRequest.getLeaderId()))
-                .build();
+        TeamEntity teamEntity = TeamEntity.builder().name(teamRequest.getName())
+                .leader(userMapper.mapUserEntity(teamRequest.getLeaderId())).build();
         TeamEntity savedTeamEntity = teamRepository.save(teamEntity);
 
         if (teamRequest.getLeaderId() != null) {
@@ -113,8 +111,10 @@ public class TeamService {
     /**
      * Update existing team in database
      *
-     * @param teamId ID of a team to update
-     * @param team   Team payload
+     * @param teamId
+     *            ID of a team to update
+     * @param team
+     *            Team payload
      * @return updated team
      */
     public Team updateTeam(Long teamId, TeamRequest team) {
@@ -133,9 +133,12 @@ public class TeamService {
     /**
      * Add a member to a team
      *
-     * @param teamId ID of the team
-     * @param userId ID of the user to add as a member
-     * @throws NotFoundException when the team ID or user ID does not exist
+     * @param teamId
+     *            ID of the team
+     * @param userId
+     *            ID of the user to add as a member
+     * @throws NotFoundException
+     *             when the team ID or user ID does not exist
      */
     public void addTeamMember(Long teamId, Long userId) {
         logger.info("Adding user with id {} into team with id {}", userId, teamId);

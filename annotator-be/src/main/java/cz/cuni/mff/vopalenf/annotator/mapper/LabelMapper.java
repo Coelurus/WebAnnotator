@@ -13,7 +13,8 @@ public class LabelMapper {
     /**
      * Maps a LabelEntity to a Label.
      *
-     * @param labelEntity the LabelEntity to map
+     * @param labelEntity
+     *            the LabelEntity to map
      * @return the mapped Label, or null if the input is null
      */
     public Label mapLabel(LabelEntity labelEntity) {
@@ -21,10 +22,7 @@ public class LabelMapper {
             return null;
         }
 
-        return Label.builder()
-                .id(labelEntity.getId())
-                .labelName(labelEntity.getLabel())
-                .color(labelEntity.getColor())
+        return Label.builder().id(labelEntity.getId()).labelName(labelEntity.getLabel()).color(labelEntity.getColor())
                 .build();
     }
 }

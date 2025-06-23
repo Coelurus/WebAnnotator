@@ -21,6 +21,5 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     @Modifying
     void updateTeamIdById(Long teamId, Long id);
 
-
     UserEntity removeById(Long id);
 }

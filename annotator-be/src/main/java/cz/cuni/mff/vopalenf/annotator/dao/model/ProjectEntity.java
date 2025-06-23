@@ -46,8 +46,8 @@ public class ProjectEntity {
     private String projectName;
 
     /**
-     * Name of the log file that was generated for this project. It is also the name of folder in file-system
-     * where data for this project are stored.
+     * Name of the log file that was generated for this project. It is also the name
+     * of folder in file-system where data for this project are stored.
      */
     @Column(name = "log_file_name", nullable = false)
     private String logFileName;
@@ -78,6 +78,5 @@ public class ProjectEntity {
     @ManyToOne
     @JoinColumn(name = "team_id", nullable = true)
     private TeamEntity team;
-
 
 }

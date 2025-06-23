@@ -11,21 +11,20 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.web.client.RestTemplate;
 
 /**
- * The main application class for the Annotator service.
- * It initializes the Spring Boot application and configures necessary beans.
+ * The main application class for the Annotator service. It initializes the
+ * Spring Boot application and configures necessary beans.
  */
 @SpringBootApplication
 @EnableMethodSecurity
 @EnableConfigurationProperties(StorageConfig.class)
-@OpenAPIDefinition(
-        info = @Info(title = "Annotator", version = "1.0")
-)
+@OpenAPIDefinition(info = @Info(title = "Annotator", version = "1.0"))
 public class AnnotatorApplication {
 
     /**
      * The main method to run the Annotator application.
      *
-     * @param args command line arguments
+     * @param args
+     *            command line arguments
      */
     public static void main(String[] args) {
         SpringApplication.run(AnnotatorApplication.class, args);

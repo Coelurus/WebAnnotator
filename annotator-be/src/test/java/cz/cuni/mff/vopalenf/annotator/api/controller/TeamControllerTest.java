@@ -56,24 +56,16 @@ class TeamControllerTest {
     @WithMockUser(authorities = {"ROLE_USER"})
     @DisplayName("Should return forbidden on get all users when requested by user")
     void getTeams_ShouldReturnForbidden_WhenRoleUser() throws Exception {
-        mockMvc.perform(get("/api/teams"))
-                .andExpect(status().isForbidden());
+        mockMvc.perform(get("/api/teams")).andExpect(status().isForbidden());
     }
 
     public Team createTeam(String name) {
-        return Team.builder()
-                .name(name)
-                .build();
+        return Team.builder().name(name).build();
     }
 
     public User createUser() {
-        return User.builder()
-                .id(USER_ID)
-                .username(USERNAME)
-                .firstName(FIRST_NAME)
-                .lastName(LAST_NAME)
-                .role(Role.ROLE_USER.getName())
-                .build();
+        return User.builder().id(USER_ID).username(USERNAME).firstName(FIRST_NAME).lastName(LAST_NAME)
+                .role(Role.ROLE_USER.getName()).build();
 
     }
 }

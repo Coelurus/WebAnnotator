@@ -6,8 +6,8 @@ import lombok.Builder;
 import lombok.Getter;
 
 /**
- * Exception denoting problems with API.
- * Contains an error code, message, and scope.
+ * Exception denoting problems with API. Contains an error code, message, and
+ * scope.
  */
 @AllArgsConstructor
 @Getter

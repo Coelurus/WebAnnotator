@@ -20,8 +20,10 @@ public class TeamMapper {
     /**
      * Constructor for TeamMapper.
      *
-     * @param modelMapper the ModelMapper instance to use for mapping
-     * @param teamRepository the TeamRepository instance to use for fetching TeamEntity by ID
+     * @param modelMapper
+     *            the ModelMapper instance to use for mapping
+     * @param teamRepository
+     *            the TeamRepository instance to use for fetching TeamEntity by ID
      */
     @Autowired
     public TeamMapper(ModelMapper modelMapper, TeamRepository teamRepository) {
@@ -32,7 +34,8 @@ public class TeamMapper {
     /**
      * Maps a TeamEntity to a Team without associating it with a User.
      *
-     * @param teamEntity the TeamEntity to map
+     * @param teamEntity
+     *            the TeamEntity to map
      * @return the mapped Team, or null if the input is null
      */
     public Team mapTeam(TeamEntity teamEntity) {
@@ -42,8 +45,10 @@ public class TeamMapper {
     /**
      * Maps a TeamEntity to a Team, associating it with a User.
      *
-     * @param teamEntity the TeamEntity to map
-     * @param leader the User to associate with the Team
+     * @param teamEntity
+     *            the TeamEntity to map
+     * @param leader
+     *            the User to associate with the Team
      * @return the mapped Team, or null if the input is null
      */
     public Team mapTeam(TeamEntity teamEntity, User leader) {
@@ -51,17 +56,14 @@ public class TeamMapper {
             return null;
         }
 
-        return Team.builder()
-                .id(teamEntity.getId())
-                .name(teamEntity.getName())
-                .leader(leader)
-                .build();
+        return Team.builder().id(teamEntity.getId()).name(teamEntity.getName()).leader(leader).build();
     }
 
     /**
      * Maps a Team to a TeamEntity.
      *
-     * @param team the Team to map
+     * @param team
+     *            the Team to map
      * @return the mapped TeamEntity, or null if the input is null
      */
     public TeamEntity mapTeamEntity(Team team) {
@@ -75,7 +77,8 @@ public class TeamMapper {
     /**
      * Maps a team ID to a TeamEntity.
      *
-     * @param teamId the ID of the team to map
+     * @param teamId
+     *            the ID of the team to map
      * @return the mapped TeamEntity, or null if the ID is null or not found
      */
     public TeamEntity mapTeamEntity(Long teamId) {

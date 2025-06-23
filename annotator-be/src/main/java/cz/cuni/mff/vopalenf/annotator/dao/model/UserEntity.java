@@ -1,6 +1,5 @@
 package cz.cuni.mff.vopalenf.annotator.dao.model;
 
-
 import cz.cuni.mff.vopalenf.annotator.security.Role;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

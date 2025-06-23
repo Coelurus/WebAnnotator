@@ -20,8 +20,7 @@ public class ModelMapperConfig {
     public ModelMapper modelMapper() {
         ModelMapper modelMapper = new ModelMapper();
 
-        modelMapper.getConfiguration()
-                .setMatchingStrategy(MatchingStrategies.LOOSE)
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE)
                 .setDestinationNamingConvention((name, type) -> true)
                 .setDestinationNameTransformer((name, type) -> name);
 

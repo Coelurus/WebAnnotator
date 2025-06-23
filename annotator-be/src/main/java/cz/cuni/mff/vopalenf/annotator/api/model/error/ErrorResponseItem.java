@@ -7,7 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.Value;
 
 /**
- * One concrete error in {@code ErrorResponse} containing information about one error
+ * One concrete error in {@code ErrorResponse} containing information about one
+ * error
  */
 @Builder(toBuilder = true)
 @Value

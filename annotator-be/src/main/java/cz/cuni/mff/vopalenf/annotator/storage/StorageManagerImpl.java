@@ -25,10 +25,11 @@ import java.util.zip.ZipInputStream;
 public class StorageManagerImpl implements StorageManager {
 
     /**
-     * Path to the file system where files are stored.
-     * This value is read from application properties.
+     * Path to the file system where files are stored. This value is read from
+     * application properties.
      */
-    @Value("${app.file-system.path}") String fileSystemPath = "file_system";
+    @Value("${app.file-system.path}")
+    String fileSystemPath = "file_system";
 
     /**
      * Root location of folder where all files are saved.
@@ -38,7 +39,8 @@ public class StorageManagerImpl implements StorageManager {
     /**
      * Constructs a new StorageManagerImpl with the specified properties.
      *
-     * @param properties the storage configuration properties
+     * @param properties
+     *            the storage configuration properties
      */
     @Autowired
     public StorageManagerImpl(StorageConfig properties) {
@@ -66,13 +68,13 @@ public class StorageManagerImpl implements StorageManager {
 
             // Unzipping files
             try (InputStream inputStream = file.getInputStream();
-                 ZipInputStream zipInputStream = new ZipInputStream(inputStream)) {
+                    ZipInputStream zipInputStream = new ZipInputStream(inputStream)) {
 
                 ZipEntry zipEntry;
                 while ((zipEntry = zipInputStream.getNextEntry()) != null) {
                     // Resolve path for each entry
-                    Path entryDestination = zipFileDirectory.resolve(Paths.get(zipEntry.getName()))
-                            .normalize().toAbsolutePath();
+                    Path entryDestination = zipFileDirectory.resolve(Paths.get(zipEntry.getName())).normalize()
+                            .toAbsolutePath();
 
                     if (zipEntry.isDirectory()) {
                         Files.createDirectories(entryDestination);
@@ -110,8 +112,10 @@ public class StorageManagerImpl implements StorageManager {
     /**
      * Delete directory based on name in file system root
      *
-     * @param dirToDelete Name of the dir in root of filesystem
-     * @throws StorageException When failure occurred during deleting files
+     * @param dirToDelete
+     *            Name of the dir in root of filesystem
+     * @throws StorageException
+     *             When failure occurred during deleting files
      */
     private void deleteDirIfExists(String dirToDelete) {
         Path targetDir = this.rootLocation.resolve(dirToDelete);
@@ -139,8 +143,10 @@ public class StorageManagerImpl implements StorageManager {
     /**
      * Delete directory and everything inside it
      *
-     * @param targetDir Path to a directory to delete
-     * @throws StorageException When exception occurs during file deleting
+     * @param targetDir
+     *            Path to a directory to delete
+     * @throws StorageException
+     *             When exception occurs during file deleting
      */
     private void deleteDirRecursively(Path targetDir) {
         try {

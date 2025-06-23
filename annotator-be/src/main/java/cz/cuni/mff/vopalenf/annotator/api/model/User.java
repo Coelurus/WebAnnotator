@@ -49,8 +49,8 @@ public class User {
     String username;
 
     /**
-     * The team user is member of.
-     * This field is only visible in the context of getting list of users.
+     * The team user is member of. This field is only visible in the context of
+     * getting list of users.
      */
     @JsonProperty("team")
     @JsonView(Views.ShowTeamsInUsers.class)

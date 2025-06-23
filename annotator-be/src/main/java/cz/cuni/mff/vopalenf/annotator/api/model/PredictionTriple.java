@@ -3,7 +3,8 @@ package cz.cuni.mff.vopalenf.annotator.api.model;
 import lombok.Data;
 
 /**
- * A class representing a prediction by assigning concrete frame in a project a label.
+ * A class representing a prediction by assigning concrete frame in a project a
+ * label.
  */
 @Data
 public class PredictionTriple {

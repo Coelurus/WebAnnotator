@@ -27,12 +27,14 @@ public class AIClient {
     /**
      * Base URL of the AI service.
      */
-    @Value("${app.ai.url}") String aiUrl = "http://localhost:8081";
+    @Value("${app.ai.url}")
+    String aiUrl = "http://localhost:8081";
 
     /**
      * Constructor for AIClient.
      *
-     * @param restTemplate The RestTemplate used for making HTTP requests.
+     * @param restTemplate
+     *            The RestTemplate used for making HTTP requests.
      */
     @Autowired
     public AIClient(RestTemplate restTemplate) {
@@ -42,9 +44,12 @@ public class AIClient {
     /**
      * Sends log data to the AI service for processing.
      *
-     * @param projectId The ID of the project associated with the log data.
-     * @param logDataList The list of log data to be sent.
-     * @return A list of PredictionTriple objects containing the predictions made by the AI service.
+     * @param projectId
+     *            The ID of the project associated with the log data.
+     * @param logDataList
+     *            The list of log data to be sent.
+     * @return A list of PredictionTriple objects containing the predictions made by
+     *         the AI service.
      */
     public List<PredictionTriple> sendLogData(Long projectId, List<LogData> logDataList) {
         String url = aiUrl + "/api/ai/" + projectId;
@@ -54,12 +59,9 @@ public class AIClient {
 
         HttpEntity<List<LogData>> requestEntity = new HttpEntity<>(logDataList, headers);
 
-        ResponseEntity<List<PredictionTriple>> response = restTemplate.exchange(
-                url,
-                HttpMethod.POST,
-                requestEntity,
-                new ParameterizedTypeReference<List<PredictionTriple>>() {}
-        );
+        ResponseEntity<List<PredictionTriple>> response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
+                new ParameterizedTypeReference<List<PredictionTriple>>() {
+                });
 
         return response.getBody();
     }

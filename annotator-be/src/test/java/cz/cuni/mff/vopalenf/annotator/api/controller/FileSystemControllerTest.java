@@ -46,10 +46,9 @@ class FileSystemControllerTest {
 
         when(fileSystemService.getFrame(PROJECT_ID, POSITION)).thenReturn(mockResource);
 
-        mockMvc.perform(get("/api/projects/{projectId}/frame/{position}", PROJECT_ID, POSITION)
-                        .accept(MediaType.IMAGE_JPEG))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.IMAGE_JPEG));
+        mockMvc.perform(
+                get("/api/projects/{projectId}/frame/{position}", PROJECT_ID, POSITION).accept(MediaType.IMAGE_JPEG))
+                .andExpect(status().isOk()).andExpect(content().contentType(MediaType.IMAGE_JPEG));
     }
 
     @Test
@@ -71,10 +70,8 @@ class FileSystemControllerTest {
 
         when(fileSystemService.getFramesCount(PROJECT_ID)).thenReturn(frameCount);
 
-        mockMvc.perform(get("/api/projects/{id}/frame/count", PROJECT_ID)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/api/projects/{id}/frame/count", PROJECT_ID).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.count").value(10));
     }
 

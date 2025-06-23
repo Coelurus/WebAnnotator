@@ -32,11 +32,11 @@ public class Team {
     String name;
 
     /**
-     * Leader of the team.
-     * This field is only visible in the context of getting list of teams.
+     * Leader of the team. This field is only visible in the context of getting list
+     * of teams.
      */
     @JsonProperty("leader")
     @JsonView(Views.ShowUsersInTeams.class)
     User leader;
-    
+
 }

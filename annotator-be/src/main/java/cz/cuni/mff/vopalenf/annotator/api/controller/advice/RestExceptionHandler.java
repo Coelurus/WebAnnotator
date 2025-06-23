@@ -21,7 +21,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.Collections;
 
 /**
- * Class handling catching exceptions from BE and transforming them into response REST-like object
+ * Class handling catching exceptions from BE and transforming them into
+ * response REST-like object
  */
 @RestControllerAdvice
 public class RestExceptionHandler {
@@ -34,7 +35,8 @@ public class RestExceptionHandler {
     /**
      * Handler for NotFoundException
      *
-     * @param e Thrown exception
+     * @param e
+     *            Thrown exception
      * @return Error response with information about exception
      */
     @ExceptionHandler(NotFoundException.class)
@@ -46,7 +48,8 @@ public class RestExceptionHandler {
     /**
      * Handler for BadRequestException
      *
-     * @param e Thrown exception
+     * @param e
+     *            Thrown exception
      * @return Error response with information about exception
      */
     @ExceptionHandler(BadRequestException.class)
@@ -58,7 +61,8 @@ public class RestExceptionHandler {
     /**
      * Handler for UnprocessableContentException
      *
-     * @param e Thrown exception
+     * @param e
+     *            Thrown exception
      * @return Error response with information about exception
      */
     @ExceptionHandler(UnprocessableContentException.class)
@@ -70,7 +74,8 @@ public class RestExceptionHandler {
     /**
      * Handler for UnprocessableContentException
      *
-     * @param e Thrown exception
+     * @param e
+     *            Thrown exception
      * @return Error response with information about exception
      */
     @ExceptionHandler(BadCredentialsException.class)
@@ -82,7 +87,8 @@ public class RestExceptionHandler {
     /**
      * Handler for ServerException
      *
-     * @param e Thrown exception
+     * @param e
+     *            Thrown exception
      * @return Error response with information about exception
      */
     @ExceptionHandler(ServerException.class)
@@ -94,7 +100,8 @@ public class RestExceptionHandler {
     /**
      * Handler for all other exceptions
      *
-     * @param e Thrown exception
+     * @param e
+     *            Thrown exception
      * @return Error response with information about exception
      */
     @ExceptionHandler(HttpMessageNotReadableException.class)
@@ -107,7 +114,8 @@ public class RestExceptionHandler {
     /**
      * Handler for MethodArgumentNotValidException
      *
-     * @param e Thrown exception
+     * @param e
+     *            Thrown exception
      * @return Error response with information about exception
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -120,7 +128,8 @@ public class RestExceptionHandler {
     /**
      * Handler for AccessDeniedException
      *
-     * @param e Thrown exception
+     * @param e
+     *            Thrown exception
      * @return Error response with information about exception
      */
     @ExceptionHandler(AccessDeniedException.class)
@@ -133,21 +142,16 @@ public class RestExceptionHandler {
     /**
      * Handles creating ErrorResponse object
      *
-     * @param e      Caught exception thrown in project
-     * @param status Http status of response
+     * @param e
+     *            Caught exception thrown in project
+     * @param status
+     *            Http status of response
      * @return Error response containing information about exception
      */
     private ErrorResponse handleException(APIException e, HttpStatus status) {
-        return ErrorResponse.builder()
-                .status(status.value())
-                .errors(Collections.singletonList(
-                        ErrorResponseItem.builder()
-                                .error(e.getCode().name())
-                                .scope(e.getScope())
-                                .message(e.getMessage())
-                                .build()
-                ))
-                .stackTrace(ExceptionUtils.getStackTrace(e))
-                .build();
+        return ErrorResponse.builder().status(status.value())
+                .errors(Collections.singletonList(ErrorResponseItem.builder().error(e.getCode().name())
+                        .scope(e.getScope()).message(e.getMessage()).build()))
+                .stackTrace(ExceptionUtils.getStackTrace(e)).build();
     }
 }

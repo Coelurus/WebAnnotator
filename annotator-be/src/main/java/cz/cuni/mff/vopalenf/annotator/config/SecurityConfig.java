@@ -22,7 +22,8 @@ public class SecurityConfig {
     /**
      * Constructor for SecurityConfig.
      *
-     * @param userAuthProvider the UserAuthProvider used for JWT validation
+     * @param userAuthProvider
+     *            the UserAuthProvider used for JWT validation
      */
     public SecurityConfig(UserAuthProvider userAuthProvider) {
         this.userAuthProvider = userAuthProvider;
@@ -31,20 +32,18 @@ public class SecurityConfig {
     /**
      * Configures the security filter chain for the application.
      *
-     * @param http the HttpSecurity object to configure
+     * @param http
+     *            the HttpSecurity object to configure
      * @return the configured SecurityFilterChain
-     * @throws Exception if an error occurs during configuration
+     * @throws Exception
+     *             if an error occurs during configuration
      */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .addFilterBefore(new JwtFilter(userAuthProvider), UsernamePasswordAuthenticationFilter.class)
+        http.addFilterBefore(new JwtFilter(userAuthProvider), UsernamePasswordAuthenticationFilter.class)
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(requests -> requests
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/actuator/**").permitAll()
-                        .anyRequest().authenticated())
-        ;
+                .authorizeHttpRequests(requests -> requests.requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/actuator/**").permitAll().anyRequest().authenticated());
         return http.build();
     }
 }

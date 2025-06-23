@@ -13,7 +13,8 @@ public class AnnotationMapper {
     /**
      * Maps an AnnotationEntity to an Annotation.
      *
-     * @param annotationEntity the AnnotationEntity to map
+     * @param annotationEntity
+     *            the AnnotationEntity to map
      * @return the mapped Annotation, or null if the input is null
      */
     public Annotation mapAnnotation(AnnotationEntity annotationEntity) {
@@ -21,10 +22,7 @@ public class AnnotationMapper {
             return null;
         }
 
-        return Annotation.builder()
-                .projectId(annotationEntity.getProjectId())
-                .frameId(annotationEntity.getFrameId())
-                .labelId(annotationEntity.getLabelId())
-                .build();
+        return Annotation.builder().projectId(annotationEntity.getProjectId()).frameId(annotationEntity.getFrameId())
+                .labelId(annotationEntity.getLabelId()).build();
     }
 }

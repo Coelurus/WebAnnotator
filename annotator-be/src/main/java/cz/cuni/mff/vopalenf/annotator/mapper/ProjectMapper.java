@@ -18,7 +18,8 @@ public class ProjectMapper {
     /**
      * Constructor for ProjectMapper.
      *
-     * @param modelMapper the ModelMapper instance to use for mapping
+     * @param modelMapper
+     *            the ModelMapper instance to use for mapping
      */
     @Autowired
     public ProjectMapper(ModelMapper modelMapper) {
@@ -28,7 +29,8 @@ public class ProjectMapper {
     /**
      * Maps a ProjectEntity to a Project without associating it with a Team.
      *
-     * @param projectEntity the ProjectEntity to map
+     * @param projectEntity
+     *            the ProjectEntity to map
      * @return the mapped Project, or null if the input is null
      */
     public Project mapProject(ProjectEntity projectEntity) {
@@ -38,8 +40,10 @@ public class ProjectMapper {
     /**
      * Maps a ProjectEntity to a Project, associating it with a Team.
      *
-     * @param projectEntity the ProjectEntity to map
-     * @param team the Team to associate with the Project
+     * @param projectEntity
+     *            the ProjectEntity to map
+     * @param team
+     *            the Team to associate with the Project
      * @return the mapped Project, or null if the input is null
      */
     public Project mapProject(ProjectEntity projectEntity, Team team) {
@@ -47,21 +51,17 @@ public class ProjectMapper {
             return null;
         }
 
-        return Project.builder()
-                .id(projectEntity.getId())
-                .projectName(projectEntity.getProjectName())
-                .logFileName(projectEntity.getLogFileName())
-                .deadline(projectEntity.getDeadline())
-                .priority(projectEntity.getPriority().getName())
-                .progress(projectEntity.getProgress().getName())
-                .team(team)
-                .build();
+        return Project.builder().id(projectEntity.getId()).projectName(projectEntity.getProjectName())
+                .logFileName(projectEntity.getLogFileName()).deadline(projectEntity.getDeadline())
+                .priority(projectEntity.getPriority().getName()).progress(projectEntity.getProgress().getName())
+                .team(team).build();
     }
 
     /**
      * Maps a Project to a ProjectEntity.
      *
-     * @param project the Project to map
+     * @param project
+     *            the Project to map
      * @return the mapped ProjectEntity, or null if the input is null
      */
     public ProjectEntity mapProjectEntity(Project project) {

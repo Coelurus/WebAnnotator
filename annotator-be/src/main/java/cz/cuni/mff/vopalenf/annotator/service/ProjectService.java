@@ -54,10 +54,11 @@ import java.util.Objects;
 public class ProjectService {
 
     /**
-     * Path to the file system where files are stored.
-     * This value is read from application properties.
+     * Path to the file system where files are stored. This value is read from
+     * application properties.
      */
-    @Value("${app.file-system.archive-extension}") String archiveExtension;
+    @Value("${app.file-system.archive-extension}")
+    String archiveExtension;
 
     private static final LabelEntity NO_GESTURE = LabelEntity.builder().label("NO_GESTURE").build();
 
@@ -81,33 +82,43 @@ public class ProjectService {
     /**
      * Constructor for ProjectService.
      *
-     * @param projectRepository       the ProjectRepository instance to use for fetching and saving projects
-     * @param teamRepository          the TeamRepository instance to use for fetching teams
-     * @param annotationRepository    the AnnotationRepository instance to use for managing annotations
-     * @param labelRepository         the LabelRepository instance to use for managing labels
-     * @param storageManager          the StorageManager instance to use for file storage operations
-     * @param projectMapper           the ProjectMapper instance to map between ProjectEntity and Project
-     * @param teamMapper              the TeamMapper instance to map between TeamEntity and Team
-     * @param labelMapper             the LabelMapper instance to map between LabelEntity and Label
-     * @param annotationMapper        the AnnotationMapper instance to map between AnnotationEntity and Annotation
-     * @param fileSystemService       the FileSystemService instance to manage file system operations
-     * @param progressMapper          the ProgressMapper instance to map between ProgressEnum and Progress
-     * @param priorityMapper          the PriorityMapper instance to map between PriorityEnum and Priority
-     * @param aiClient                the AIClient instance to interact with AI services
+     * @param projectRepository
+     *            the ProjectRepository instance to use for fetching and saving
+     *            projects
+     * @param teamRepository
+     *            the TeamRepository instance to use for fetching teams
+     * @param annotationRepository
+     *            the AnnotationRepository instance to use for managing annotations
+     * @param labelRepository
+     *            the LabelRepository instance to use for managing labels
+     * @param storageManager
+     *            the StorageManager instance to use for file storage operations
+     * @param projectMapper
+     *            the ProjectMapper instance to map between ProjectEntity and
+     *            Project
+     * @param teamMapper
+     *            the TeamMapper instance to map between TeamEntity and Team
+     * @param labelMapper
+     *            the LabelMapper instance to map between LabelEntity and Label
+     * @param annotationMapper
+     *            the AnnotationMapper instance to map between AnnotationEntity and
+     *            Annotation
+     * @param fileSystemService
+     *            the FileSystemService instance to manage file system operations
+     * @param progressMapper
+     *            the ProgressMapper instance to map between ProgressEnum and
+     *            Progress
+     * @param priorityMapper
+     *            the PriorityMapper instance to map between PriorityEnum and
+     *            Priority
+     * @param aiClient
+     *            the AIClient instance to interact with AI services
      */
-    public ProjectService(ProjectRepository projectRepository,
-                          TeamRepository teamRepository,
-                          AnnotationRepository annotationRepository,
-                          LabelRepository labelRepository,
-                          StorageManager storageManager,
-                          ProjectMapper projectMapper,
-                          TeamMapper teamMapper,
-                          LabelMapper labelMapper,
-                          AnnotationMapper annotationMapper,
-                          FileSystemService fileSystemService,
-                          ProgressMapper progressMapper,
-                          PriorityMapper priorityMapper,
-                          AIClient aiClient) {
+    public ProjectService(ProjectRepository projectRepository, TeamRepository teamRepository,
+            AnnotationRepository annotationRepository, LabelRepository labelRepository, StorageManager storageManager,
+            ProjectMapper projectMapper, TeamMapper teamMapper, LabelMapper labelMapper,
+            AnnotationMapper annotationMapper, FileSystemService fileSystemService, ProgressMapper progressMapper,
+            PriorityMapper priorityMapper, AIClient aiClient) {
         this.projectRepository = projectRepository;
         this.teamRepository = teamRepository;
         this.storageManager = storageManager;
@@ -129,34 +140,25 @@ public class ProjectService {
      * @return List of all projects
      */
     public List<Project> getAllProjects() {
-        return projectRepository.findAll().stream()
-                .map(projectEntity -> projectMapper.mapProject(
-                        projectEntity,
-                        teamMapper.mapTeam(
-                                projectEntity.getTeam(),
-                                null
-                        )
-                ))
-                .toList();
+        return projectRepository.findAll().stream().map(projectEntity -> projectMapper.mapProject(projectEntity,
+                teamMapper.mapTeam(projectEntity.getTeam(), null))).toList();
     }
 
     /**
      * Find project by its id
      *
-     * @param projectId id of project to be found
+     * @param projectId
+     *            id of project to be found
      * @return Project response with corresponding id
-     * @throws NotFoundException Thrown when requested id is not owned by any project
+     * @throws NotFoundException
+     *             Thrown when requested id is not owned by any project
      */
     public Project getProject(Long projectId) {
         ProjectEntity foundProject = projectRepository.findById(projectId)
-                .orElseThrow(() -> new NotFoundException("Not found project with id" + projectId, ProjectService.class.getSimpleName()));
+                .orElseThrow(() -> new NotFoundException("Not found project with id" + projectId,
+                        ProjectService.class.getSimpleName()));
 
-        return projectMapper.mapProject(
-                foundProject,
-                teamMapper.mapTeam(
-                        foundProject.getTeam()
-                )
-        );
+        return projectMapper.mapProject(foundProject, teamMapper.mapTeam(foundProject.getTeam()));
     }
 
     /**
@@ -165,18 +167,22 @@ public class ProjectService {
      * @return List of all available priorities
      */
     public List<Priority> getAllProjectPriorities() {
-        return Arrays.stream(PriorityEnum.values()).map(priorityMapper::mapPriority)
-                .toList();
+        return Arrays.stream(PriorityEnum.values()).map(priorityMapper::mapPriority).toList();
     }
 
     /**
      * Toggle information about existence of annotation on frame in project
      *
-     * @param projectId id of project where to add / remove annotation
-     * @param frameId   id of a frame which to (un)annotate
-     * @param labelId   ID of a label being used to annotate
-     * @throws NotFoundException   when project ID does not exist
-     * @throws BadRequestException when frame position is larger than frame count
+     * @param projectId
+     *            id of project where to add / remove annotation
+     * @param frameId
+     *            id of a frame which to (un)annotate
+     * @param labelId
+     *            ID of a label being used to annotate
+     * @throws NotFoundException
+     *             when project ID does not exist
+     * @throws BadRequestException
+     *             when frame position is larger than frame count
      */
     public void annotateProjectFrame(Long projectId, Long frameId, Long labelId) {
         if (!projectRepository.existsById(projectId)) {
@@ -191,11 +197,16 @@ public class ProjectService {
     /**
      * Annotate all frames in range
      *
-     * @param projectId    id of project to annotate frames in
-     * @param startFrameId id of frame from which to annotate
-     * @param endFrameId   id of frame to which annotate
-     * @param labelId      id of a label to be used to annotate
-     * @throws NotFoundException when project ID does not exist
+     * @param projectId
+     *            id of project to annotate frames in
+     * @param startFrameId
+     *            id of frame from which to annotate
+     * @param endFrameId
+     *            id of frame to which annotate
+     * @param labelId
+     *            id of a label to be used to annotate
+     * @throws NotFoundException
+     *             when project ID does not exist
      */
     public void annotateProjectFramesInRange(Long projectId, Long startFrameId, Long endFrameId, Long labelId) {
         if (!projectRepository.existsById(projectId)) {
@@ -209,10 +220,14 @@ public class ProjectService {
     /**
      * Erase all annotations from frames in range
      *
-     * @param projectId    id of project to annotate frames in
-     * @param startFrameId id of frame from which to annotate
-     * @param endFrameId   id of frame to which annotate
-     * @throws NotFoundException when project ID does not exist
+     * @param projectId
+     *            id of project to annotate frames in
+     * @param startFrameId
+     *            id of frame from which to annotate
+     * @param endFrameId
+     *            id of frame to which annotate
+     * @throws NotFoundException
+     *             when project ID does not exist
      */
     public void eraseAnnotationsInRange(Long projectId, Long startFrameId, Long endFrameId) {
         if (!projectRepository.existsById(projectId)) {
@@ -226,32 +241,33 @@ public class ProjectService {
     /**
      * Annotate frame in project
      *
-     * @param projectId     id of project where to find frame to annotate
-     * @param frameId       id of frame to annotate in project
-     * @param labelId       id of a label to annotate frame with
-     * @param forceAnnotate whether frame should be annotated even if it is already annotated
+     * @param projectId
+     *            id of project where to find frame to annotate
+     * @param frameId
+     *            id of frame to annotate in project
+     * @param labelId
+     *            id of a label to annotate frame with
+     * @param forceAnnotate
+     *            whether frame should be annotated even if it is already annotated
      */
     private void annotateFrameInProject(Long projectId, Long frameId, Long labelId, boolean forceAnnotate) {
-        boolean annotationAlreadyExists
-                = annotationRepository.existsByProjectIdAndFrameIdAndLabelId(projectId, frameId, DEFAULT_ID) && !forceAnnotate;
+        boolean annotationAlreadyExists = annotationRepository.existsByProjectIdAndFrameIdAndLabelId(projectId, frameId,
+                DEFAULT_ID) && !forceAnnotate;
         if (annotationAlreadyExists) {
             annotationRepository.deleteByProjectIdAndFrameIdAndLabelId(projectId, frameId, DEFAULT_ID);
         } else {
-            annotationRepository.save(
-                    AnnotationEntity.builder()
-                            .projectId(projectId)
-                            .frameId(frameId)
-                            .labelId(labelId)
-                            .build()
-            );
+            annotationRepository
+                    .save(AnnotationEntity.builder().projectId(projectId).frameId(frameId).labelId(labelId).build());
         }
     }
 
     /**
      * Erase all annotations of a frame in project
      *
-     * @param projectId ID of project in which to erase annotations
-     * @param frameId   ID of frame whose annotation to delete
+     * @param projectId
+     *            ID of project in which to erase annotations
+     * @param frameId
+     *            ID of frame whose annotation to delete
      */
     private void eraseFrameAnnotation(Long projectId, Long frameId) {
         annotationRepository.deleteAllByProjectIdAndFrameId(projectId, frameId);
@@ -260,16 +276,15 @@ public class ProjectService {
     /**
      * Get all annotations used in a project
      *
-     * @param projectId id of a project to identify team
+     * @param projectId
+     *            id of a project to identify team
      * @return List of all annotations on project defined by id
      */
     public List<Annotation> getAllAnnotations(Long projectId) {
         if (!projectRepository.existsById(projectId)) {
             throw new NotFoundException(PROJECT_NOT_FOUND_MSG, ProjectService.class.getSimpleName());
         }
-        return annotationRepository.findByProjectId(projectId).stream()
-                .map(annotationMapper::mapAnnotation)
-                .toList();
+        return annotationRepository.findByProjectId(projectId).stream().map(annotationMapper::mapAnnotation).toList();
     }
 
     /**
@@ -278,17 +293,17 @@ public class ProjectService {
      * @return List of all labels
      */
     public List<Label> getAllLabels() {
-        return labelRepository.findAll().stream()
-                .map(labelMapper::mapLabel)
-                .toList();
+        return labelRepository.findAll().stream().map(labelMapper::mapLabel).toList();
     }
 
     /**
      * Create new entity
      *
-     * @param label Name and color of label to create
+     * @param label
+     *            Name and color of label to create
      * @return Newly created entity
-     * @throws BadRequestException when label already exists or color is not valid
+     * @throws BadRequestException
+     *             when label already exists or color is not valid
      */
     public Label addLabel(LabelRequest label) {
         boolean existsByLabel = labelRepository.existsByLabel(label.getLabelName());
@@ -299,22 +314,22 @@ public class ProjectService {
             throw new BadRequestException("Color was not chosen.", ProjectService.class.getSimpleName());
         }
         if (!label.getColor().matches("^#([A-Fa-f0-9]{6})$")) {
-            throw new BadRequestException(label.getColor() + " is not a valid color.", ProjectService.class.getSimpleName());
+            throw new BadRequestException(label.getColor() + " is not a valid color.",
+                    ProjectService.class.getSimpleName());
         }
-        return labelMapper.mapLabel(labelRepository.save(
-                LabelEntity.builder()
-                        .label(label.getLabelName())
-                        .color(label.getColor())
-                        .build()
-        ));
+        return labelMapper.mapLabel(labelRepository
+                .save(LabelEntity.builder().label(label.getLabelName()).color(label.getColor()).build()));
     }
 
     /**
-     * Create new project and save its metadata into database and data into filesystem
+     * Create new project and save its metadata into database and data into
+     * filesystem
      *
-     * @param projectRequest Payload information about new project to create
+     * @param projectRequest
+     *            Payload information about new project to create
      * @return Response status
-     * @throws StorageException when error occurs during file saving
+     * @throws StorageException
+     *             when error occurs during file saving
      */
     public Project manageFileUpload(ProjectRequest projectRequest) {
         logger.info("Uploading file: {}", projectRequest.getFile().getOriginalFilename());
@@ -330,17 +345,13 @@ public class ProjectService {
         }
 
         String compressedFileName = projectRequest.getFile().getOriginalFilename();
-        String shortenedFileName = Objects.requireNonNull(compressedFileName)
-                .substring(0, compressedFileName.indexOf(archiveExtension));
+        String shortenedFileName = Objects.requireNonNull(compressedFileName).substring(0,
+                compressedFileName.indexOf(archiveExtension));
 
-        ProjectEntity projectEntity = ProjectEntity.builder()
-                .projectName(projectRequest.getProjectName())
-                .logFileName(shortenedFileName)
-                .deadline(projectRequest.getDeadline())
+        ProjectEntity projectEntity = ProjectEntity.builder().projectName(projectRequest.getProjectName())
+                .logFileName(shortenedFileName).deadline(projectRequest.getDeadline())
                 .priority(PriorityEnum.fromName(projectRequest.getPriority()))
-                .progress(ProgressEnum.fromName(projectRequest.getProgress()))
-                .team(teamEntity)
-                .build();
+                .progress(ProgressEnum.fromName(projectRequest.getProgress())).team(teamEntity).build();
 
         storageManager.store(projectRequest.getFile());
 
@@ -351,9 +362,12 @@ public class ProjectService {
     /**
      * Delete project by its ID
      *
-     * @param id ID of a project to delete
-     * @throws NotFoundException when project ID does not exist
-     * @throws StorageException  when folder does not exist or when deleting files fails
+     * @param id
+     *            ID of a project to delete
+     * @throws NotFoundException
+     *             when project ID does not exist
+     * @throws StorageException
+     *             when folder does not exist or when deleting files fails
      */
     public void deleteProject(Long id) {
         logger.info("Deleting project: {}", id);
@@ -370,15 +384,16 @@ public class ProjectService {
      * @return List of all progress states
      */
     public List<Progress> getAllProjectProgresses() {
-        return Arrays.stream(ProgressEnum.values()).map(progressMapper::mapProgress)
-                .toList();
+        return Arrays.stream(ProgressEnum.values()).map(progressMapper::mapProgress).toList();
     }
 
     /**
      * Update project with new information
      *
-     * @param projectId ID of project to update
-     * @param project   Project payload
+     * @param projectId
+     *            ID of project to update
+     * @param project
+     *            Project payload
      * @return Updated project
      */
     public Project updateProject(Long projectId, ProjectRequest project) {
@@ -390,10 +405,7 @@ public class ProjectService {
         projectToUpdate.setDeadline(project.getDeadline());
         projectToUpdate.setProgress(ProgressEnum.fromName(project.getProgress()));
         projectToUpdate.setTeam(
-                project.getTeamId() != null
-                        ? teamRepository.findById(project.getTeamId()).orElse(null)
-                        : null
-        );
+                project.getTeamId() != null ? teamRepository.findById(project.getTeamId()).orElse(null) : null);
 
         return projectMapper.mapProject(projectRepository.save(projectToUpdate));
     }
@@ -401,7 +413,8 @@ public class ProjectService {
     /**
      * Train AI model on project data
      *
-     * @param projectId ID of the project to train AI on
+     * @param projectId
+     *            ID of the project to train AI on
      * @return List of prediction triples generated by AI
      */
     public List<PredictionTriple> trainAI(Long projectId) {
@@ -416,7 +429,8 @@ public class ProjectService {
             String line = lines[Math.toIntExact(i)].trim();
             String[] parts = line.split(",");
 
-            if (parts.length < 5) continue;
+            if (parts.length < 5)
+                continue;
 
             String timestampStr = parts[0];
             double x = Double.parseDouble(parts[2]);
@@ -426,24 +440,15 @@ public class ProjectService {
             double timeInSeconds = parseTimeToSeconds(timestampStr);
 
             String label;
-            AnnotationEntity annotationEntity = annotationRepository.findByProjectIdAndFrameId(projectId, i-1);
+            AnnotationEntity annotationEntity = annotationRepository.findByProjectIdAndFrameId(projectId, i - 1);
             if (annotationEntity != null) {
                 label = labelRepository.findById(annotationEntity.getLabelId()).orElse(NO_GESTURE).getLabel();
             } else {
                 label = "NO_GESTURE";
             }
 
-            logDataList.add(
-                    LogData.builder()
-                            .time(timeInSeconds)
-                            .posX(x)
-                            .posY(y)
-                            .posZ(z)
-                            .label(label)
-                            .build()
-            );
+            logDataList.add(LogData.builder().time(timeInSeconds).posX(x).posY(y).posZ(z).label(label).build());
         }
-
 
         return aiClient.sendLogData(projectId, logDataList);
     }
@@ -451,11 +456,13 @@ public class ProjectService {
     /**
      * Parse timestamp string to seconds
      *
-     * @param timestamp Timestamp string in format "yyyy-MM-dd HH:mm:ss"
+     * @param timestamp
+     *            Timestamp string in format "yyyy-MM-dd HH:mm:ss"
      * @return Time in seconds since midnight
      */
     private double parseTimeToSeconds(String timestamp) {
-        LocalTime time = LocalDateTime.parse(timestamp, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).toLocalTime();
+        LocalTime time = LocalDateTime.parse(timestamp, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+                .toLocalTime();
         return time.toSecondOfDay();
     }
 }

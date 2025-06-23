@@ -14,7 +14,8 @@ public class LabelRequest {
      */
     private String labelName;
     /**
-     * Color associated with the label, represented as a string in RGB hexadecimal format (e.g., "#FF5733").
+     * Color associated with the label, represented as a string in RGB hexadecimal
+     * format (e.g., "#FF5733").
      */
     private String color;
 }

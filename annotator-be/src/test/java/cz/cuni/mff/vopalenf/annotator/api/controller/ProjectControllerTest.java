@@ -50,7 +50,6 @@ class ProjectControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-
     @Test
     @DisplayName("Should return all projects")
     @WithMockUser(authorities = {"ROLE_USER"})
@@ -74,8 +73,7 @@ class ProjectControllerTest {
         Project project = createProject(PROJECT_NAME);
         when(projectService.getProject(PROJECT_ID)).thenReturn(project);
 
-        mockMvc.perform(get("/api/projects/{id}", PROJECT_ID))
-                .andExpect(status().isOk())
+        mockMvc.perform(get("/api/projects/{id}", PROJECT_ID)).andExpect(status().isOk())
                 .andExpect(jsonPath("$.projectName").value(PROJECT_NAME));
     }
 
@@ -85,16 +83,14 @@ class ProjectControllerTest {
     void getProjectById_ShouldReturn404_WhenProjectNotFound() throws Exception {
         doThrow(new NotFoundException(NOT_FOUND_MESSAGE, SCOPE)).when(projectService).getProject(PROJECT_ID);
 
-        mockMvc.perform(get("/api/projects/{id}", PROJECT_ID))
-                .andExpect(status().isNotFound());
+        mockMvc.perform(get("/api/projects/{id}", PROJECT_ID)).andExpect(status().isNotFound());
     }
 
     @Test
     @DisplayName("Should delete project by ID")
     @WithMockUser(authorities = {"ROLE_ADMIN"})
     void deleteProjectById_ShouldDeleteProject_WhenAuthenticated() throws Exception {
-        mockMvc.perform(delete("/api/projects/{id}", PROJECT_ID))
-                .andExpect(status().isOk());
+        mockMvc.perform(delete("/api/projects/{id}", PROJECT_ID)).andExpect(status().isOk());
     }
 
     @Test
@@ -103,8 +99,7 @@ class ProjectControllerTest {
     void deleteProjectById_ShouldReturn404_WhenProjectNotFound() throws Exception {
         doThrow(new NotFoundException(NOT_FOUND_MESSAGE, SCOPE)).when(projectService).deleteProject(PROJECT_ID);
 
-        mockMvc.perform(delete("/api/projects/{id}", PROJECT_ID))
-                .andExpect(status().isNotFound());
+        mockMvc.perform(delete("/api/projects/{id}", PROJECT_ID)).andExpect(status().isNotFound());
     }
 
     @Test
@@ -115,10 +110,8 @@ class ProjectControllerTest {
         Project updatedProject = createProject(PROJECT_NAME);
         when(projectService.updateProject(PROJECT_ID, projectRequest)).thenReturn(updatedProject);
 
-        mockMvc.perform(put("/api/projects/{projectId}", PROJECT_ID)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(projectRequest)))
-                .andExpect(status().isOk())
+        mockMvc.perform(put("/api/projects/{projectId}", PROJECT_ID).contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(projectRequest))).andExpect(status().isOk())
                 .andExpect(jsonPath("$.projectName").value(PROJECT_NAME));
     }
 
@@ -127,25 +120,18 @@ class ProjectControllerTest {
     @WithMockUser(authorities = {"ROLE_ADMIN"})
     void updateProject_ShouldReturn404_WhenProjectNotFound() throws Exception {
         ProjectRequest projectRequest = createProjectRequest();
-        when(projectService.updateProject(PROJECT_ID, projectRequest)).thenThrow(new NotFoundException(NOT_FOUND_MESSAGE, SCOPE));
+        when(projectService.updateProject(PROJECT_ID, projectRequest))
+                .thenThrow(new NotFoundException(NOT_FOUND_MESSAGE, SCOPE));
 
-        mockMvc.perform(put("/api/projects/{projectId}", PROJECT_ID)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(projectRequest)))
-                .andExpect(status().isNotFound());
+        mockMvc.perform(put("/api/projects/{projectId}", PROJECT_ID).contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(projectRequest))).andExpect(status().isNotFound());
     }
 
     Project createProject(String name) {
-        return Project.builder()
-                .projectName(name)
-                .build();
+        return Project.builder().projectName(name).build();
     }
 
     ProjectRequest createProjectRequest() {
-        return ProjectRequest.builder()
-                .projectName(PROJECT_NAME)
-                .deadline(DUE_DATE)
-                .priority(PRIORITY)
-                .build();
+        return ProjectRequest.builder().projectName(PROJECT_NAME).deadline(DUE_DATE).priority(PRIORITY).build();
     }
 }

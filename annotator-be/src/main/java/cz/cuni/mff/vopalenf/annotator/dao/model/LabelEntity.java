@@ -36,7 +36,8 @@ public class LabelEntity {
     @Column(name = "label")
     private String label;
     /**
-     * The color associated with the label, used for visual representation. Represented as a RGB hex color code (e.g., "#FF5733").
+     * The color associated with the label, used for visual representation.
+     * Represented as a RGB hex color code (e.g., "#FF5733").
      */
     @Column(name = "color")
     private String color;

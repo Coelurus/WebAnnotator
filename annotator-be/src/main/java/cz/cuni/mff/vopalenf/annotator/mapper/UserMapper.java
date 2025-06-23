@@ -22,8 +22,10 @@ public class UserMapper {
     /**
      * Constructor for UserMapper.
      *
-     * @param modelMapper the ModelMapper instance to use for mapping
-     * @param userRepository the UserRepository instance to use for fetching UserEntity by ID
+     * @param modelMapper
+     *            the ModelMapper instance to use for mapping
+     * @param userRepository
+     *            the UserRepository instance to use for fetching UserEntity by ID
      */
     @Autowired
     public UserMapper(ModelMapper modelMapper, UserRepository userRepository) {
@@ -34,7 +36,8 @@ public class UserMapper {
     /**
      * Maps a UserEntity to a User without associating it with a Team.
      *
-     * @param userEntity the UserEntity to map
+     * @param userEntity
+     *            the UserEntity to map
      * @return the mapped User, or null if the input is null
      */
     public User mapUser(UserEntity userEntity) {
@@ -44,8 +47,10 @@ public class UserMapper {
     /**
      * Maps a UserEntity to a User, associating it with a Team.
      *
-     * @param userEntity the UserEntity to map
-     * @param team the Team to associate with the User
+     * @param userEntity
+     *            the UserEntity to map
+     * @param team
+     *            the Team to associate with the User
      * @return the mapped User, or null if the input is null
      */
     public User mapUser(UserEntity userEntity, Team team) {
@@ -53,21 +58,18 @@ public class UserMapper {
             return null;
         }
 
-        return User.builder()
-                .id(userEntity.getId())
-                .firstName(userEntity.getFirstName())
-                .lastName(userEntity.getLastName())
-                .username(userEntity.getUsername())
-                .team(team)
+        return User.builder().id(userEntity.getId()).firstName(userEntity.getFirstName())
+                .lastName(userEntity.getLastName()).username(userEntity.getUsername()).team(team)
                 .role(userEntity.getRole().name())
-              //  .password(userEntity.getPasswordHash())
+                // .password(userEntity.getPasswordHash())
                 .build();
     }
 
     /**
      * Maps a User to a UserEntity.
      *
-     * @param user the User to map
+     * @param user
+     *            the User to map
      * @return the mapped UserEntity, or null if the input is null
      */
     public UserEntity mapUserEntity(User user) {
@@ -81,7 +83,8 @@ public class UserMapper {
     /**
      * Maps SignupCredentials to a UserEntity.
      *
-     * @param credentials the SignupCredentials to map
+     * @param credentials
+     *            the SignupCredentials to map
      * @return the mapped UserEntity, or null if the input is null
      */
     public UserEntity signupCredentialsToUserEntity(SignupCredentials credentials) {
@@ -89,19 +92,15 @@ public class UserMapper {
             return null;
         }
 
-        return UserEntity.builder()
-                .firstName(credentials.firstName())
-                .lastName(credentials.lastName())
-                .username(credentials.username())
-                .team(null)
-                .role(Role.ROLE_USER)
-                .build();
+        return UserEntity.builder().firstName(credentials.firstName()).lastName(credentials.lastName())
+                .username(credentials.username()).team(null).role(Role.ROLE_USER).build();
     }
 
     /**
      * Maps a user ID to a UserEntity.
      *
-     * @param userId the ID of the user to map
+     * @param userId
+     *            the ID of the user to map
      * @return the mapped UserEntity, or null if the ID is null or not found
      */
     public UserEntity mapUserEntity(Long userId) {

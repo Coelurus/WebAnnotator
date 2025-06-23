@@ -1,10 +1,11 @@
 package cz.cuni.mff.vopalenf.annotator.api.view;
 
 /**
- * Defines the views used for serialization and deserialization of entities in the API.
- * These views are used to control which fields are included in the JSON output.
- * This way StackOverflow can be avoided when serializing entities with circular references.
- * For example Team contains User as leader and User contains Team which contains User as leader...
+ * Defines the views used for serialization and deserialization of entities in
+ * the API. These views are used to control which fields are included in the
+ * JSON output. This way StackOverflow can be avoided when serializing entities
+ * with circular references. For example Team contains User as leader and User
+ * contains Team which contains User as leader...
  */
 public interface Views {
     /**

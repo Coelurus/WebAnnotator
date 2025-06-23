@@ -22,7 +22,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -79,11 +78,8 @@ class AuthControllerTest {
         when(userService.login(any())).thenReturn(user);
         when(userAuthProvider.createToken(user)).thenReturn(TOKEN);
 
-        mockMvc.perform(post("/api/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(json))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.token").value(TOKEN));
+        mockMvc.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON).content(json))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.token").value(TOKEN));
     }
 
     @Test
@@ -94,9 +90,7 @@ class AuthControllerTest {
         when(userService.login(any()))
                 .thenThrow(new BadCredentialsException(INVALID_CREDENTIALS_MSG, UserService.class.getSimpleName()));
 
-        mockMvc.perform(post("/api/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(json))
+        mockMvc.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON).content(json))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errors[0].message").value(INVALID_CREDENTIALS_MSG));
     }
@@ -109,11 +103,8 @@ class AuthControllerTest {
         when(userService.login(any()))
                 .thenThrow(new NotFoundException(UNKNOWN_USER_MSG, UserService.class.getSimpleName()));
 
-        mockMvc.perform(post("/api/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(json))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.errors[0].message").value(UNKNOWN_USER_MSG));
+        mockMvc.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON).content(json))
+                .andExpect(status().isNotFound()).andExpect(jsonPath("$.errors[0].message").value(UNKNOWN_USER_MSG));
     }
 
     @Test
@@ -126,13 +117,9 @@ class AuthControllerTest {
         when(userService.signup(any())).thenReturn(user);
         when(userAuthProvider.createToken(user)).thenReturn(TOKEN);
 
-        mockMvc.perform(post("/api/auth/signup")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(json))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.token").value(TOKEN));
+        mockMvc.perform(post("/api/auth/signup").contentType(MediaType.APPLICATION_JSON).content(json))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.token").value(TOKEN));
     }
-
 
     @Test
     @DisplayName("Signup should fail with non-unique username")
@@ -142,9 +129,7 @@ class AuthControllerTest {
         when(userService.signup(any()))
                 .thenThrow(new BadCredentialsException(USERNAME_ALREADY_EXISTS_MSG, UserService.class.getSimpleName()));
 
-        mockMvc.perform(post("/api/auth/signup")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(json))
+        mockMvc.perform(post("/api/auth/signup").contentType(MediaType.APPLICATION_JSON).content(json))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errors[0].message").value(USERNAME_ALREADY_EXISTS_MSG));
     }
@@ -152,20 +137,12 @@ class AuthControllerTest {
     @Test
     @DisplayName("Login should fail with missing password")
     void login_ShouldReturnBadRequest_WhenMissingPassword() throws Exception {
-        mockMvc.perform(post("/api/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(INVALID_CREDENTIALS))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errors[0].message").exists());
+        mockMvc.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON).content(INVALID_CREDENTIALS))
+                .andExpect(status().isBadRequest()).andExpect(jsonPath("$.errors[0].message").exists());
     }
 
     public User createUser() {
-        return User.builder()
-                .username(USERNAME)
-                .password(PASSWORD)
-                .firstName(FIRST_NAME)
-                .lastName(LAST_NAME)
-                .role(Role.ROLE_USER.getName())
-                .build();
+        return User.builder().username(USERNAME).password(PASSWORD).firstName(FIRST_NAME).lastName(LAST_NAME)
+                .role(Role.ROLE_USER.getName()).build();
     }
 }

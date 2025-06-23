@@ -11,7 +11,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 /**
- * Filter that checks for a JWT in the Authorization header of incoming requests.
+ * Filter that checks for a JWT in the Authorization header of incoming
+ * requests.
  */
 public class JwtFilter extends OncePerRequestFilter {
     /**
@@ -24,30 +25,26 @@ public class JwtFilter extends OncePerRequestFilter {
     /**
      * Constructor for JwtFilter.
      *
-     * @param userAuthProvider Provider for user authentication that validates JWT tokens.
+     * @param userAuthProvider
+     *            Provider for user authentication that validates JWT tokens.
      */
     public JwtFilter(UserAuthProvider userAuthProvider) {
         this.userAuthProvider = userAuthProvider;
     }
 
     @Override
-    protected void doFilterInternal(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
 
         try {
             String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
             if (authHeader != null && authHeader.startsWith(AUTH_HEADER_PREFIX)) {
                 authHeader = authHeader.substring(AUTH_HEADER_PREFIX.length());
                 if ("GET".equals(request.getMethod())) {
-                    SecurityContextHolder.getContext().setAuthentication(
-                            userAuthProvider.validate(authHeader)
-                    );
+                    SecurityContextHolder.getContext().setAuthentication(userAuthProvider.validate(authHeader));
                 } else {
-                    SecurityContextHolder.getContext().setAuthentication(
-                            userAuthProvider.validateAgainstDB(authHeader)
-                    );
+                    SecurityContextHolder.getContext()
+                            .setAuthentication(userAuthProvider.validateAgainstDB(authHeader));
                 }
             }
         } catch (Exception e) {

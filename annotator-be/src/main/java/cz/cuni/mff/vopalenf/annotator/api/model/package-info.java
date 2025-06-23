@@ -3,4 +3,3 @@
  * Contains all data models that can be returned by the API.
  */
 package cz.cuni.mff.vopalenf.annotator.api.model;
-

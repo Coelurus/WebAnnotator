@@ -24,22 +24,25 @@ import java.util.Objects;
 public class FileSystemService {
 
     /**
-     * Path to the file system where files are stored.
-     * This value is read from application properties.
+     * Path to the file system where files are stored. This value is read from
+     * application properties.
      */
-    @Value("${app.file-system.path}") String fileSystemPath;
+    @Value("${app.file-system.path}")
+    String fileSystemPath;
     /**
-     * Extension of image files in the file system.
-     * This value is read from application properties.
+     * Extension of image files in the file system. This value is read from
+     * application properties.
      */
-    @Value("${app.file-system.image-extension}") String imageExtension;
+    @Value("${app.file-system.image-extension}")
+    String imageExtension;
 
     private final ProjectRepository projectRepository;
 
     /**
      * Constructor for FileSystemService.
      *
-     * @param projectRepository the ProjectRepository instance to use for fetching ProjectEntities
+     * @param projectRepository
+     *            the ProjectRepository instance to use for fetching ProjectEntities
      */
     @Autowired
     public FileSystemService(ProjectRepository projectRepository) {
@@ -49,33 +52,41 @@ public class FileSystemService {
     /**
      * Get array of all image files for a project by its ID
      *
-     * @param projectId ID of project to find images of
+     * @param projectId
+     *            ID of project to find images of
      * @return array of image files of project
-     * @throws NotFoundException when projectId is invalid, or it does not have assigned directory
+     * @throws NotFoundException
+     *             when projectId is invalid, or it does not have assigned directory
      */
     private File[] getImageFiles(Long projectId) {
         ProjectEntity projectEntity = projectRepository.findById(projectId)
-                .orElseThrow(() -> new NotFoundException("Invalid project id: " + projectId, FileSystemService.class.getSimpleName()));
+                .orElseThrow(() -> new NotFoundException("Invalid project id: " + projectId,
+                        FileSystemService.class.getSimpleName()));
 
         String logFileName = projectEntity.getLogFileName();
         Path pathToFS = Path.of(fileSystemPath);
 
         File projectDir = Arrays.stream(Objects.requireNonNull(pathToFS.toFile().listFiles()))
-                .filter(file -> file.getName().equals(logFileName))
-                .findFirst()
-                .orElseThrow(() -> new NotFoundException("Not found project dir for project with id: " + projectId, FileSystemService.class.getSimpleName()));
+                .filter(file -> file.getName().equals(logFileName)).findFirst()
+                .orElseThrow(() -> new NotFoundException("Not found project dir for project with id: " + projectId,
+                        FileSystemService.class.getSimpleName()));
 
-        return Objects.requireNonNull(projectDir.listFiles(((dir, name) -> name.toLowerCase().endsWith(imageExtension))));
+        return Objects
+                .requireNonNull(projectDir.listFiles(((dir, name) -> name.toLowerCase().endsWith(imageExtension))));
     }
 
     /**
      * Get frame from project at a position
      *
-     * @param projectId ID of a project
-     * @param position  Order number of the frame in project
+     * @param projectId
+     *            ID of a project
+     * @param position
+     *            Order number of the frame in project
      * @return image from a project at a position
-     * @throws NotFoundException when projectId is invalid, or it does not have assigned directory
-     * @throws ServerException   when image fetching fails
+     * @throws NotFoundException
+     *             when projectId is invalid, or it does not have assigned directory
+     * @throws ServerException
+     *             when image fetching fails
      */
     public Resource getFrame(Long projectId, Integer position) {
         File[] imageFiles = getImageFiles(projectId);
@@ -85,8 +96,7 @@ public class FileSystemService {
         if (imageFiles.length <= position) {
             throw new NotFoundException(
                     "Position " + position + " of image for project with id " + projectId + "is out of range",
-                    FileSystemService.class.getSimpleName()
-            );
+                    FileSystemService.class.getSimpleName());
         }
 
         try {
@@ -100,14 +110,14 @@ public class FileSystemService {
     /**
      * Get number of frames of a project by its ID
      *
-     * @param projectId ID of project to count its images
+     * @param projectId
+     *            ID of project to count its images
      * @return Frame count
-     * @throws NotFoundException when projectId is invalid, or it does not have assigned directory
+     * @throws NotFoundException
+     *             when projectId is invalid, or it does not have assigned directory
      */
     public FrameCount getFramesCount(Long projectId) {
-        return FrameCount.builder()
-                .count(getImageFiles(projectId).length)
-                .build();
+        return FrameCount.builder().count(getImageFiles(projectId).length).build();
 
     }
 }

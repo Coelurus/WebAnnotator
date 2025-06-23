@@ -37,14 +37,9 @@ public class TeamController {
         this.teamService = teamService;
     }
 
-    @Operation(
-            summary = "Get all teams",
-            description = "Retrieves a list of all teams along with their users.",
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "Teams retrieved successfully"),
-                    @ApiResponse(responseCode = "403", description = "Forbidden – Only admins can access this endpoint")
-            }
-    )
+    @Operation(summary = "Get all teams", description = "Retrieves a list of all teams along with their users.", responses = {
+            @ApiResponse(responseCode = "200", description = "Teams retrieved successfully"),
+            @ApiResponse(responseCode = "403", description = "Forbidden – Only admins can access this endpoint")})
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @JsonView({Views.ShowUsersInTeams.class})
     @GetMapping
@@ -52,18 +47,11 @@ public class TeamController {
         return ResponseEntity.ok(teamService.getAllTeams());
     }
 
-    @Operation(
-            summary = "Delete a team",
-            description = "Deletes a team by its ID.",
-            parameters = {
-                    @Parameter(in = ParameterIn.PATH, name = "teamId", schema = @Schema(type = "integer"), description = "ID of the team to be deleted", required = true)
-            },
-            responses = {
+    @Operation(summary = "Delete a team", description = "Deletes a team by its ID.", parameters = {
+            @Parameter(in = ParameterIn.PATH, name = "teamId", schema = @Schema(type = "integer"), description = "ID of the team to be deleted", required = true)}, responses = {
                     @ApiResponse(responseCode = "200", description = "Team deleted successfully"),
                     @ApiResponse(responseCode = "403", description = "Forbidden – Only admins can delete teams"),
-                    @ApiResponse(responseCode = "404", description = "Team not found")
-            }
-    )
+                    @ApiResponse(responseCode = "404", description = "Team not found")})
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @DeleteMapping("/{teamId}")
     public ResponseEntity<Void> deleteTeam(@PathVariable Long teamId) {
@@ -71,19 +59,9 @@ public class TeamController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation(
-            summary = "Create a new team",
-            description = "Creates a new team with the given details.",
-            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    description = "Team request object containing necessary team details",
-                    required = true,
-                    content = @Content(schema = @Schema(implementation = TeamRequest.class))
-            ),
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "Team created successfully"),
-                    @ApiResponse(responseCode = "403", description = "Forbidden – Only admins can create users")
-            }
-    )
+    @Operation(summary = "Create a new team", description = "Creates a new team with the given details.", requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Team request object containing necessary team details", required = true, content = @Content(schema = @Schema(implementation = TeamRequest.class))), responses = {
+            @ApiResponse(responseCode = "200", description = "Team created successfully"),
+            @ApiResponse(responseCode = "403", description = "Forbidden – Only admins can create users")})
     @PostMapping
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<Team> createTeam(@RequestBody TeamRequest teamRequest) {
@@ -91,24 +69,12 @@ public class TeamController {
         return ResponseEntity.ok(team);
     }
 
-    @Operation(
-            summary = "Update a team",
-            description = "Updates a team information by their ID.",
-            parameters = {
-                    @Parameter(in = ParameterIn.PATH, name = "teamId", schema = @Schema(type = "integer"), description = "ID of the team to be updated", required = true)
-            },
-            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    description = "Team request object containing updated team details",
-                    required = true,
-                    content = @Content(schema = @Schema(implementation = TeamRequest.class))
-            ),
-            responses = {
+    @Operation(summary = "Update a team", description = "Updates a team information by their ID.", parameters = {
+            @Parameter(in = ParameterIn.PATH, name = "teamId", schema = @Schema(type = "integer"), description = "ID of the team to be updated", required = true)}, requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Team request object containing updated team details", required = true, content = @Content(schema = @Schema(implementation = TeamRequest.class))), responses = {
                     @ApiResponse(responseCode = "200", description = "User updated successfully"),
                     @ApiResponse(responseCode = "400", description = "Invalid request data"),
                     @ApiResponse(responseCode = "403", description = "Forbidden – Only admins can update users"),
-                    @ApiResponse(responseCode = "404", description = "User not found")
-            }
-    )
+                    @ApiResponse(responseCode = "404", description = "User not found")})
     @PutMapping("/{teamId}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<Team> updateTeam(@PathVariable Long teamId, @RequestBody TeamRequest team) {
@@ -116,25 +82,12 @@ public class TeamController {
         return ResponseEntity.ok(teamToUpdate);
     }
 
-
-    @Operation(
-            summary = "Add a member to a team",
-            description = "Adds a new member to the specified team.",
-            parameters = {
-                    @Parameter(in = ParameterIn.PATH, name = "teamId", schema = @Schema(type = "integer"), description = "ID of the team to add the member to", required = true),
-                    @Parameter(in = ParameterIn.PATH, name = "userId", schema = @Schema(type = "integer"), description = "ID of the user to add to the team", required = true)
-            },
-            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    description = "User request object containing necessary user details",
-                    required = true,
-                    content = @Content(schema = @Schema(implementation = UserRequest.class))
-            ),
-            responses = {
+    @Operation(summary = "Add a member to a team", description = "Adds a new member to the specified team.", parameters = {
+            @Parameter(in = ParameterIn.PATH, name = "teamId", schema = @Schema(type = "integer"), description = "ID of the team to add the member to", required = true),
+            @Parameter(in = ParameterIn.PATH, name = "userId", schema = @Schema(type = "integer"), description = "ID of the user to add to the team", required = true)}, requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "User request object containing necessary user details", required = true, content = @Content(schema = @Schema(implementation = UserRequest.class))), responses = {
                     @ApiResponse(responseCode = "200", description = "Member added successfully"),
                     @ApiResponse(responseCode = "403", description = "Forbidden – Only admins can add members to teams"),
-                    @ApiResponse(responseCode = "404", description = "Team or user not found")
-            }
-    )
+                    @ApiResponse(responseCode = "404", description = "Team or user not found")})
     @PostMapping("/{teamId}/members/{userId}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<Void> addTeamMember(@PathVariable Long teamId, @PathVariable Long userId) {

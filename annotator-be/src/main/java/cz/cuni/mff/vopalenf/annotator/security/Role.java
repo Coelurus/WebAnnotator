@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Getter;
 
 /**
- * Enum representing user roles in the application.
- * This enum is used to define different roles that users can have, such as ADMIN and USER.
+ * Enum representing user roles in the application. This enum is used to define
+ * different roles that users can have, such as ADMIN and USER.
  */
 @Getter
 public enum Role {
@@ -26,7 +26,8 @@ public enum Role {
     /**
      * Constructor for the Role enum.
      *
-     * @param name the name of the role
+     * @param name
+     *            the name of the role
      */
     Role(String name) {
         this.name = name;
@@ -35,7 +36,8 @@ public enum Role {
     /**
      * Returns the string representation of the role.
      *
-     * @param role the string representation of the role
+     * @param role
+     *            the string representation of the role
      * @return the name of the role
      */
     @JsonCreator

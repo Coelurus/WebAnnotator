@@ -9,8 +9,10 @@ public class ServerException extends APIException {
     /**
      * Constructs a new ServerException with the specified message and scope.
      *
-     * @param message   the detail message
-     * @param scope     the scope of the error
+     * @param message
+     *            the detail message
+     * @param scope
+     *            the scope of the error
      */
     public ServerException(final String message, final String scope) {
         super(RUNTIME_EXCEPTION, message, scope);

@@ -43,7 +43,8 @@ public enum PriorityEnum {
     /**
      * Get Priority object based on its integer representation
      *
-     * @param value Integer representation of Priority
+     * @param value
+     *            Integer representation of Priority
      * @return Priority for valid values. {@code NONE} otherwise
      */
     public static PriorityEnum fromValue(int value) {
@@ -59,7 +60,8 @@ public enum PriorityEnum {
     /**
      * Get Priority object based on its name
      *
-     * @param name Human-readable name of Priority
+     * @param name
+     *            Human-readable name of Priority
      * @return Priority for valid values. {@code NONE} otherwise
      */
     public static PriorityEnum fromName(String name) {
