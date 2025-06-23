@@ -11,11 +11,20 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * Implementation of UserDetailsService to load user-specific data.
+ * This service is used by Spring Security to retrieve user details for authentication and authorization.
+ */
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     private final UserRepository userRepository;
 
+    /**
+     * Constructor for UserDetailsServiceImpl.
+     *
+     * @param userRepository the UserRepository instance to use for fetching UserEntity by username
+     */
     public UserDetailsServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
     }

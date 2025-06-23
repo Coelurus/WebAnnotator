@@ -10,11 +10,22 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+/**
+ * Filter that checks for a JWT in the Authorization header of incoming requests.
+ */
 public class JwtFilter extends OncePerRequestFilter {
+    /**
+     * Prefix for the Authorization header containing the JWT token.
+     */
     private static final String AUTH_HEADER_PREFIX = "Bearer ";
 
     private final UserAuthProvider userAuthProvider;
 
+    /**
+     * Constructor for JwtFilter.
+     *
+     * @param userAuthProvider Provider for user authentication that validates JWT tokens.
+     */
     public JwtFilter(UserAuthProvider userAuthProvider) {
         this.userAuthProvider = userAuthProvider;
     }

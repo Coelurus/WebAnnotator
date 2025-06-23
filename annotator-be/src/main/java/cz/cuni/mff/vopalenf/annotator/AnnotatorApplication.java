@@ -10,6 +10,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.web.client.RestTemplate;
 
+/**
+ * The main application class for the Annotator service.
+ * It initializes the Spring Boot application and configures necessary beans.
+ */
 @SpringBootApplication
 @EnableMethodSecurity
 @EnableConfigurationProperties(StorageConfig.class)
@@ -18,10 +22,20 @@ import org.springframework.web.client.RestTemplate;
 )
 public class AnnotatorApplication {
 
+    /**
+     * The main method to run the Annotator application.
+     *
+     * @param args command line arguments
+     */
     public static void main(String[] args) {
         SpringApplication.run(AnnotatorApplication.class, args);
     }
 
+    /**
+     * Creates a RestTemplate bean for making HTTP requests.
+     *
+     * @return a RestTemplate instance
+     */
     @Bean
     public RestTemplate restTemplate() {
         return new RestTemplate();

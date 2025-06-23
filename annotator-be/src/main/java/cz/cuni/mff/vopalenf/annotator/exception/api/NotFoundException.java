@@ -9,6 +9,12 @@ import static cz.cuni.mff.vopalenf.annotator.api.model.error.ErrorCode.DATA_NOT_
  */
 @Getter
 public class NotFoundException extends APIException {
+    /**
+     * Constructs a new NotFoundException with the specified message and scope.
+     *
+     * @param message the detail message
+     * @param scope   the scope of the error
+     */
     public NotFoundException(final String message, final String scope) {
         super(DATA_NOT_FOUND, message, scope);
     }

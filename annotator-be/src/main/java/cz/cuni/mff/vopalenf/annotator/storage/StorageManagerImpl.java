@@ -1,9 +1,10 @@
-package cz.cuni.mff.vopalenf.annotator.manager.storage;
+package cz.cuni.mff.vopalenf.annotator.storage;
 
 import cz.cuni.mff.vopalenf.annotator.config.StorageConfig;
 import cz.cuni.mff.vopalenf.annotator.exception.StorageException;
 import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,17 +25,28 @@ import java.util.zip.ZipInputStream;
 public class StorageManagerImpl implements StorageManager {
 
     /**
+     * Path to the file system where files are stored.
+     * This value is read from application properties.
+     */
+    @Value("${app.file-system.path}") String fileSystemPath = "file_system";
+
+    /**
      * Root location of folder where all files are saved.
      */
     private final Path rootLocation;
 
+    /**
+     * Constructs a new StorageManagerImpl with the specified properties.
+     *
+     * @param properties the storage configuration properties
+     */
     @Autowired
     public StorageManagerImpl(StorageConfig properties) {
 
-        if (properties.getLocation().trim().isEmpty()) {
+        if (fileSystemPath.trim().isEmpty()) {
             throw new StorageException("File upload location must not be empty!");
         }
-        rootLocation = Paths.get(properties.getLocation());
+        rootLocation = Paths.get(fileSystemPath);
     }
 
     @Override

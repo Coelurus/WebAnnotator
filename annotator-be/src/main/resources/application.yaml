@@ -63,3 +63,13 @@ springdoc:
   use-management-port: true
   override-with-generic-response: false
   default-produces-media-type: application/json
+
+
+app:
+  ai:
+    url: ${AI_URL:http://localhost:8081}
+  file-system:
+    path: ${FILE_SYSTEM_PATH:file_system}
+    archive-extension: ${ARCHIVE_EXTENSION:.zip}
+    image-extension: ${IMAGE_EXTENSION:.webp}
+

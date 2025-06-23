@@ -6,6 +6,16 @@ import jakarta.validation.constraints.NotEmpty;
 import java.util.Arrays;
 import java.util.Objects;
 
+/**
+ * Represents the credentials required for user signup.
+ * This record encapsulates the user's first name, last name, username, and password.
+ * It includes validation constraints to ensure that the fields are not blank or empty.
+ *
+ * @param firstName The first name of the user. Must not be blank.
+ * @param lastName The last name of the user. Must not be blank.
+ * @param username The username chosen by the user. Must not be blank.
+ * @param password The password chosen by the user. Must not be empty.
+ */
 public record SignupCredentials(
         @NotBlank
         String firstName,

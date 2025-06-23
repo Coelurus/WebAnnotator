@@ -16,6 +16,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * Service for managing teams in the application.
+ * Provides methods to create, update, delete, and retrieve teams.
+ */
 @Service
 public class TeamService {
 
@@ -29,6 +33,14 @@ public class TeamService {
 
     private final TeamMapper teamMapper;
 
+    /**
+     * Constructor for TeamService.
+     *
+     * @param teamRepository    TeamRepository instance to use for database operations
+     * @param userRepository    UserRepository instance to use for user operations
+     * @param userMapper        UserMapper instance to map UserEntity to User
+     * @param teamMapper        TeamMapper instance to map TeamEntity to Team
+     */
     @Autowired
     public TeamService(TeamRepository teamRepository,
                        UserRepository userRepository,

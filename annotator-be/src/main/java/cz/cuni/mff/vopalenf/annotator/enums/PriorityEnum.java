@@ -10,10 +10,25 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public enum PriorityEnum {
+    /**
+     * Project has critical priority, should be addressed immediately
+     */
     CRITICAL(4, "critical"),
+    /**
+     * Project has high priority, should be addressed as soon as possible
+     */
     HIGH(3, "high"),
+    /**
+     * Project has medium priority, should be addressed when possible
+     */
     MEDIUM(2, "medium"),
+    /**
+     * Project has low priority, can be addressed at leisure
+     */
     LOW(1, "low"),
+    /**
+     * Project has no priority, no need to be addressed
+     */
     NONE(0, "none");
 
     /**

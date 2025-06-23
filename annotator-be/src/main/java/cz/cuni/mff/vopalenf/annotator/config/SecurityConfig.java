@@ -9,6 +9,9 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+/**
+ * Security configuration class for the application.
+ */
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -16,10 +19,22 @@ public class SecurityConfig {
 
     private final UserAuthProvider userAuthProvider;
 
+    /**
+     * Constructor for SecurityConfig.
+     *
+     * @param userAuthProvider the UserAuthProvider used for JWT validation
+     */
     public SecurityConfig(UserAuthProvider userAuthProvider) {
         this.userAuthProvider = userAuthProvider;
     }
 
+    /**
+     * Configures the security filter chain for the application.
+     *
+     * @param http the HttpSecurity object to configure
+     * @return the configured SecurityFilterChain
+     * @throws Exception if an error occurs during configuration
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http

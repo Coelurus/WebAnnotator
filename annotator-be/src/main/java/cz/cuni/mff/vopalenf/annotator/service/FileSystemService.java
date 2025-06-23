@@ -1,12 +1,12 @@
 package cz.cuni.mff.vopalenf.annotator.service;
 
 import cz.cuni.mff.vopalenf.annotator.api.model.FrameCount;
-import cz.cuni.mff.vopalenf.annotator.constants.Constants;
 import cz.cuni.mff.vopalenf.annotator.dao.model.ProjectEntity;
 import cz.cuni.mff.vopalenf.annotator.dao.repository.ProjectRepository;
 import cz.cuni.mff.vopalenf.annotator.exception.api.NotFoundException;
 import cz.cuni.mff.vopalenf.annotator.exception.api.ServerException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
@@ -15,10 +15,7 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Objects;
-
-import static cz.cuni.mff.vopalenf.annotator.constants.Constants.IMAGE_EXTENSION;
 
 /**
  * Service for accessing images of projects in file system
@@ -26,8 +23,24 @@ import static cz.cuni.mff.vopalenf.annotator.constants.Constants.IMAGE_EXTENSION
 @Service
 public class FileSystemService {
 
+    /**
+     * Path to the file system where files are stored.
+     * This value is read from application properties.
+     */
+    @Value("${app.file-system.path}") String fileSystemPath;
+    /**
+     * Extension of image files in the file system.
+     * This value is read from application properties.
+     */
+    @Value("${app.file-system.image-extension}") String imageExtension;
+
     private final ProjectRepository projectRepository;
 
+    /**
+     * Constructor for FileSystemService.
+     *
+     * @param projectRepository the ProjectRepository instance to use for fetching ProjectEntities
+     */
     @Autowired
     public FileSystemService(ProjectRepository projectRepository) {
         this.projectRepository = projectRepository;
@@ -45,14 +58,14 @@ public class FileSystemService {
                 .orElseThrow(() -> new NotFoundException("Invalid project id: " + projectId, FileSystemService.class.getSimpleName()));
 
         String logFileName = projectEntity.getLogFileName();
-        Path pathToFS = Path.of(Constants.FILE_SYSTEM_PATH);
+        Path pathToFS = Path.of(fileSystemPath);
 
         File projectDir = Arrays.stream(Objects.requireNonNull(pathToFS.toFile().listFiles()))
                 .filter(file -> file.getName().equals(logFileName))
                 .findFirst()
                 .orElseThrow(() -> new NotFoundException("Not found project dir for project with id: " + projectId, FileSystemService.class.getSimpleName()));
 
-        return Objects.requireNonNull(projectDir.listFiles(((dir, name) -> name.toLowerCase().endsWith(IMAGE_EXTENSION))));
+        return Objects.requireNonNull(projectDir.listFiles(((dir, name) -> name.toLowerCase().endsWith(imageExtension))));
     }
 
     /**

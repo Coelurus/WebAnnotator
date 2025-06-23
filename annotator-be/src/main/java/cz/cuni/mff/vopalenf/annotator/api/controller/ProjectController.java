@@ -7,7 +7,7 @@ import cz.cuni.mff.vopalenf.annotator.api.model.Progress;
 import cz.cuni.mff.vopalenf.annotator.api.model.Project;
 import cz.cuni.mff.vopalenf.annotator.api.request.LabelRequest;
 import cz.cuni.mff.vopalenf.annotator.api.request.ProjectRequest;
-import cz.cuni.mff.vopalenf.annotator.dao.model.Priority;
+import cz.cuni.mff.vopalenf.annotator.api.model.Priority;
 import cz.cuni.mff.vopalenf.annotator.service.ProjectService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

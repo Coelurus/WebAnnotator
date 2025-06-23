@@ -7,10 +7,22 @@ import lombok.Builder;
 import java.util.Arrays;
 import java.util.Objects;
 
+/**
+ * Represents login credentials for authentication.
+ *
+ * @param username the username for login
+ * @param password the password for login, stored as a char array for security
+ */
 @Builder
 public record LoginCredentials(
+        /**
+         * The username for login.
+         */
         @NotBlank
         String username,
+        /**
+         * The password for login, stored as a char array for security.
+         */
         @NotEmpty
         char[] password
 ) {

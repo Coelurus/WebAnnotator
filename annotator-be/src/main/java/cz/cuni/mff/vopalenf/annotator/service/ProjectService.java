@@ -10,10 +10,9 @@ import cz.cuni.mff.vopalenf.annotator.api.model.User;
 import cz.cuni.mff.vopalenf.annotator.api.request.LabelRequest;
 import cz.cuni.mff.vopalenf.annotator.api.request.ProjectRequest;
 import cz.cuni.mff.vopalenf.annotator.client.AIClient;
-import cz.cuni.mff.vopalenf.annotator.constants.Constants;
 import cz.cuni.mff.vopalenf.annotator.dao.model.AnnotationEntity;
 import cz.cuni.mff.vopalenf.annotator.dao.model.LabelEntity;
-import cz.cuni.mff.vopalenf.annotator.dao.model.Priority;
+import cz.cuni.mff.vopalenf.annotator.api.model.Priority;
 import cz.cuni.mff.vopalenf.annotator.dao.model.ProjectEntity;
 import cz.cuni.mff.vopalenf.annotator.dao.model.TeamEntity;
 import cz.cuni.mff.vopalenf.annotator.dao.repository.AnnotationRepository;
@@ -25,7 +24,7 @@ import cz.cuni.mff.vopalenf.annotator.enums.ProgressEnum;
 import cz.cuni.mff.vopalenf.annotator.exception.StorageException;
 import cz.cuni.mff.vopalenf.annotator.exception.api.BadRequestException;
 import cz.cuni.mff.vopalenf.annotator.exception.api.NotFoundException;
-import cz.cuni.mff.vopalenf.annotator.manager.storage.StorageManager;
+import cz.cuni.mff.vopalenf.annotator.storage.StorageManager;
 import cz.cuni.mff.vopalenf.annotator.mapper.AnnotationMapper;
 import cz.cuni.mff.vopalenf.annotator.mapper.LabelMapper;
 import cz.cuni.mff.vopalenf.annotator.mapper.PriorityMapper;
@@ -35,6 +34,7 @@ import cz.cuni.mff.vopalenf.annotator.mapper.TeamMapper;
 import cz.cuni.mff.vopalenf.annotator.security.Role;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -47,13 +47,19 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import static cz.cuni.mff.vopalenf.annotator.constants.Constants.NO_GESTURE;
-
 /**
  * Service taking care of projects
  */
 @Service
 public class ProjectService {
+
+    /**
+     * Path to the file system where files are stored.
+     * This value is read from application properties.
+     */
+    @Value("${app.file-system.archive-extension}") String archiveExtension;
+
+    private static final LabelEntity NO_GESTURE = LabelEntity.builder().label("NO_GESTURE").build();
 
     private static final Logger logger = LoggerFactory.getLogger(ProjectService.class);
     private static final String PROJECT_NOT_FOUND_MSG = "PROJECT_NOT_FOUND";
@@ -72,6 +78,23 @@ public class ProjectService {
     private final FileSystemService fileSystemService;
     private final AIClient aiClient;
 
+    /**
+     * Constructor for ProjectService.
+     *
+     * @param projectRepository       the ProjectRepository instance to use for fetching and saving projects
+     * @param teamRepository          the TeamRepository instance to use for fetching teams
+     * @param annotationRepository    the AnnotationRepository instance to use for managing annotations
+     * @param labelRepository         the LabelRepository instance to use for managing labels
+     * @param storageManager          the StorageManager instance to use for file storage operations
+     * @param projectMapper           the ProjectMapper instance to map between ProjectEntity and Project
+     * @param teamMapper              the TeamMapper instance to map between TeamEntity and Team
+     * @param labelMapper             the LabelMapper instance to map between LabelEntity and Label
+     * @param annotationMapper        the AnnotationMapper instance to map between AnnotationEntity and Annotation
+     * @param fileSystemService       the FileSystemService instance to manage file system operations
+     * @param progressMapper          the ProgressMapper instance to map between ProgressEnum and Progress
+     * @param priorityMapper          the PriorityMapper instance to map between PriorityEnum and Priority
+     * @param aiClient                the AIClient instance to interact with AI services
+     */
     public ProjectService(ProjectRepository projectRepository,
                           TeamRepository teamRepository,
                           AnnotationRepository annotationRepository,
@@ -308,7 +331,7 @@ public class ProjectService {
 
         String compressedFileName = projectRequest.getFile().getOriginalFilename();
         String shortenedFileName = Objects.requireNonNull(compressedFileName)
-                .substring(0, compressedFileName.indexOf(Constants.ARCHIVE_EXTENSION));
+                .substring(0, compressedFileName.indexOf(archiveExtension));
 
         ProjectEntity projectEntity = ProjectEntity.builder()
                 .projectName(projectRequest.getProjectName())
@@ -375,6 +398,12 @@ public class ProjectService {
         return projectMapper.mapProject(projectRepository.save(projectToUpdate));
     }
 
+    /**
+     * Train AI model on project data
+     *
+     * @param projectId ID of the project to train AI on
+     * @return List of prediction triples generated by AI
+     */
     public List<PredictionTriple> trainAI(Long projectId) {
         Project project = getProject(projectId);
         byte[] logData = storageManager.load(project.getLogFileName() + "\\" + project.getLogFileName() + ".csv");
@@ -385,9 +414,8 @@ public class ProjectService {
 
         for (Long i = 1L; i < lines.length; i++) {
             String line = lines[Math.toIntExact(i)].trim();
-            if (line.isEmpty()) continue;
-
             String[] parts = line.split(",");
+
             if (parts.length < 5) continue;
 
             String timestampStr = parts[0];
@@ -420,6 +448,12 @@ public class ProjectService {
         return aiClient.sendLogData(projectId, logDataList);
     }
 
+    /**
+     * Parse timestamp string to seconds
+     *
+     * @param timestamp Timestamp string in format "yyyy-MM-dd HH:mm:ss"
+     * @return Time in seconds since midnight
+     */
     private double parseTimeToSeconds(String timestamp) {
         LocalTime time = LocalDateTime.parse(timestamp, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).toLocalTime();
         return time.toSecondOfDay();

@@ -20,24 +20,44 @@ import java.util.Base64;
 import java.util.Collections;
 import java.util.Date;
 
+/**
+ * UserAuthProvider is responsible for creating and validating JWT tokens for user authentication.
+ */
 @Component
 public class UserAuthProvider {
 
     private final UserService userService;
 
+    /**
+     * The secret key used for signing JWT tokens.
+     */
     @Value("${spring.security.jwt.secret-key}")
     private String secretKey;
 
+    /**
+     * Constructor for UserAuthProvider.
+     *
+     * @param userService The service used to interact with user data.
+     */
     @Autowired
     public UserAuthProvider(UserService userService) {
         this.userService = userService;
     }
 
+    /**
+     * Initializes the secret key by encoding it in Base64 format.
+     */
     @PostConstruct
     public void init() {
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
     }
 
+    /**
+     * Creates a JWT token for the given user.
+     *
+     * @param user the user for whom the token is created
+     * @return the generated JWT token as a String
+     */
     public String createToken(User user) {
         Date issuedAt = new Date();
         Date expiresAt = new Date(issuedAt.getTime() + 1000 * 60 * 60);
@@ -56,6 +76,12 @@ public class UserAuthProvider {
                 .sign(Algorithm.HMAC256(secretKey));
     }
 
+    /**
+     * Validates the given JWT token and returns an Authentication object.
+     *
+     * @param token the JWT token to validate
+     * @return an Authentication object containing user details
+     */
     public Authentication validate(String token) {
         JWTVerifier verifier = JWT.require(Algorithm.HMAC256(secretKey)).build();
         DecodedJWT jwt = verifier.verify(token);
@@ -72,6 +98,12 @@ public class UserAuthProvider {
 
     }
 
+    /**
+     * Validates the given JWT token against the database and returns an Authentication object.
+     *
+     * @param token the JWT token to validate
+     * @return an Authentication object containing user details from the database
+     */
     public Authentication validateAgainstDB(String token) {
         JWTVerifier verifier = JWT.require(Algorithm.HMAC256(secretKey)).build();
         DecodedJWT jwt = verifier.verify(token);

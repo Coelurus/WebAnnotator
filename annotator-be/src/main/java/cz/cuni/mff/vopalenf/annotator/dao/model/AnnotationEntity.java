@@ -12,6 +12,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * Represents an annotation in the database.
+ */
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
@@ -20,17 +23,26 @@ import lombok.Setter;
 @Getter
 @Setter
 public class AnnotationEntity {
+    /**
+     * The unique identifier for the annotation.
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
-
+    /**
+     * The ID of the project the annotation belongs to.
+     */
     @Column(name = "project_id")
     private Long projectId;
-
+    /**
+     * The ID of the frame in the project the annotation belongs to.
+     */
     @Column(name = "frame_id")
     private Long frameId;
-
+    /**
+     * The ID of the label associated with the annotation.
+     */
     @Column(name = "label_id")
     private Long labelId;
 }

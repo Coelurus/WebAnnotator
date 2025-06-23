@@ -26,6 +26,9 @@ import java.util.Collections;
 @RestControllerAdvice
 public class RestExceptionHandler {
 
+    /**
+     * Scope of the controller
+     */
     private static final String CONTROLLER_SCOPE = "APIController";
 
     /**
@@ -88,6 +91,12 @@ public class RestExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     }
 
+    /**
+     * Handler for all other exceptions
+     *
+     * @param e Thrown exception
+     * @return Error response with information about exception
+     */
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponse> handleInvalidJson(HttpMessageNotReadableException e) {
         APIException apiException = new APIException(ErrorCode.BAD_REQUEST, e.getMessage(), CONTROLLER_SCOPE);
@@ -95,6 +104,12 @@ public class RestExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
+    /**
+     * Handler for MethodArgumentNotValidException
+     *
+     * @param e Thrown exception
+     * @return Error response with information about exception
+     */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationException(MethodArgumentNotValidException e) {
         APIException apiException = new APIException(ErrorCode.BAD_REQUEST, e.getBody().getDetail(), CONTROLLER_SCOPE);
@@ -102,6 +117,12 @@ public class RestExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
+    /**
+     * Handler for AccessDeniedException
+     *
+     * @param e Thrown exception
+     * @return Error response with information about exception
+     */
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ErrorResponse> handleAccessDenied(AccessDeniedException e) {
         APIException apiException = new APIException(ErrorCode.FORBIDDEN, e.getMessage(), CONTROLLER_SCOPE);

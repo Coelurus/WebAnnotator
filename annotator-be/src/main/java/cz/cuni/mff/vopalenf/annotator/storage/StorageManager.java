@@ -1,4 +1,4 @@
-package cz.cuni.mff.vopalenf.annotator.manager.storage;
+package cz.cuni.mff.vopalenf.annotator.storage;
 
 import org.springframework.web.multipart.MultipartFile;
 

@@ -22,6 +22,9 @@ import java.nio.CharBuffer;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Service for managing users in the application.
+ */
 @Service
 public class UserService {
 
@@ -35,6 +38,14 @@ public class UserService {
 
     private final PasswordEncoder passwordEncoder;
 
+    /**
+     * Constructor for UserService.
+     *
+     * @param userRepository    UserRepository instance to use for database operations
+     * @param userMapper        UserMapper instance to map UserEntity to User and vice versa
+     * @param teamMapper        TeamMapper instance to map TeamEntity to Team and vice versa
+     * @param passwordEncoder   PasswordEncoder instance to encode and verify passwords
+     */
     @Autowired
     public UserService(UserRepository userRepository,
                        UserMapper userMapper,

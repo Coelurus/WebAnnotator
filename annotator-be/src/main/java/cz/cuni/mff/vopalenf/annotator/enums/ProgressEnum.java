@@ -23,9 +23,22 @@ public enum ProgressEnum {
      */
     FINISHED(2, "finished");
 
+    /**
+     * Progress represented as a number for convenient usage
+     */
     private final int value;
+
+    /**
+     * Human-readable form of progress
+     */
     private final String name;
 
+    /**
+     * Get ProgressEnum object based on its integer representation
+     *
+     * @param value Integer representation of ProgressEnum
+     * @return ProgressEnum for valid values. {@code NOT_STARTED} otherwise
+     */
     public static ProgressEnum fromValue(int value) {
         return switch (value) {
             case 2 -> FINISHED;
@@ -34,6 +47,12 @@ public enum ProgressEnum {
         };
     }
 
+    /**
+     * Get ProgressEnum object based on its name
+     *
+     * @param name Human-readable name of ProgressEnum
+     * @return ProgressEnum for valid values. {@code NOT_STARTED} otherwise
+     */
     public static ProgressEnum fromName(String name) {
         if (name == null || name.isEmpty()) {
             return NOT_STARTED;
