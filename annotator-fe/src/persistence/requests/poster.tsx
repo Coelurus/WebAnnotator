@@ -1,7 +1,7 @@
 import toast from 'react-hot-toast';
 import {request} from '../../security/auth';
 import {ErrorResponse} from '../errors/error-response';
-import {LabelApiResponse, LongTeamApiResponse, ProjectApiResponse, UserApiResponse} from '../model/api-responses';
+import {LabelApiResponse, LongTeamApiResponse, ProjectApiResponse, LongUserApiResponse} from '../model/api-responses';
 import {LabelRequest, TeamRequest, UserRequest} from '../model/requests';
 import {ShortTeam} from '../model/data';
 import generateErrorToasts from '../../screens/notifications/toast-util';
@@ -58,7 +58,7 @@ export function createProjectRequest(formData: FormData): Promise<ProjectApiResp
     });
 }
 
-export function createUserRequest(newUser: UserRequest): Promise<UserApiResponse> {
+export function createUserRequest(newUser: UserRequest): Promise<LongUserApiResponse> {
     const requestPromise = request('POST', '/api/users', newUser)
         .then((response) => response.data)
         .catch((error: ErrorResponse) => {
