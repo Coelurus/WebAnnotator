@@ -1,5 +1,5 @@
-import * as React from 'react';
-import * as ReactDOM from 'react-dom/client';
+import React from 'react';
+import ReactDOM from 'react-dom/client';
 import {
   createBrowserRouter,
   RouterProvider,
@@ -18,21 +18,42 @@ import SignupPage from './screens/security/signup/signup-screen';
 import { isUserAdmin, isUserLoggedIn } from './security/auth';
 import HomePage from './screens/root/menu';
 
+/**
+ * AdminRoute component that checks if the user is an admin.
+ * If the user is an admin, it renders the Outlet; otherwise, it redirects to the home page.
+ * 
+ * @returns JSX element representing the admin route.
+ */
 const AdminRoute = () => {
   const location = useLocation();
   return isUserAdmin() ? <Outlet /> : <Navigate to="/" replace state={{ from: location }} />;
 };
 
+/**
+ * SignedUserRoute component that checks if the user is logged in.
+ * If the user is logged in, it renders the Outlet; otherwise, it redirects to the home page.
+ * 
+ * @returns JSX element representing the signed user route.
+ */
 const SignedUserRoute = () => {
   const location = useLocation();
   return isUserLoggedIn() ? <Outlet /> : <Navigate to="/" replace state={{ from: location }} />;
 };
 
+/**
+ * AnonymousUserRoute component that checks if the user is not logged in.
+ * If the user is not logged in, it renders the Outlet; otherwise, it redirects to the home page.
+ * 
+ * @returns JSX element representing the anonymous user route.
+ */
 const AnonymousUserRoute = () => {
   const location = useLocation();
   return !isUserLoggedIn() ? <Outlet /> : <Navigate to="/" replace state={{ from: location }} />;
 };
 
+/**
+ * Router configuration for the application.
+ */
 const router = createBrowserRouter([
   {
     path: '/',

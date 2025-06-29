@@ -1,21 +1,27 @@
 /**
  * ErrorResponse interface represents the structure of an error response from the API.
  */
-export interface ErrorResponse {
+export default interface ErrorResponse {
+  /**
+   * Payload of the error response containing details about the error.
+   */
   response: ErrorPayload;
 }
 
 /**
  * ErrorPayload interface represents the payload of the error response.
  */
-interface ErrorPayload {
+export interface ErrorPayload {
+  /**
+   * Data containing the error details.
+   */
   data: Error;
 }
 
 /**
  * Error interface represents the structure of the error object in the error response.
  */
-interface Error {
+export interface Error {
   /**
    * The HTTP status code of the error response.
    */
@@ -33,7 +39,7 @@ interface Error {
 /**
  * ErrorItem interface represents an individual error item in the errors array.
  */
-interface ErrorItem {
+export interface ErrorItem {
   /**
    * Name of the error.
    */
