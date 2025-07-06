@@ -142,7 +142,7 @@ class AuthControllerTest {
     }
 
     public User createUser() {
-        return User.builder().username(USERNAME).password(PASSWORD).firstName(FIRST_NAME).lastName(LAST_NAME)
+        return User.builder().username(USERNAME).firstName(FIRST_NAME).lastName(LAST_NAME)
                 .role(Role.ROLE_USER.getName()).build();
     }
 }

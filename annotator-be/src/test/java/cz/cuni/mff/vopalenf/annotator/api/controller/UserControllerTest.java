@@ -30,7 +30,6 @@ class UserControllerTest {
     private static final String USERNAME_2 = "testuser2";
     private static final String FIRST_NAME = "test";
     private static final String LAST_NAME = "user";
-    private static final String PASSWORD = "testpassword";
 
     @Autowired
     private MockMvc mockMvc;
@@ -63,7 +62,7 @@ class UserControllerTest {
     }
 
     public User createUser(String username) {
-        return User.builder().username(username).password(PASSWORD).firstName(FIRST_NAME).lastName(LAST_NAME)
+        return User.builder().username(username).firstName(FIRST_NAME).lastName(LAST_NAME)
                 .role(Role.ROLE_USER.getName()).build();
     }
 }
