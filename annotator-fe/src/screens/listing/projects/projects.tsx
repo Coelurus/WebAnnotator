@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 
 import { LongTeam, Priority, Progress, Project } from '../../../persistence/model/data';
@@ -20,23 +20,48 @@ import Form from 'react-bootstrap/esm/Form';
 import Modal from 'react-bootstrap/esm/Modal';
 import { isUserAdmin } from '../../../security/auth';
 
+/**
+ * Interface to identify a project for deletion
+ */
 interface ProjectInfo {
+  /**
+   * ID of the project to be deleted
+   */
   id: number;
+  /**
+   * Name of the project to be deleted
+   */
   name: string;
 }
 
+/**
+ * Projects component displays a list of projects with options to edit, delete, and add new projects.
+ * It fetches project data, manages state for editing and deleting projects, and renders a table of projects.
+ *
+ * @returns JSX Element representing the projects listing screen.
+ */
 export default function Projects() {
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [projectToDelete, setProjectToDelete] = useState<ProjectInfo | null>(null);
-  const [showDeleteProjectConfirmation, setShowDeleteProjectConfirmation] = useState(false);
-  const [showAddProjectModal, setShowAddProjectModal] = useState(false);
-  const [editProjectId, setEditProjectId] = useState<number | null>(null);
-  const [editProjectValues, setEditProjectValues] = useState<ProjectRequest>({});
-  const [progresses, setProgresses] = useState<Progress[]>([]);
-  const [priorities, setPriorities] = useState<Priority[]>([]);
-  const [teams, setTeams] = useState<LongTeam[]>([]);
+  // State to manage the list of projects
+  const [projects, setProjects] = React.useState<Project[]>([]);
+  // State to manage the project to be deleted
+  const [projectToDelete, setProjectToDelete] = React.useState<ProjectInfo | null>(null);
+  // State to manage the visibility of the delete confirmation modal
+  const [showDeleteProjectConfirmation, setShowDeleteProjectConfirmation] = React.useState(false);
+  // State to manage the visibility of the add project modal
+  const [showAddProjectModal, setShowAddProjectModal] = React.useState(false);
+  // State to manage the project being edited
+  const [editProjectId, setEditProjectId] = React.useState<number | null>(null);
+  // State to manage the values of the project being edited
+  const [editProjectValues, setEditProjectValues] = React.useState<ProjectRequest>({});
+  // State to manage the list of progresses
+  const [progresses, setProgresses] = React.useState<Progress[]>([]);
+  // State to manage the list of priorities
+  const [priorities, setPriorities] = React.useState<Priority[]>([]);
+  // State to manage the list of teams
+  const [teams, setTeams] = React.useState<LongTeam[]>([]);
 
-  useEffect(() => {
+  // Effect to update teams, progresses, and priorities when editing a project
+  React.useEffect(() => {
     if (isUserAdmin()) {
       fetchTeams().then(setTeams);
     }
@@ -44,15 +69,27 @@ export default function Projects() {
     fetchPriorities().then(setPriorities);
   }, [editProjectId !== null]);
 
-  useEffect(() => {
+  // Effect to update projects when state of adding, deleting, or editing a project changes
+  React.useEffect(() => {
     fetchProjects().then(setProjects);
   }, [showAddProjectModal, projectToDelete, editProjectId === null]);
 
+  /**
+   * Function to handle the editing of a project.
+   * 
+   * @param project The project object to be edited.
+   */
   const handleProjectEdit = (project: Project) => {
     setEditProjectId(project.id);
     setEditProjectValues({ ...mapProjectRequest(project) });
   };
 
+  /**
+   * Function to handle changes in the project form fields.
+   * 
+   * @param field The field name to update.
+   * @param e The change event from the input field.
+   */
   const handleProjectFieldChange = (
     field: keyof ProjectRequest,
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -60,24 +97,48 @@ export default function Projects() {
     setEditProjectValues({ ...editProjectValues, [field]: e.target.value });
   };
 
+  /**
+   * Function to handle changes in the team selection dropdown.
+   * 
+   * @param field The field name to update.
+   * @param team The selected team object or undefined if no team is selected.
+   */
   const handleSelectChange = (field: keyof ProjectRequest, team: LongTeam | undefined) => {
     setEditProjectValues({ ...editProjectValues, [field]: team ? team.id : null });
   };
 
+  /**
+   * Function to handle the submission of the edited project form.
+   */
   const handleSubmitProjectEdit = () => {
     if (editProjectId === null) return;
     updateProject(editProjectId, editProjectValues).then(() => setEditProjectId(null));
   };
 
+  /**
+   * Function to handle the cancellation of project editing.
+   */
   const handleCancelProjectEdit = () => setEditProjectId(null);
 
+  /**
+   * Function to handle clicking on the delete button for a project.
+   * 
+   * @param projectId ID of the project to be deleted.
+   * @param projectName Name of the project to be deleted.
+   */
   const handleProjectDelete = (projectId: number, projectName: string) => {
     setProjectToDelete({ id: projectId, name: projectName });
     setShowDeleteProjectConfirmation(true);
   };
 
+  /**
+   * Function to close the delete project confirmation modal.
+   */
   const handleDeleteProjectClose = () => setShowDeleteProjectConfirmation(false);
 
+  /**
+   * Function to delete a project.
+   */
   const deleteProject = async () => {
     deleteProjectRequest(projectToDelete?.id ?? 0).then(() => {
       setProjectToDelete(null);
@@ -85,6 +146,9 @@ export default function Projects() {
     });
   };
 
+  /**
+   * Function to show the add project modal.
+   */
   const handleAddProjectShow = () => setShowAddProjectModal(true);
 
   return (

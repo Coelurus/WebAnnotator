@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Label, Project } from '../../persistence/model/data';
 import { trainAI } from './ai/train-ai';
 import Form from 'react-bootstrap/Form';
@@ -11,17 +11,50 @@ import { mapLabel } from '../../persistence/mapper/mapper';
 import toast from 'react-hot-toast';
 import { Link } from 'react-router-dom';
 
-interface AnnotatorHeaderProps {
+/**
+ * Interface for the properties of the AnnotatorHeader component.
+ */
+export interface AnnotatorHeaderProps {
+  /**
+   * Current size of the image to be displayed.
+   */
   imageSize: number;
+  /**
+   * Function to set the size of the image.
+   */
   setImageSize: React.Dispatch<React.SetStateAction<number>>;
+  /**
+   * Currently selected label.
+   */
   currentLabel: Label | undefined;
+  /**
+   * Function to set the currently selected label.
+   */
   setCurrentLabel: React.Dispatch<React.SetStateAction<Label | undefined>>;
+  /**
+   * List of all available labels.
+   */
   labels: Label[];
+  /**
+   * Function to set the list of labels.
+   */
   setLabels: React.Dispatch<React.SetStateAction<Label[]>>;
+  /**
+   * Current project being edited.
+   */
   project: Project;
+  /**
+   * Reference to the header element for accessing its size.
+   */
   headerRef: React.RefObject<HTMLDivElement>;
 }
 
+/**
+ * AnnotatorHeader component provides controls for selecting labels, adjusting image size, and managing project settings.
+ * 
+ * @param props The properties for the AnnotatorHeader component.
+ * @returns The rendered header with controls for label selection, image size adjustment, and project settings
+ */
 export default function AnnotatorHeader({
   imageSize,
   setImageSize,
@@ -32,15 +65,27 @@ export default function AnnotatorHeader({
   project,
   headerRef
 }: AnnotatorHeaderProps) {
+  // Default color option for new labels
   const DEFAULT_COLOR_OPTION = '#563d7c';
-
+  // State to manage inputting and creating a new label
   const [newLabel, setNewLabel] = React.useState<LabelRequest>({ color: DEFAULT_COLOR_OPTION });
-  const [showSettings, setShowSettings] = useState(false);
+  // State to manage the visibility of settings bar
+  const [showSettings, setShowSettings] = React.useState(false);
 
+  /**
+   * Handles the change event for the slider input to adjust image size.
+   * 
+   * @param event Change event from the slider input to adjust image size - user slides the slider to resize images.
+   */
   const handleSliderChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setImageSize(Number(event.target.value));
   };
 
+  /**
+   * Handles the change event for the label selection dropdown.
+   * 
+   * @param event Change event from the label selection dropdown - user selects another label from the dropdown.
+   */
   const handleLabelChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedLabelId = Number(event.target.selectedOptions[0].getAttribute('data-label-id'));
     const selectedLabelName = event.target.selectedOptions[0].getAttribute('data-label-name');
@@ -54,6 +99,10 @@ export default function AnnotatorHeader({
     }
   };
 
+  /**
+   * Handles the addition of a new label.
+   * If the new label name is empty, it shows an error toast.
+   */
   const handleAddLabel = () => {
     if (!newLabel.labelName || newLabel.labelName.length === 0) {
       toast.error('Cannot create empty label');
@@ -68,6 +117,11 @@ export default function AnnotatorHeader({
     }
   };
 
+  /**
+   * Handles the change event for the label input field.
+   * 
+   * @param event Change event from the label input field - user types in a new label name or selects a color.
+   */
   const handleLabelInputFieldChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNewLabel({ ...newLabel, [event.target.name]: event.target.value });
   };

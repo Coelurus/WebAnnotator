@@ -1,14 +1,16 @@
 {
   "name": "annotator-fe",
+  "description": "WebAnnotator Frontend",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "format": "prettier --write './**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc"
+    "format": "prettier --write './**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc",
+    "docs": "npx typedoc --entryPointStrategy Expand src --validation.notDocumented.warn"
   },
   "dependencies": {
     "axios": "^1.8.1",
@@ -37,6 +39,7 @@
     "globals": "^15.15.0",
     "prettier": "^3.5.3",
     "prettier-eslint": "^16.1.2",
+    "typedoc": "^0.28.6",
     "typescript": "^5.8.2",
     "typescript-eslint": "^8.26.0",
     "vite": "^5.4.8"

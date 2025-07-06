@@ -4,7 +4,7 @@ import {
   ProjectApiResponse,
   ShortTeamApiResponse,
   LongTeamApiResponse,
-  UserApiResponse,
+  LongUserApiResponse,
   LabelApiResponse,
   FrameCountApiResponse,
   AnnotationApiResponse,
@@ -12,6 +12,12 @@ import {
   PriorityApiResponse
 } from '../model/api-responses';
 
+/**
+ * Maps a ProjectApiResponse with ShortTeamApiResponse to a Project object.
+ * 
+ * @param project ProjectApiResponse with ShortTeamApiResponse
+ * @returns Mapped Project object
+ */
 export function mapProjectResponse(project: ProjectApiResponse<ShortTeamApiResponse>): Project {
   return {
     id: project.id,
@@ -29,6 +35,12 @@ export function mapProjectResponse(project: ProjectApiResponse<ShortTeamApiRespo
   };
 }
 
+/**
+ * Maps an array of ProjectApiResponse with LongTeamApiResponse to an array of Project objects.
+ * 
+ * @param data Array of ProjectApiResponse with LongTeamApiResponse 
+ * @returns Array of mapped Project objects
+ */
 export function mapProjectResponses(data: ProjectApiResponse<LongTeamApiResponse>[]): Project[] {
   return data.map((project) => ({
     id: project.id,
@@ -47,6 +59,12 @@ export function mapProjectResponses(data: ProjectApiResponse<LongTeamApiResponse
   }));
 }
 
+/**
+ * Maps an array of LongTeamApiResponse to an array of LongTeam objects.
+ * 
+ * @param data Array of LongTeamApiResponse containing team details
+ * @returns Array of mapped LongTeam objects
+ */
 export function mapTeamResponse(data: LongTeamApiResponse[]): LongTeam[] {
   return data.map((team) => ({
     id: team.id,
@@ -61,7 +79,13 @@ export function mapTeamResponse(data: LongTeamApiResponse[]): LongTeam[] {
   }));
 }
 
-export function mapUserResponse(data: UserApiResponse[]): LongUser[] {
+/**
+ * Maps an array of UserApiResponse to an array of LongUser objects.
+ * 
+ * @param data Array of UserApiResponse containing user details
+ * @returns Array of mapped LongUser objects
+ */
+export function mapUserResponse(data: LongUserApiResponse[]): LongUser[] {
   return data.map((user) => ({
     id: user.id,
     firstName: user.firstName,
@@ -72,6 +96,12 @@ export function mapUserResponse(data: UserApiResponse[]): LongUser[] {
   }));
 }
 
+/**
+ * Maps a UserApiResponse to a LongUser object.
+ * 
+ * @param data UserApiResponse containing priority details
+ * @returns Mapped LongUser object
+ */
 export function mapPriorityResponse(data: PriorityApiResponse[]): Priority[] {
   return data.map((priority) => ({
     name: priority.name,
@@ -79,6 +109,12 @@ export function mapPriorityResponse(data: PriorityApiResponse[]): Priority[] {
   }));
 }
 
+/**
+ * Maps a LongUser object to a UserRequest object.
+ * 
+ * @param data LongUser object containing user details
+ * @returns 
+ */
 export function mapUserRequest(data: LongUser): UserRequest {
   return {
     firstName: data.firstName,
@@ -89,6 +125,12 @@ export function mapUserRequest(data: LongUser): UserRequest {
   };
 }
 
+/**
+ * Maps a LongTeam object to a TeamRequest object.
+ * 
+ * @param data LongTeam object containing team details
+ * @returns Mapped TeamRequest object
+ */
 export function mapTeamRequest(data: LongTeam): TeamRequest {
   return {
     name: data.name,
@@ -96,6 +138,12 @@ export function mapTeamRequest(data: LongTeam): TeamRequest {
   };
 }
 
+/**
+ * Maps a Project object to a ProjectRequest object.
+ * 
+ * @param data Project object containing project details
+ * @returns Mapped ProjectRequest object
+ */
 export function mapProjectRequest(data: Project): ProjectRequest {
   return {
     projectName: data.projectName,
@@ -106,10 +154,22 @@ export function mapProjectRequest(data: Project): ProjectRequest {
   };
 }
 
+/**
+ * Maps an array of roles (strings) to an array of strings.
+ * 
+ * @param data List of roles as strings
+ * @returns List of roles as strings
+ */
 export function mapRoles(data: string[]): string[] {
   return data.map((role) => role);
 }
 
+/**
+ * Maps an array of LabelApiResponse to an array of Label objects.
+ * 
+ * @param data Array of LabelApiResponse containing label details
+ * @returns Array of mapped Label objects
+ */
 export function mapLabels(data: LabelApiResponse[]): Label[] {
   return data.map((label) => ({
     id: label.id,
@@ -118,10 +178,22 @@ export function mapLabels(data: LabelApiResponse[]): Label[] {
   }));
 }
 
+/**
+ * Maps a FrameCountApiResponse to a number representing the frame count.
+ * 
+ * @param data FrameCountApiResponse containing the frame count
+ * @returns Number representing the frame count
+ */
 export function mapFrameCount(data: FrameCountApiResponse): number {
   return data.count;
 }
 
+/**
+ * Maps an array of AnnotationApiResponse to an array of Annotation objects.
+ * 
+ * @param data Array of AnnotationApiResponse containing annotation details
+ * @returns Array of mapped Annotation objects
+ */
 export function mapAnnotations(data: AnnotationApiResponse[]): Annotation[] {
   return data.map((annotation) => ({
     frameId: annotation.frameId,
@@ -129,6 +201,12 @@ export function mapAnnotations(data: AnnotationApiResponse[]): Annotation[] {
   }));
 }
 
+/**
+ * Maps a LabelApiResponse to a Label object.
+ * 
+ * @param data LabelApiResponse containing label details
+ * @returns Mapped Label object
+ */
 export function mapLabel(data: LabelApiResponse): Label {
   return {
     id: data.id,
@@ -137,6 +215,12 @@ export function mapLabel(data: LabelApiResponse): Label {
   };
 }
 
+/**
+ * Maps an array of ProgressApiResponse to an array of Progress objects.
+ * 
+ * @param data Array of ProgressApiResponse containing progress details
+ * @returns Array of mapped Progress objects
+ */
 export function mapProgresses(data: ProgressApiResponse[]): Progress[] {
   return data.map((progress) => ({
     value: progress.value,

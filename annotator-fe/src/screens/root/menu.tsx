@@ -8,7 +8,16 @@ import {logout} from '../../security/logout';
 import {Nav} from 'react-bootstrap';
 import {Toaster} from 'react-hot-toast';
 
+/**
+ * HomePage component that serves as the main layout for the application.
+ * It includes a navigation bar and a welcome message.
+ *
+ * @returns JSX Element representing the home page layout.
+ */
 const HomePage = () => {
+    /**
+     * Hook to get the navigate function for programmatic navigation.
+     */
     const navigate = useNavigate();
 
     return (

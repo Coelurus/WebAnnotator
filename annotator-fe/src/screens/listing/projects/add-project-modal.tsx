@@ -9,19 +9,38 @@ import { ProjectRequest } from '../../../persistence/model/requests';
 import { createProjectRequest } from '../../../persistence/requests/poster';
 import { isUserAdmin } from '../../../security/auth';
 
-interface AddProjectModalProps {
+/**
+ * Interface for the properties of the AddProjectModal component.
+ */
+export interface AddProjectModalProps {
+  /**
+   * Boolean to control the visibility of the modal.
+   */
   showAddProjectModal: boolean;
+  /**
+   * Function to set the visibility state of the modal.
+   */
   setShowAddProjectModal: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
+/**
+ * Component for adding a new project through a modal form.
+ *
+ * @param props The properties for the AddProjectModal component.
+ * @returns JSX Element representing the add project form modal.
+ */
 export default function ProjectForm({
   showAddProjectModal,
   setShowAddProjectModal
 }: Readonly<AddProjectModalProps>) {
+  // State to manage list of all teams
   const [teams, setTeams] = React.useState<LongTeam[]>([]);
+  // State to manage list of available priorities
   const [priorities, setPriorities] = React.useState<Priority[]>([]);
+  // State to manage creation of a new project
   const [newProject, setNewProject] = React.useState<ProjectRequest>({});
 
+  // Effect to fetch teams and priorities when the component mounts
   React.useEffect(() => {
     if (isUserAdmin()) {
       fetchTeams().then(setTeams);
@@ -29,12 +48,26 @@ export default function ProjectForm({
     fetchPriorities().then(setPriorities);
   }, []);
 
+  /**
+   * Function to close the modal for adding a new project.
+   */
   const handleAddProjectClose = () => setShowAddProjectModal(false);
 
+  /**
+   * Function to handle changes in the project form fields.
+   *
+   * @param value The new value for the field.
+   * @param name The name of the field being changed.
+   */
   const handleAddProjectChange = (value: string, name: string) => {
     setNewProject({ ...newProject, [name]: value });
   };
 
+  /**
+   * Function to handle file selection for the project.
+   *
+   * @param e The change event from the file input.
+   */
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
@@ -45,10 +78,21 @@ export default function ProjectForm({
     }
   };
 
+  /**
+   * Function to handle changes in the team selection dropdown.
+   *
+   * @param field The field name to update (e.g., 'teamId').
+   * @param team The selected team object or undefined if no team is selected.
+   */
   const handleSelectChange = (field: string, team: LongTeam | undefined) => {
     setNewProject({ ...newProject, [field]: team ? team.id : null });
   };
 
+  /**
+   * Function to handle the submission of the new project form.
+   *
+   * @param e The submit event from the form.
+   */
   const handleAddProjectSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -74,6 +118,11 @@ export default function ProjectForm({
     });
   };
 
+  /**
+   * Function to get the default deadline for a new project, set to one week from today.
+   *
+   * @returns A string representing the default deadline date in 'YYYY-MM-DD' format.
+   */
   const defaultDeadlineInWeek = () => {
     const nextWeek = new Date();
     nextWeek.setDate(nextWeek.getDate() + 7);

@@ -5,23 +5,53 @@ import { LongTeam, LongUser } from '../../../persistence/model/data';
 import { addTeamMember } from '../../../persistence/requests/poster';
 import Button from 'react-bootstrap/esm/Button';
 
-interface AddMemberModalProps {
+/**
+ * Interface for the properties of the AddMemberModal component.
+ */
+export interface AddMemberModalProps {
+  /**
+   * Boolean to control the visibility of the modal.
+   */
   showAddMemberModal: boolean;
+  /**
+   * Function to set the visibility state of the modal.
+   */
   setShowAddMemberModal: React.Dispatch<React.SetStateAction<boolean>>;
+  /**
+   * Array of users to be displayed in the member selection dropdown.
+   */
   users: LongUser[];
+  /**
+   * The team to which the member will be added.
+   */
   teamToAddMemberTo: LongTeam | null | undefined;
 }
 
+/**
+ * Component for adding a new member to a team through a modal form.
+ *
+ * @param props The properties for the AddMemberModal component.
+ * @returns JSX Element representing the add member form modal.
+ */
 export default function AddMemberModal({
   showAddMemberModal,
   setShowAddMemberModal,
   users,
   teamToAddMemberTo
 }: AddMemberModalProps) {
+  // State to manage the selected user to be added as a member
   const [selectedUser, setSelectedUser] = React.useState<LongUser | null>();
 
+  /**
+   * Function to close the modal for adding a new member.
+   */
   const handleAddMemberClose = () => setShowAddMemberModal(false);
 
+  /**
+   * Function to handle the submission of the add member form.
+   *
+   * @param e The form submission event.
+   */
   const handleAddMemberSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!teamToAddMemberTo || !selectedUser) {
@@ -35,6 +65,11 @@ export default function AddMemberModal({
     });
   };
 
+  /**
+   * Function to handle changes in the team member selection.
+   *
+   * @param user The selected user or undefined if no user is selected.
+   */
   const handleTeamMemberChange = (user: LongUser | undefined) => {
     if (user) {
       setSelectedUser(user);

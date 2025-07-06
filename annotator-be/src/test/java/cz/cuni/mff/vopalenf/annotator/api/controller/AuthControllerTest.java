@@ -14,6 +14,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -25,6 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@ActiveProfiles("test")
 class AuthControllerTest {
     private static final String USERNAME = "testuser";
     private static final String FIRST_NAME = "test";
@@ -142,7 +144,7 @@ class AuthControllerTest {
     }
 
     public User createUser() {
-        return User.builder().username(USERNAME).password(PASSWORD).firstName(FIRST_NAME).lastName(LAST_NAME)
+        return User.builder().username(USERNAME).firstName(FIRST_NAME).lastName(LAST_NAME)
                 .role(Role.ROLE_USER.getName()).build();
     }
 }

@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { Label, PredictionTriple } from '../../../persistence/model/data';
 import { request } from '../../../security/auth';
 import toast from 'react-hot-toast';
@@ -14,6 +13,13 @@ function normalizeColor(color: string): string {
   return computedColor;
 }
 
+/**
+ * Function to train the AI model for a specific project using the provided labels.
+ * It sends a POST request to the server and updates the UI based on the response.
+ *
+ * @param projectId The ID of the project to train the AI model for.
+ * @param labels The list of labels used for training.
+ */
 export const trainAI = async (projectId: number, labels: Label[]) => {
   try {
     request('POST', `/api/projects/${projectId}/trainAI`)
