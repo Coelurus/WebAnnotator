@@ -1,0 +1,1 @@
+tagSearchIndex = [{"l":"Annotator for sequential data BE","h":"Overview","d":"Section","u":"index.html#annotator-for-sequential-data-be-heading"},{"l":"Serialized Form","h":"","u":"serialized-form.html"}];updateSearchResults();
