@@ -1,6 +1,11 @@
 import toast from 'react-hot-toast';
-import { ErrorResponse } from '../../persistence/errors/error-response';
+import ErrorResponse from '../../persistence/errors/error-response';
 
+/**
+ * Generates error toasts based on the provided error response.
+ *
+ * @param error The error response containing error messages.
+ */
 export default function generateErrorToasts(error: ErrorResponse) {
   try {
     error.response.data.errors.map((error) => {

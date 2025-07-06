@@ -7,15 +7,40 @@ import { createTeamRequest } from '../../../persistence/requests/poster';
 import { LongUser } from '../../../persistence/model/data';
 import { fetchUsers } from '../../../persistence/requests/fetcher';
 
-interface AddTeamModalProps {
+/**
+ * Interface for the properties of the AddTeamModal component.
+ */
+export interface AddTeamModalProps {
+  /**
+   * Boolean to control the visibility of the modal.
+   */
   showAddTeamModal: boolean;
+  /**
+   * Function to set the visibility state of the modal.
+   */
   setShowAddTeamModal: React.Dispatch<React.SetStateAction<boolean>>;
+  /**
+   * Array of users to be displayed in the team leader selection dropdown.
+   */
+  users: LongUser[];
+  /**
+   * Function to set the users state.
+   */
+  setUsers: React.Dispatch<React.SetStateAction<LongUser[]>>;
 }
 
-export default function AddTeamModal({ showAddTeamModal, setShowAddTeamModal }: AddTeamModalProps) {
-  const [users, setUsers] = React.useState<LongUser[]>([]);
+/**
+ * Component for adding a new team through a modal form.
+ *
+ * @param props The properties for the AddTeamModal component.
+ * @returns JSX Element representing the add team form modal.
+ */
+export default function AddTeamModal({ showAddTeamModal, setShowAddTeamModal, users, setUsers }: AddTeamModalProps) {
+  // State to manage the new team being created
   const [newTeam, setNewTeam] = React.useState<TeamRequest>({});
 
+  // Effect to fetch users when the component mounts
+  // TODO: just reuse users
   React.useEffect(() => {
     fetchUsers().then((response) => {
       setUsers(response);
@@ -23,7 +48,16 @@ export default function AddTeamModal({ showAddTeamModal, setShowAddTeamModal }: 
     });
   }, []);
 
+  /**
+   * Function to close the modal for adding a new team.
+   */
   const handleAddTeamClose = () => setShowAddTeamModal(false);
+
+  /**
+   * Function to handle the submission of the add team form.
+   *
+   * @param e The form submission event.
+   */
   const handleAddTeamSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     createTeamRequest(newTeam).then(() => {
@@ -31,9 +65,23 @@ export default function AddTeamModal({ showAddTeamModal, setShowAddTeamModal }: 
       handleAddTeamClose();
     });
   };
+
+  /**
+   * Function to handle changes in the team form fields.
+   *
+   * @param value The new value for the field.
+   * @param name The name of the field being changed.
+   */
   const handleAddTeamChange = (value: string, name: string) => {
     setNewTeam({ ...newTeam, [name]: value });
   };
+
+  /**
+   * Function to handle changes in the team leader selection.
+   *
+   * @param field The field being updated
+   * @param user The selected user or undefined if no user is selected.
+   */
   const handleTeamLeaderChange = (field: string, user: LongUser | undefined) => {
     setNewTeam({ ...newTeam, [field]: user ? user.id : null });
   };

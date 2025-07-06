@@ -3,18 +3,41 @@ import { useNavigate } from 'react-router-dom';
 import { login } from '../../../security/login';
 import { Button, Card, Form } from 'react-bootstrap';
 
-interface LoginValidationErrors {
+/**
+ * Interface for the validation errors in the login form.
+ */
+export interface LoginValidationErrors {
+  /**
+   * Error message for the username field.
+   */
   username?: string;
+  /**
+   * Error message for the password field.
+   */
   password?: string;
 }
 
-function LoginForm() {
+/**
+ * LoginForm component that renders a login form with username and password fields.
+ * It handles user input, validation, and submission of the login request.
+ *
+ * @returns JSX Element representing the login form.
+ */
+export default function LoginForm() {
+  // State to manage the username field of login form
   const [username, setUsername] = React.useState('');
+  // State to manage the password field of login form
   const [password, setPassword] = React.useState('');
+  // State to manage error messages during login
   const [error, setError] = React.useState('');
+  // State to manage validation errors in the login form
   const [validationErrors, setValidationErrors] = React.useState<LoginValidationErrors>({});
+  // Hook to get the navigate function for programmatic navigation
   const navigate = useNavigate();
 
+  /**
+   * Function to handle the login process.
+   */
   const handleLogin = async () => {
     const errors: LoginValidationErrors = {};
 
@@ -32,6 +55,12 @@ function LoginForm() {
     );
   };
 
+  /**
+   * Function to handle the Enter key press on the username field.
+   * It prevents the default action and focuses on the password field.
+   *
+   * @param e The keyboard event triggered by pressing a key.
+   */
   const hadleKeyOnUsername = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       e.preventDefault();
@@ -39,6 +68,12 @@ function LoginForm() {
     }
   };
 
+  /**
+   * Function to handle the Enter key press on the password field.
+   * It prevents the default action and triggers the login process.
+   *
+   * @param e The keyboard event triggered by pressing a key.
+   */
   const hadleKeyOnPassword = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       e.preventDefault();
@@ -79,5 +114,3 @@ function LoginForm() {
     </Card>
   );
 }
-
-export default LoginForm;

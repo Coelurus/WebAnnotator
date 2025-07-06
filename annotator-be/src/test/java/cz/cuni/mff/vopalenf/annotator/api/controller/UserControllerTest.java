@@ -11,6 +11,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
@@ -24,13 +25,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@ActiveProfiles("test")
 class UserControllerTest {
 
     private static final String USERNAME = "testuser";
     private static final String USERNAME_2 = "testuser2";
     private static final String FIRST_NAME = "test";
     private static final String LAST_NAME = "user";
-    private static final String PASSWORD = "testpassword";
 
     @Autowired
     private MockMvc mockMvc;
@@ -63,7 +64,7 @@ class UserControllerTest {
     }
 
     public User createUser(String username) {
-        return User.builder().username(username).password(PASSWORD).firstName(FIRST_NAME).lastName(LAST_NAME)
+        return User.builder().username(username).firstName(FIRST_NAME).lastName(LAST_NAME)
                 .role(Role.ROLE_USER.getName()).build();
     }
 }

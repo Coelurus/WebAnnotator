@@ -2,26 +2,53 @@ import React from 'react';
 import { X } from 'react-bootstrap-icons';
 import Button from 'react-bootstrap/esm/Button';
 import Modal from 'react-bootstrap/esm/Modal';
-import { getUserUsername, invalidateToken, request } from '../../../security/auth';
+import { getUserUsername, invalidateToken } from '../../../security/auth';
 import { UserInfo } from './users';
+import { deleteUserRequest } from '../../../persistence/requests/deleter';
 
-interface DeleteUserModalProps {
+/**
+ * Interface for the properties of the DeleteUserModal component.
+ */
+export interface DeleteUserModalProps {
+  /**
+   * Boolean to control the visibility of the modal.
+   */
   showDeleteUserConfirmation: boolean;
+  /**
+   * Function to set the visibility state of the modal.
+   */
   setShowDeleteUserConfirmation: React.Dispatch<React.SetStateAction<boolean>>;
+  /**
+   * The user to be deleted.
+   */
   userToDelete: UserInfo | null;
+  /**
+   * Function to set the user to delete.
+   */
   setUserToDelete: React.Dispatch<React.SetStateAction<UserInfo | null>>;
 }
 
+/**
+ * Component for confirming the deletion of a user through a modal.
+ *
+ * @param props The properties for the DeleteUserModal component.
+ * @returns JSX Element representing the delete user confirmation modal.
+ */
 export default function DeleteUserModal({
   showDeleteUserConfirmation,
   setShowDeleteUserConfirmation,
   userToDelete,
   setUserToDelete
 }: DeleteUserModalProps) {
+
+  /**
+   * Function to handle the deletion of a user.
+   */
   const deleteUser = async () => {
     if (userToDelete) {
-      await request('DELETE', `/api/users/${userToDelete.id}`);
+      deleteUserRequest(userToDelete.id)
       setUserToDelete(null);
+      // If user deleted themself, invalidate their token
       if (getUserUsername() === userToDelete.name) {
         invalidateToken();
       }
@@ -29,6 +56,9 @@ export default function DeleteUserModal({
     }
   };
 
+  /**
+   * Function to close the delete user confirmation modal.
+   */
   const handleDeleteUserClose = () => setShowDeleteUserConfirmation(false);
 
   return (

@@ -1,6 +1,14 @@
-import { ErrorResponse } from '../persistence/errors/error-response';
+import ErrorResponse from '../persistence/errors/error-response';
 import { invalidateToken, loginRequest, setAuthToken } from './auth';
 
+/**
+ * Function to handle user login.
+ *
+ * @param username The username of the user attempting to log in.
+ * @param password The password of the user attempting to log in.
+ * @param onSuccess Callback function to be called on successful login.
+ * @param onError Callback function to be called on login error.
+ */
 export const login = async (
   username: string,
   password: string,
