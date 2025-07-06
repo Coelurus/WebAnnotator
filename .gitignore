@@ -19,3 +19,4 @@ venv/
 file_system/
 !/file_system/recording_20250522_230912
 !.mvn/
+annotator-fe/docs/
