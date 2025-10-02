@@ -34,6 +34,9 @@ spring:
       secret-key: "secret"
       # secret-key: ${JWT_SECRET}
 
+  flyway:
+    locations: classpath:db/migration/common
+
 logging:
   level:
     root: info

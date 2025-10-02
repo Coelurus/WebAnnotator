@@ -1,6 +1,7 @@
 import React from 'react';
 import { Label, Project } from '../../persistence/model/data';
 import { trainAI } from './ai/train-ai';
+import { exportData } from './export/export-data';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Collapse from 'react-bootstrap/Collapse';
@@ -199,9 +200,14 @@ export default function AnnotatorHeader({
             </Button>
           </div>
 
-          <Button variant="success" className="mt-3" onClick={() => trainAI(project.id, labels)}>
-            Train AI
-          </Button>
+          <div className="mt-3 d-flex gap-2">
+            <Button variant="success" onClick={() => trainAI(project.id, labels)}>
+              Train AI
+            </Button>
+            <Button variant="primary" onClick={() => exportData(project.id, project.projectName)}>
+              Export Data
+            </Button>
+          </div>
         </div>
       </Collapse>
     </div>

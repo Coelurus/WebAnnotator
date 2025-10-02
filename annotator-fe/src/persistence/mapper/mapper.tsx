@@ -171,6 +171,7 @@ export function mapRoles(data: string[]): string[] {
  * @returns Array of mapped Label objects
  */
 export function mapLabels(data: LabelApiResponse[]): Label[] {
+  console.log('Mapping labels:', data);
   return data.map((label) => ({
     id: label.id,
     label: label.labelName,

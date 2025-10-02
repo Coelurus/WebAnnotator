@@ -1,6 +1,5 @@
 INSERT INTO users (id, first_name, last_name, username, password_hash, team_id, role)
-VALUES (0, 'John', 'Doe', 'admin', '$2a$10$btgrXn5reBv5nblarOU3leWnfZuyJAuKFwhliXL8S9S5yspfdIzka', 1, 'ROLE_ADMIN'),
-       (1, 'Jane', 'Smith', 'user', '$2a$10$YWbD6Jr4lAOsBBUhNid.AuMok6d00GupeGv9DOAlgbPRJ27e0cHm.', 0, 'ROLE_USER'),
+VALUES (1, 'Jane', 'Smith', 'user', '$2a$10$YWbD6Jr4lAOsBBUhNid.AuMok6d00GupeGv9DOAlgbPRJ27e0cHm.', 0, 'ROLE_USER'),
        (2, 'Alice', 'Johnson', 'user1', '$2a$10$EkVy/kM6x1uWWgpD4SiFN.9XmZXMJv37i.8RyExGL8AGblw7SuTFW', 0, 'ROLE_USER');
 ALTER TABLE users ALTER COLUMN id RESTART WITH (SELECT MAX(id) + 1 FROM users);
 

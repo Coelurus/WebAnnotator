@@ -2,6 +2,7 @@ package cz.cuni.mff.vopalenf.annotator.api.controller;
 
 import cz.cuni.mff.vopalenf.annotator.api.model.Annotation;
 import cz.cuni.mff.vopalenf.annotator.api.model.Label;
+import cz.cuni.mff.vopalenf.annotator.api.model.LogData;
 import cz.cuni.mff.vopalenf.annotator.api.model.PredictionTriple;
 import cz.cuni.mff.vopalenf.annotator.api.model.Progress;
 import cz.cuni.mff.vopalenf.annotator.api.model.Project;
@@ -193,5 +194,13 @@ public class ProjectController {
     @PostMapping("/projects/{projectId}/trainAI")
     public ResponseEntity<List<PredictionTriple>> trainAI(@PathVariable Long projectId) {
         return ResponseEntity.ok(projectService.trainAI(projectId));
+    }
+
+    @Operation(summary = "Export project data", description = "Exports annotated project data as structured data for download.", responses = {
+            @ApiResponse(responseCode = "200", description = "Project data exported successfully")})
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
+    @GetMapping("/projects/{projectId}/export")
+    public ResponseEntity<List<LogData>> exportProjectData(@PathVariable Long projectId) {
+        return ResponseEntity.ok(projectService.exportProjectData(projectId));
     }
 }

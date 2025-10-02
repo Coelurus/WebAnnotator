@@ -16,7 +16,8 @@ import Project, { loader as projectLoader } from './screens/editor/annotator';
 import LoginPage from './screens/security/login/login-screen';
 import SignupPage from './screens/security/signup/signup-screen';
 import { isUserAdmin, isUserLoggedIn } from './security/auth';
-import HomePage from './screens/root/menu';
+import Menu from './screens/root/menu';
+import HomePage from './screens/root/homepage';
 
 /**
  * AdminRoute component that checks if the user is an admin.
@@ -57,9 +58,17 @@ const AnonymousUserRoute = () => {
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <HomePage />,
+    element: <Menu />,
     errorElement: <ErrorPage />,
     children: [
+      {
+        index: true,
+        element: <Navigate to="/home" replace />
+      },
+      {
+        path: 'home',
+        element: <HomePage />
+      },
       {
         path: 'user',
         element: <AnonymousUserRoute />,

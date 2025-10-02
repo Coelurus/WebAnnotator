@@ -14,7 +14,7 @@ public class WebConfig implements WebMvcConfigurer {
     /**
      * Path to the file system directory, defined in application.yaml
      */
-    @Value("${app.file-system.path}")
+    @Value("${app.file-system.path:file_system}")
     String fileSystemPath;
 
     /**

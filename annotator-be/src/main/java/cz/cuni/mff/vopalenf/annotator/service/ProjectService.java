@@ -306,8 +306,10 @@ public class ProjectService {
      *             when label already exists or color is not valid
      */
     public Label addLabel(LabelRequest label) {
+        logger.info("Creating new label: {}", label.getLabelName());
         boolean existsByLabel = labelRepository.existsByLabel(label.getLabelName());
         if (existsByLabel) {
+            logger.error("All of the labels already exists: {}", labelRepository.findAll());
             throw new BadRequestException("Label already exists", ProjectService.class.getSimpleName());
         }
         if (label.getColor() == null) {
@@ -451,6 +453,55 @@ public class ProjectService {
         }
 
         return aiClient.sendLogData(projectId, logDataList);
+    }
+
+    /**
+     * Export project data for download
+     *
+     * @param projectId
+     *            ID of the project to export data for
+     * @return List of log data with annotations for export
+     */
+    public List<LogData> exportProjectData(Long projectId) {
+        Project project = getProject(projectId);
+        byte[] logData = storageManager.load(project.getLogFileName() + "\\" + project.getLogFileName() + ".csv");
+        String csv = new String(logData, StandardCharsets.UTF_8);
+
+        List<LogData> logDataList = new ArrayList<>();
+        String[] lines = csv.split("\n");
+
+        for (Long i = 1L; i < lines.length; i++) {
+            String line = lines[Math.toIntExact(i)].trim();
+            String[] parts = line.split(",");
+
+            if (parts.length < 5)
+                continue;
+
+            String timestampStr = parts[0];
+            double x = Double.parseDouble(parts[2]);
+            double y = Double.parseDouble(parts[3]);
+            double z = Double.parseDouble(parts[4]);
+
+            double timeInSeconds = parseTimeToSeconds(timestampStr);
+
+            String label;
+            AnnotationEntity annotationEntity = annotationRepository.findByProjectIdAndFrameId(projectId, i - 1);
+            if (annotationEntity != null) {
+                label = labelRepository.findById(annotationEntity.getLabelId()).orElse(NO_GESTURE).getLabel();
+            } else {
+                label = "NO_GESTURE";
+            }
+
+            logDataList.add(LogData.builder()
+                    .time(timeInSeconds)
+                    .posX(x)
+                    .posY(y)
+                    .posZ(z)
+                    .label(label)
+                    .build());
+        }
+
+        return logDataList;
     }
 
     /**

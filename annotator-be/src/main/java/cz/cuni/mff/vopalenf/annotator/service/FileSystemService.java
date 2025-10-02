@@ -5,6 +5,8 @@ import cz.cuni.mff.vopalenf.annotator.dao.model.ProjectEntity;
 import cz.cuni.mff.vopalenf.annotator.dao.repository.ProjectRepository;
 import cz.cuni.mff.vopalenf.annotator.exception.api.NotFoundException;
 import cz.cuni.mff.vopalenf.annotator.exception.api.ServerException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -23,11 +25,13 @@ import java.util.Objects;
 @Service
 public class FileSystemService {
 
+    private static final Logger logger = LoggerFactory.getLogger(FileSystemService.class);
+
     /**
      * Path to the file system where files are stored. This value is read from
      * application properties.
      */
-    @Value("${app.file-system.path}")
+    @Value("${app.file-system.path:file_system}")
     String fileSystemPath;
     /**
      * Extension of image files in the file system. This value is read from
@@ -65,6 +69,10 @@ public class FileSystemService {
 
         String logFileName = projectEntity.getLogFileName();
         Path pathToFS = Path.of(fileSystemPath);
+        logger.info("Fetching image files for project with id: {} from FS: {} looking for log file: {}",
+                projectId,
+                pathToFS,
+                logFileName);
 
         File projectDir = Arrays.stream(Objects.requireNonNull(pathToFS.toFile().listFiles()))
                 .filter(file -> file.getName().equals(logFileName)).findFirst()
