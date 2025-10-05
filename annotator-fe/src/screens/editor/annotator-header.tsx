@@ -69,6 +69,17 @@ export default function AnnotatorHeader({
 }: AnnotatorHeaderProps) {
   // Default color option for new labels
   const DEFAULT_COLOR_OPTION = '#563d7c';
+  
+  // Luminance calculation constants for contrast color determination
+  const LUMINANCE_WEIGHTS = {
+    RED: 0.299,
+    GREEN: 0.587,
+    BLUE: 0.114
+  } as const;
+  // Contrast threshold for determining text color
+  const CONTRAST_THRESHOLD = 0.5;
+  // Maximum value for RGB color channels
+  const RGB_MAX = 255;
   // State to manage inputting and creating a new label
   const [newLabel, setNewLabel] = React.useState<LabelRequest>({ color: DEFAULT_COLOR_OPTION });
   // State to manage the visibility of settings bar
@@ -92,6 +103,24 @@ export default function AnnotatorHeader({
     CTRL_TRAIN_AI: 'ctrl+a',
     CTRL_EXPORT_DATA: 'ctrl+e',
   } as const;
+
+  /**
+   * Determines the best text color (black or white) for readability on a given background color
+   */
+  const getContrastColor = (hexColor: string): string => {
+    const color = hexColor.replace('#', '');
+    
+    // Convert hex to RGB
+    const r = parseInt(color.substring(0, 2), 16);
+    const g = parseInt(color.substring(2, 4), 16);
+    const b = parseInt(color.substring(4, 6), 16);
+    
+    // Calculate relative luminance using standard weights
+    const luminance = (LUMINANCE_WEIGHTS.RED * r + LUMINANCE_WEIGHTS.GREEN * g + LUMINANCE_WEIGHTS.BLUE * b) / RGB_MAX;
+    
+    // Return black for light colors, white for dark colors
+    return luminance > CONTRAST_THRESHOLD ? '#000000' : '#FFFFFF';
+  };
 
   /**
    * Generates a random hex color for new labels
@@ -121,7 +150,7 @@ export default function AnnotatorHeader({
         setShowSettings(false);
       }
     },
-    [KEYS.HELP]: () => setShowInfoModal(true),
+    [KEYS.HELP]: () => setShowInfoModal(!showInfoModal),
     [KEYS.NEW_LABEL]: () => {
       if (!showSettings) {
         setShowSettings(true);
@@ -258,26 +287,44 @@ export default function AnnotatorHeader({
           </Link>
           <h5 className="m-0">{project ? project.projectName : 'No project found'}</h5>
         </div>
-        <Form.Select
-          ref={labelSelectRef}
-          className="form-select w-auto ms-2"
-          name="label"
-          id="label-select"
-          value={currentLabel?.id ?? ''}
-          onChange={handleLabelChange}
-        >
-          {labels.map((label) => (
-            <option
-              value={label.id}
-              key={'label_' + label.id}
-              data-label-id={label.id}
-              data-label-name={label.label}
-              data-label-color={label.color}
-            >
-              {label.label}
-            </option>
-          ))}
-        </Form.Select>
+        <div className="d-flex align-items-center">
+          <Form.Select
+            ref={labelSelectRef}
+            className="form-select"
+            name="label"
+            id="label-select"
+            value={currentLabel?.id ?? ''}
+            onChange={handleLabelChange}
+          >
+            {labels.map((label) => (
+              <option
+                value={label.id}
+                key={'label_' + label.id}
+                data-label-id={label.id}
+                data-label-name={label.label}
+                data-label-color={label.color}
+                style={{
+                  backgroundColor: label.color,
+                  color: getContrastColor(label.color)
+                }}
+              >
+                {label.label}
+              </option>
+            ))}
+          </Form.Select>
+          {currentLabel && (
+            <div 
+              className="ms-2 rounded-circle border"
+              style={{
+                width: '20px',
+                height: '20px',
+                backgroundColor: currentLabel.color,
+                minWidth: '20px'
+              }}
+              title={`Color: ${currentLabel.color}`}
+            />
+          )}
+        </div>
         <Button variant="secondary" className="ms-2" onClick={() => setShowSettings(!showSettings)}>
           {showSettings ? 'Hide' : 'Show'} Settings
         </Button>
