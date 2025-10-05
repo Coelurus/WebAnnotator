@@ -126,6 +126,5 @@ public class FileSystemService {
      */
     public FrameCount getFramesCount(Long projectId) {
         return FrameCount.builder().count(getImageFiles(projectId).length).build();
-
     }
 }

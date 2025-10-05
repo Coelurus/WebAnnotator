@@ -45,7 +45,7 @@ export default function Project() {
   /**
    * Gap size between images in the annotator grid.
    */
-  const GAP_SIZE = 4;
+  const GAP_SIZE = 0;
   /**
    * Default number of images displayed per page in the annotator grid.
    */
