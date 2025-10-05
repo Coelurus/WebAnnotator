@@ -57,6 +57,42 @@ export default function AnnotatorFooter({
     }
   };
 
+  /**
+   * Configuration object for keyboard shortcuts
+   */
+  const keyboardShortcuts = React.useMemo(() => ({
+    a: prevPage,
+    d: nextPage,
+  }), [pageNum, frameCount, imagesPerPage]);
+
+  /**
+   * Effect to handle keyboard shortcuts for navigation
+   */
+  React.useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      // Only trigger if not typing in an input field
+      if (event.target instanceof Element &&
+          !['INPUT', 'TEXTAREA', 'SELECT'].includes(event.target.tagName)) {
+        
+        const key = event.key.toLowerCase();
+        const shortcutAction = keyboardShortcuts[key as keyof typeof keyboardShortcuts];
+        
+        if (shortcutAction) {
+          event.preventDefault();
+          shortcutAction();
+        }
+      }
+    };
+
+    // Add event listener
+    document.addEventListener('keydown', handleKeyDown);
+
+    // Cleanup function to remove event listener
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [keyboardShortcuts]);
+
   return (
     <div className="pagination-buttons" ref={footerRef}>
       <button onClick={prevPage} disabled={pageNum === 0}>

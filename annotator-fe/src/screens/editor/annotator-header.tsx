@@ -72,6 +72,101 @@ export default function AnnotatorHeader({
   const [newLabel, setNewLabel] = React.useState<LabelRequest>({ color: DEFAULT_COLOR_OPTION });
   // State to manage the visibility of settings bar
   const [showSettings, setShowSettings] = React.useState(false);
+  // Ref for the label select dropdown
+  const labelSelectRef = React.useRef<HTMLSelectElement>(null);
+  // Ref for the new label input field
+  const newLabelInputRef = React.useRef<HTMLInputElement>(null);
+
+  /**
+   * Keyboard shortcut key constants
+   */
+  const KEYS = {
+    TOGGLE_SETTINGS: 's',
+    FOCUS_LABEL_SELECT: 'l',
+    ESCAPE: 'escape',
+    NEW_LABEL: 'n',
+    CTRL_TRAIN_AI: 'ctrl+a',
+    CTRL_EXPORT_DATA: 'ctrl+e',
+  } as const;
+
+  /**
+   * Generates a random hex color for new labels
+   */
+  const generateRandomColor = () => {
+    const getRandomHex = () => Math.floor(Math.random() * 256).toString(16).padStart(2, '0');
+    return `#${getRandomHex()}${getRandomHex()}${getRandomHex()}`;
+  };
+
+  /**
+   * Configuration object for keyboard shortcuts
+   */
+  const keyboardShortcuts = React.useMemo(() => ({
+    [KEYS.TOGGLE_SETTINGS]: () => setShowSettings(!showSettings),
+    [KEYS.FOCUS_LABEL_SELECT]: () => labelSelectRef.current?.focus(),
+    [KEYS.ESCAPE]: () => {
+      const activeElement = document.activeElement as HTMLElement;
+      // If there's a focused element -> blur it
+      if (activeElement && activeElement !== document.body) {
+        activeElement.blur();
+      }
+      // If nothing is focused and settings are open, close settings
+      else if (showSettings) {
+        setShowSettings(false);
+      }
+    },
+    [KEYS.NEW_LABEL]: () => {
+      if (!showSettings) {
+        setShowSettings(true);
+      }
+      // Set random color
+      setNewLabel({ labelName: newLabel.labelName, color: generateRandomColor() });
+      // Use setTimeout to ensure the input field is rendered after settings panel opens
+      setTimeout(() => newLabelInputRef.current?.focus(), 0);
+    },
+    [KEYS.CTRL_TRAIN_AI]: () => trainAI(project.id, labels),
+    [KEYS.CTRL_EXPORT_DATA]: () => exportData(project.id, project.projectName),
+  }), [showSettings, project.id, project.projectName, labels]);
+
+  /**
+   * Effect to handle keyboard shortcuts
+   */
+  React.useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const key = event.key.toLowerCase();
+      
+      // Handle Ctrl combinations regardless of focused element
+      if (event.ctrlKey) {
+        const ctrlKey = `ctrl+${key}`;
+        const ctrlAction = keyboardShortcuts[ctrlKey as keyof typeof keyboardShortcuts];
+        if (ctrlAction) {
+          event.preventDefault();
+          ctrlAction();
+          return;
+        }
+      }
+      
+      // Handle regular shortcuts only if not typing in an input field
+      if (event.target instanceof Element &&
+          (!['INPUT', 'TEXTAREA', 'SELECT'].includes(event.target.tagName) ||
+          key === KEYS.ESCAPE)
+        ) {
+        
+        const shortcutAction = keyboardShortcuts[key as keyof typeof keyboardShortcuts];
+        if (shortcutAction) {
+          event.preventDefault();
+          shortcutAction();
+        }
+      }
+    };
+
+    // Add event listener
+    document.addEventListener('keydown', handleKeyDown);
+
+    // Cleanup function to remove event listener
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [keyboardShortcuts]); // Dependency on the shortcuts object
 
   /**
    * Handles the change event for the slider input to adjust image size.
@@ -127,6 +222,19 @@ export default function AnnotatorHeader({
     setNewLabel({ ...newLabel, [event.target.name]: event.target.value });
   };
 
+  /**
+   * Handles key down events for the new label input field.
+   * Triggers label creation when Enter is pressed.
+   * 
+   * @param event Keyboard event from the new label input field.
+   */
+  const handleNewLabelKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      handleAddLabel();
+    }
+  };
+
   return (
     <div ref={headerRef} className="p-3 border rounded">
       <div className="d-flex align-items-center justify-content-between">
@@ -143,6 +251,7 @@ export default function AnnotatorHeader({
           <h5 className="m-0">{project ? project.projectName : 'No project found'}</h5>
         </div>
         <Form.Select
+          ref={labelSelectRef}
           className="form-select w-auto ms-2"
           name="label"
           id="label-select"
@@ -180,9 +289,11 @@ export default function AnnotatorHeader({
 
           <div className="mt-3 d-flex">
             <Form.Control
+              ref={newLabelInputRef}
               type="text"
               placeholder="New label"
               onChange={handleLabelInputFieldChange}
+              onKeyDown={handleNewLabelKeyDown}
               value={newLabel.labelName ?? ''}
               name="labelName"
               className="me-2"
