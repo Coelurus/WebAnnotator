@@ -5,6 +5,7 @@ import { exportData } from './export/export-data';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Collapse from 'react-bootstrap/Collapse';
+import Modal from 'react-bootstrap/Modal';
 import { LabelRequest } from '../../persistence/model/requests';
 import { postCreateLabel } from '../../persistence/requests/poster';
 import { LabelApiResponse } from '../../persistence/model/api-responses';
@@ -72,6 +73,8 @@ export default function AnnotatorHeader({
   const [newLabel, setNewLabel] = React.useState<LabelRequest>({ color: DEFAULT_COLOR_OPTION });
   // State to manage the visibility of settings bar
   const [showSettings, setShowSettings] = React.useState(false);
+  // State to manage the visibility of info modal
+  const [showInfoModal, setShowInfoModal] = React.useState(false);
   // Ref for the label select dropdown
   const labelSelectRef = React.useRef<HTMLSelectElement>(null);
   // Ref for the new label input field
@@ -85,6 +88,7 @@ export default function AnnotatorHeader({
     FOCUS_LABEL_SELECT: 'l',
     ESCAPE: 'escape',
     NEW_LABEL: 'n',
+    HELP: 'h',
     CTRL_TRAIN_AI: 'ctrl+a',
     CTRL_EXPORT_DATA: 'ctrl+e',
   } as const;
@@ -104,16 +108,20 @@ export default function AnnotatorHeader({
     [KEYS.TOGGLE_SETTINGS]: () => setShowSettings(!showSettings),
     [KEYS.FOCUS_LABEL_SELECT]: () => labelSelectRef.current?.focus(),
     [KEYS.ESCAPE]: () => {
-      const activeElement = document.activeElement as HTMLElement;
+      // If help modal is open, close it first
+      if (showInfoModal) {
+        setShowInfoModal(false);
+      }
       // If there's a focused element -> blur it
-      if (activeElement && activeElement !== document.body) {
-        activeElement.blur();
+      else if (document.activeElement && document.activeElement !== document.body) {
+        (document.activeElement as HTMLElement).blur();
       }
       // If nothing is focused and settings are open, close settings
       else if (showSettings) {
         setShowSettings(false);
       }
     },
+    [KEYS.HELP]: () => setShowInfoModal(true),
     [KEYS.NEW_LABEL]: () => {
       if (!showSettings) {
         setShowSettings(true);
@@ -125,7 +133,7 @@ export default function AnnotatorHeader({
     },
     [KEYS.CTRL_TRAIN_AI]: () => trainAI(project.id, labels),
     [KEYS.CTRL_EXPORT_DATA]: () => exportData(project.id, project.projectName),
-  }), [showSettings, project.id, project.projectName, labels]);
+  }), [showSettings, showInfoModal, project.id, project.projectName, labels]);
 
   /**
    * Effect to handle keyboard shortcuts
@@ -273,6 +281,13 @@ export default function AnnotatorHeader({
         <Button variant="secondary" className="ms-2" onClick={() => setShowSettings(!showSettings)}>
           {showSettings ? 'Hide' : 'Show'} Settings
         </Button>
+        <Button variant="outline-info" className="ms-2" onClick={() => setShowInfoModal(true)} title="Help & Shortcuts">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+            <line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+        </Button>
       </div>
       <Collapse in={showSettings}>
         <div>
@@ -321,6 +336,71 @@ export default function AnnotatorHeader({
           </div>
         </div>
       </Collapse>
+
+      {/* Info Modal */}
+      <Modal show={showInfoModal} onHide={() => setShowInfoModal(false)} size="lg">
+        <Modal.Header closeButton>
+          <Modal.Title>Annotation Help & Keyboard Shortcuts</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div className="row">
+            <div className="col-md-6">
+              <h5>How to set up</h5>
+              <ul>
+                <li><strong>Select a Label:</strong> Choose from the dropdown</li>
+                <li><strong>Create label:</strong> Fill in name and choose color</li>
+                <li><strong>Resize:</strong> Choose frame size using slider</li>
+              </ul>
+
+              <h5 className="mt-4">How to Annotate</h5>
+              <ul>
+                <li><strong>Apply labels:</strong> Left-click a frame and drag to another. All annotations in the selected range will be annotated with selected label.</li>
+                <li><strong>Erase labels:</strong> Right-click a frame and drag to another. Results into erasing all annotations in the selected range.</li>
+              </ul>
+
+              <h5 className="mt-4">When finished</h5>
+              <ul>
+                <li><strong>Send to AI:</strong> Send annotated frames to the AI model for learning.</li>
+                <li><strong>Export:</strong> Export the annotated data for external use.</li>
+              </ul>
+            </div>
+            <div className="col-md-6">
+              <h5>Keyboard Shortcuts</h5>
+              <div className="mb-3">
+                <h6>Navigation</h6>
+                <ul className="list-unstyled">
+                  <li><kbd>A</kbd> - Previous page</li>
+                  <li><kbd>D</kbd> - Next page</li>
+                </ul>
+              </div>
+              
+              <div className="mb-3">
+                <h6>Controls</h6>
+                <ul className="list-unstyled">
+                  <li><kbd>S</kbd> - Toggle Settings</li>
+                  <li><kbd>L</kbd> - Focus Label dropdown</li>
+                  <li><kbd>N</kbd> - New label (random color)</li>
+                  <li><kbd>ESC</kbd> - Unfocus/Close settings</li>
+                  <li><kbd>H</kbd> - Open this help window</li>
+                </ul>
+              </div>
+              
+              <div className="mb-3">
+                <h6>Actions</h6>
+                <ul className="list-unstyled">
+                  <li><kbd>Ctrl+A</kbd> - Train AI</li>
+                  <li><kbd>Ctrl+E</kbd> - Export Data</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowInfoModal(false)}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 }
