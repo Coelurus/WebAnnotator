@@ -1,4 +1,5 @@
 import React from 'react';
+import Button from 'react-bootstrap/Button';
 
 /**
  * Interface for the properties of the AnnotatorFooter component.
@@ -57,14 +58,78 @@ export default function AnnotatorFooter({
     }
   };
 
+  /**
+   * Configuration object for keyboard shortcuts
+   */
+  const keyboardShortcuts = React.useMemo(() => ({
+    a: prevPage,
+    d: nextPage,
+  }), [pageNum, frameCount, imagesPerPage]);
+
+  /**
+   * Effect to handle keyboard shortcuts for navigation
+   */
+  React.useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      // Only trigger if not typing in an input field
+      if (event.target instanceof Element &&
+          !['INPUT', 'TEXTAREA', 'SELECT'].includes(event.target.tagName)) {
+        
+        const key = event.key.toLowerCase();
+        const shortcutAction = keyboardShortcuts[key as keyof typeof keyboardShortcuts];
+        
+        if (shortcutAction) {
+          event.preventDefault();
+          shortcutAction();
+        }
+      }
+    };
+
+    // Add event listener
+    document.addEventListener('keydown', handleKeyDown);
+
+    // Cleanup function to remove event listener
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [keyboardShortcuts]);
+
+  const currentPageDisplay = pageNum + 1;
+  const totalPages = Math.ceil(frameCount / imagesPerPage);  
+
   return (
-    <div className="pagination-buttons" ref={footerRef}>
-      <button onClick={prevPage} disabled={pageNum === 0}>
-        Back
-      </button>
-      <button onClick={nextPage} disabled={(pageNum + 1) * imagesPerPage >= frameCount}>
+    <div className="d-flex justify-content-between align-items-center p-3 border-top" ref={footerRef}>
+      <Button 
+        variant="outline-primary" 
+        onClick={prevPage} 
+        disabled={pageNum === 0}
+        className="d-flex align-items-center"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="me-2">
+          <polyline points="15,18 9,12 15,6"/>
+        </svg>
+        Previous
+      </Button>
+      
+      <div className="d-flex align-items-center">
+        <span className="text-muted me-2">Page</span>
+        <span className="fw-bold">{currentPageDisplay}</span>
+        <span className="text-muted mx-1">of</span>
+        <span className="fw-bold">{totalPages}</span>
+        <span className="text-muted ms-2">({frameCount} images total)</span>
+      </div>
+      
+      <Button 
+        variant="outline-primary" 
+        onClick={nextPage} 
+        disabled={(pageNum + 1) * imagesPerPage >= frameCount}
+        className="d-flex align-items-center"
+      >
         Next
-      </button>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="ms-2">
+          <polyline points="9,18 15,12 9,6"/>
+        </svg>
+      </Button>
     </div>
   );
 }

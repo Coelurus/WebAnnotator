@@ -8,31 +8,27 @@ spring:
       max-request-size: 400MB
 
   datasource:
-    # url: jdbc:h2:file:./database/database
-    driverClassName: org.h2.Driver
-    username: ${DB_USERNAME:admin}
-    password: ${DB_PASSWORD:password}
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/annotator}
+    driverClassName: org.postgresql.Driver
+    username: ${DB_USERNAME:annotator}
+    password: ${DB_PASSWORD:annotator_password}
 
   jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: none
     show-sql: false
     properties:
       hibernate:
         show_sql: false
         generate_statistics: false
 
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
-      settings:
-        trace: false
-        web-allow-others: false
-
   security:
     jwt:
-      secret-key: "secret"
-      # secret-key: ${JWT_SECRET}
+      secret-key: ${JWT_SECRET:}
+
+  flyway:
+    locations: classpath:db/migration/common
 
 logging:
   level:

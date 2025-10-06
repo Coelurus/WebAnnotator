@@ -1,9 +1,11 @@
 import React from 'react';
 import { Label, Project } from '../../persistence/model/data';
 import { trainAI } from './ai/train-ai';
+import { exportData } from './export/export-data';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Collapse from 'react-bootstrap/Collapse';
+import Modal from 'react-bootstrap/Modal';
 import { LabelRequest } from '../../persistence/model/requests';
 import { postCreateLabel } from '../../persistence/requests/poster';
 import { LabelApiResponse } from '../../persistence/model/api-responses';
@@ -67,10 +69,141 @@ export default function AnnotatorHeader({
 }: AnnotatorHeaderProps) {
   // Default color option for new labels
   const DEFAULT_COLOR_OPTION = '#563d7c';
+  
+  // Luminance calculation constants for contrast color determination
+  const LUMINANCE_WEIGHTS = {
+    RED: 0.299,
+    GREEN: 0.587,
+    BLUE: 0.114
+  } as const;
+  // Contrast threshold for determining text color
+  const CONTRAST_THRESHOLD = 0.5;
+  // Maximum value for RGB color channels
+  const RGB_MAX = 255;
   // State to manage inputting and creating a new label
   const [newLabel, setNewLabel] = React.useState<LabelRequest>({ color: DEFAULT_COLOR_OPTION });
   // State to manage the visibility of settings bar
   const [showSettings, setShowSettings] = React.useState(false);
+  // State to manage the visibility of info modal
+  const [showInfoModal, setShowInfoModal] = React.useState(false);
+  // Ref for the label select dropdown
+  const labelSelectRef = React.useRef<HTMLSelectElement>(null);
+  // Ref for the new label input field
+  const newLabelInputRef = React.useRef<HTMLInputElement>(null);
+
+  /**
+   * Keyboard shortcut key constants
+   */
+  const KEYS = {
+    TOGGLE_SETTINGS: 's',
+    FOCUS_LABEL_SELECT: 'l',
+    ESCAPE: 'escape',
+    NEW_LABEL: 'n',
+    HELP: 'h',
+    CTRL_TRAIN_AI: 'ctrl+a',
+    CTRL_EXPORT_DATA: 'ctrl+e',
+  } as const;
+
+  /**
+   * Determines the best text color (black or white) for readability on a given background color
+   */
+  const getContrastColor = (hexColor: string): string => {
+    const color = hexColor.replace('#', '');
+    
+    // Convert hex to RGB
+    const r = parseInt(color.substring(0, 2), 16);
+    const g = parseInt(color.substring(2, 4), 16);
+    const b = parseInt(color.substring(4, 6), 16);
+    
+    // Calculate relative luminance using standard weights
+    const luminance = (LUMINANCE_WEIGHTS.RED * r + LUMINANCE_WEIGHTS.GREEN * g + LUMINANCE_WEIGHTS.BLUE * b) / RGB_MAX;
+    
+    // Return black for light colors, white for dark colors
+    return luminance > CONTRAST_THRESHOLD ? '#000000' : '#FFFFFF';
+  };
+
+  /**
+   * Generates a random hex color for new labels
+   */
+  const generateRandomColor = () => {
+    const getRandomHex = () => Math.floor(Math.random() * 256).toString(16).padStart(2, '0');
+    return `#${getRandomHex()}${getRandomHex()}${getRandomHex()}`;
+  };
+
+  /**
+   * Configuration object for keyboard shortcuts
+   */
+  const keyboardShortcuts = React.useMemo(() => ({
+    [KEYS.TOGGLE_SETTINGS]: () => setShowSettings(!showSettings),
+    [KEYS.FOCUS_LABEL_SELECT]: () => labelSelectRef.current?.focus(),
+    [KEYS.ESCAPE]: () => {
+      // If help modal is open, close it first
+      if (showInfoModal) {
+        setShowInfoModal(false);
+      }
+      // If there's a focused element -> blur it
+      else if (document.activeElement && document.activeElement !== document.body) {
+        (document.activeElement as HTMLElement).blur();
+      }
+      // If nothing is focused and settings are open, close settings
+      else if (showSettings) {
+        setShowSettings(false);
+      }
+    },
+    [KEYS.HELP]: () => setShowInfoModal(!showInfoModal),
+    [KEYS.NEW_LABEL]: () => {
+      if (!showSettings) {
+        setShowSettings(true);
+      }
+      // Set random color
+      setNewLabel({ labelName: newLabel.labelName, color: generateRandomColor() });
+      // Use setTimeout to ensure the input field is rendered after settings panel opens
+      setTimeout(() => newLabelInputRef.current?.focus(), 0);
+    },
+    [KEYS.CTRL_TRAIN_AI]: () => trainAI(project.id, labels),
+    [KEYS.CTRL_EXPORT_DATA]: () => exportData(project.id, project.projectName),
+  }), [showSettings, showInfoModal, project.id, project.projectName, labels]);
+
+  /**
+   * Effect to handle keyboard shortcuts
+   */
+  React.useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const key = event.key.toLowerCase();
+      
+      // Handle Ctrl combinations regardless of focused element
+      if (event.ctrlKey) {
+        const ctrlKey = `ctrl+${key}`;
+        const ctrlAction = keyboardShortcuts[ctrlKey as keyof typeof keyboardShortcuts];
+        if (ctrlAction) {
+          event.preventDefault();
+          ctrlAction();
+          return;
+        }
+      }
+      
+      // Handle regular shortcuts only if not typing in an input field
+      if (event.target instanceof Element &&
+          (!['INPUT', 'TEXTAREA', 'SELECT'].includes(event.target.tagName) ||
+          key === KEYS.ESCAPE)
+        ) {
+        
+        const shortcutAction = keyboardShortcuts[key as keyof typeof keyboardShortcuts];
+        if (shortcutAction) {
+          event.preventDefault();
+          shortcutAction();
+        }
+      }
+    };
+
+    // Add event listener
+    document.addEventListener('keydown', handleKeyDown);
+
+    // Cleanup function to remove event listener
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [keyboardShortcuts]); // Dependency on the shortcuts object
 
   /**
    * Handles the change event for the slider input to adjust image size.
@@ -126,6 +259,19 @@ export default function AnnotatorHeader({
     setNewLabel({ ...newLabel, [event.target.name]: event.target.value });
   };
 
+  /**
+   * Handles key down events for the new label input field.
+   * Triggers label creation when Enter is pressed.
+   * 
+   * @param event Keyboard event from the new label input field.
+   */
+  const handleNewLabelKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      handleAddLabel();
+    }
+  };
+
   return (
     <div ref={headerRef} className="p-3 border rounded">
       <div className="d-flex align-items-center justify-content-between">
@@ -141,27 +287,53 @@ export default function AnnotatorHeader({
           </Link>
           <h5 className="m-0">{project ? project.projectName : 'No project found'}</h5>
         </div>
-        <Form.Select
-          className="form-select w-auto ms-2"
-          name="label"
-          id="label-select"
-          value={currentLabel?.id ?? ''}
-          onChange={handleLabelChange}
-        >
-          {labels.map((label) => (
-            <option
-              value={label.id}
-              key={'label_' + label.id}
-              data-label-id={label.id}
-              data-label-name={label.label}
-              data-label-color={label.color}
-            >
-              {label.label}
-            </option>
-          ))}
-        </Form.Select>
+        <div className="d-flex align-items-center">
+          <Form.Select
+            ref={labelSelectRef}
+            className="form-select"
+            name="label"
+            id="label-select"
+            value={currentLabel?.id ?? ''}
+            onChange={handleLabelChange}
+          >
+            {labels.map((label) => (
+              <option
+                value={label.id}
+                key={'label_' + label.id}
+                data-label-id={label.id}
+                data-label-name={label.label}
+                data-label-color={label.color}
+                style={{
+                  backgroundColor: label.color,
+                  color: getContrastColor(label.color)
+                }}
+              >
+                {label.label}
+              </option>
+            ))}
+          </Form.Select>
+          {currentLabel && (
+            <div 
+              className="ms-2 rounded-circle border"
+              style={{
+                width: '20px',
+                height: '20px',
+                backgroundColor: currentLabel.color,
+                minWidth: '20px'
+              }}
+              title={`Color: ${currentLabel.color}`}
+            />
+          )}
+        </div>
         <Button variant="secondary" className="ms-2" onClick={() => setShowSettings(!showSettings)}>
           {showSettings ? 'Hide' : 'Show'} Settings
+        </Button>
+        <Button variant="outline-info" className="ms-2" onClick={() => setShowInfoModal(true)} title="Help & Shortcuts">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+            <line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
         </Button>
       </div>
       <Collapse in={showSettings}>
@@ -179,9 +351,11 @@ export default function AnnotatorHeader({
 
           <div className="mt-3 d-flex">
             <Form.Control
+              ref={newLabelInputRef}
               type="text"
               placeholder="New label"
               onChange={handleLabelInputFieldChange}
+              onKeyDown={handleNewLabelKeyDown}
               value={newLabel.labelName ?? ''}
               name="labelName"
               className="me-2"
@@ -199,11 +373,81 @@ export default function AnnotatorHeader({
             </Button>
           </div>
 
-          <Button variant="success" className="mt-3" onClick={() => trainAI(project.id, labels)}>
-            Train AI
-          </Button>
+          <div className="mt-3 d-flex gap-2">
+            <Button variant="success" onClick={() => trainAI(project.id, labels)}>
+              Train AI
+            </Button>
+            <Button variant="primary" onClick={() => exportData(project.id, project.projectName)}>
+              Export Data
+            </Button>
+          </div>
         </div>
       </Collapse>
+
+      {/* Info Modal */}
+      <Modal show={showInfoModal} onHide={() => setShowInfoModal(false)} size="lg">
+        <Modal.Header closeButton>
+          <Modal.Title>Annotation Help & Keyboard Shortcuts</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div className="row">
+            <div className="col-md-6">
+              <h5>How to set up</h5>
+              <ul>
+                <li><strong>Select a Label:</strong> Choose from the dropdown</li>
+                <li><strong>Create label:</strong> Fill in name and choose color</li>
+                <li><strong>Resize:</strong> Choose frame size using slider</li>
+              </ul>
+
+              <h5 className="mt-4">How to Annotate</h5>
+              <ul>
+                <li><strong>Apply labels:</strong> Left-click a frame and drag to another. All annotations in the selected range will be annotated with selected label.</li>
+                <li><strong>Erase labels:</strong> Right-click a frame and drag to another. Results into erasing all annotations in the selected range.</li>
+              </ul>
+
+              <h5 className="mt-4">When finished</h5>
+              <ul>
+                <li><strong>Send to AI:</strong> Send annotated frames to the AI model for learning.</li>
+                <li><strong>Export:</strong> Export the annotated data for external use.</li>
+              </ul>
+            </div>
+            <div className="col-md-6">
+              <h5>Keyboard Shortcuts</h5>
+              <div className="mb-3">
+                <h6>Navigation</h6>
+                <ul className="list-unstyled">
+                  <li><kbd>A</kbd> - Previous page</li>
+                  <li><kbd>D</kbd> - Next page</li>
+                </ul>
+              </div>
+              
+              <div className="mb-3">
+                <h6>Controls</h6>
+                <ul className="list-unstyled">
+                  <li><kbd>S</kbd> - Toggle Settings</li>
+                  <li><kbd>L</kbd> - Focus Label dropdown</li>
+                  <li><kbd>N</kbd> - New label (random color)</li>
+                  <li><kbd>ESC</kbd> - Unfocus/Close settings</li>
+                  <li><kbd>H</kbd> - Open this help window</li>
+                </ul>
+              </div>
+              
+              <div className="mb-3">
+                <h6>Actions</h6>
+                <ul className="list-unstyled">
+                  <li><kbd>Ctrl+A</kbd> - Train AI</li>
+                  <li><kbd>Ctrl+E</kbd> - Export Data</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowInfoModal(false)}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 }

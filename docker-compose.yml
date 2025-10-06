@@ -30,6 +30,13 @@ services:
       FILE_SYSTEM_PATH: /opt/app/file-system
       ARCHIVE_EXTENSION: .zip
       IMAGE_EXTENSION: .webp
+      DB_URL: jdbc:postgresql://postgres:5432/annotator
+      DB_USERNAME: annotator
+      DB_PASSWORD: annotator_password
+      JWT_SECRET: ${JWT_SECRET:-}
+    depends_on:
+      postgres:
+        condition: service_healthy
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8088/actuator/health" ]
       interval: 10s
@@ -62,3 +69,22 @@ services:
       - "5044:5044"
     depends_on:
       - elasticsearch
+
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: annotator
+      POSTGRES_USER: annotator
+      POSTGRES_PASSWORD: annotator_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U annotator -d annotator"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:

@@ -8,9 +8,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import jakarta.annotation.PostConstruct;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -28,13 +30,13 @@ public class StorageManagerImpl implements StorageManager {
      * Path to the file system where files are stored. This value is read from
      * application properties.
      */
-    @Value("${app.file-system.path}")
-    String fileSystemPath = "file_system";
+    @Value("${app.file-system.path:file_system}")
+    String fileSystemPath;
 
     /**
      * Root location of folder where all files are saved.
      */
-    private final Path rootLocation;
+    private Path rootLocation;
 
     /**
      * Constructs a new StorageManagerImpl with the specified properties.
@@ -44,8 +46,16 @@ public class StorageManagerImpl implements StorageManager {
      */
     @Autowired
     public StorageManagerImpl(StorageConfig properties) {
+        // Constructor does not initialize rootLocation here anymore
+        // It will be initialized in the @PostConstruct method after @Value injection
+    }
 
-        if (fileSystemPath.trim().isEmpty()) {
+    /**
+     * Initialize the root location after Spring has injected the fileSystemPath value.
+     */
+    @PostConstruct
+    private void init() {
+        if (fileSystemPath == null || fileSystemPath.trim().isEmpty()) {
             throw new StorageException("File upload location must not be empty!");
         }
         rootLocation = Paths.get(fileSystemPath);
@@ -137,6 +147,47 @@ public class StorageManagerImpl implements StorageManager {
             return Files.readAllBytes(filePath);
         } catch (IOException e) {
             throw new StorageException("Failure occurred during loading files...", e);
+        }
+    }
+
+    @Override
+    public InputStream loadAsStream(String filename) {
+        if (filename.isEmpty()) {
+            throw new StorageException("Filename must not be empty!");
+        }
+        Path filePath = this.rootLocation.resolve(filename);
+        try {
+            return Files.newInputStream(filePath);
+        } catch (IOException e) {
+            throw new StorageException("Failure occurred during loading files...", e);
+        }
+    }
+
+    @Override
+    public String findCsvFileInDirectory(String directoryName) {
+        if (directoryName == null || directoryName.trim().isEmpty()) {
+            throw new StorageException("Directory name must not be empty!");
+        }
+        
+        try {
+            Path directoryPath = rootLocation.resolve(directoryName);
+            
+            if (!Files.exists(directoryPath) || !Files.isDirectory(directoryPath)) {
+                throw new StorageException("Directory does not exist: " + directoryName);
+            }
+            
+            // Search for CSV files in the directory
+            try (DirectoryStream<Path> stream = Files.newDirectoryStream(directoryPath, "*.csv")) {
+                for (Path csvFile : stream) {
+                    // Return the relative path that storage manager expects
+                    return Paths.get(directoryName, csvFile.getFileName().toString()).toString();
+                }
+            }
+            
+            throw new StorageException("No CSV file found in directory: " + directoryName);
+            
+        } catch (IOException e) {
+            throw new StorageException("Error searching for CSV file in directory: " + directoryName, e);
         }
     }
 

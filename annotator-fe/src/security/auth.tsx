@@ -58,6 +58,34 @@ export interface SignupCredentials {
 }
 
 /**
+ * Interface for the authentication response containing access and refresh tokens.
+ */
+export interface AuthResponse {
+    /**
+     * The access token (JWT).
+     */
+    accessToken: string;
+    /**
+     * The refresh token.
+     */
+    refreshToken: string;
+    /**
+     * The token type (always "Bearer").
+     */
+    tokenType: string;
+}
+
+/**
+ * Interface for refresh token request.
+ */
+export interface RefreshTokenRequest {
+    /**
+     * The refresh token to use for generating a new access token.
+     */
+    refreshToken: string;
+}
+
+/**
  * Function to check if the logged-in user is an admin.
  * 
  * @returns True if the user is an admin, false otherwise.
@@ -118,10 +146,20 @@ export const getAuthToken = () => {
 };
 
 /**
- * Function to invalidate the JWT token by removing it from local storage.
+ * Function to load the refresh token from local storage.
+ * 
+ * @return The refresh token if it exists, null otherwise.
+ */
+export const getRefreshToken = () => {
+    return window.localStorage.getItem('refresh_token');
+};
+
+/**
+ * Function to invalidate both tokens by removing them from local storage.
  */
 export const invalidateToken = () => {
     setAuthToken(null);
+    setRefreshToken(null);
 };
 
 /**
@@ -135,6 +173,29 @@ export const setAuthToken = (token: string | null) => {
     } else {
         window.localStorage.removeItem('auth_token');
     }
+};
+
+/**
+ * Function to set the refresh token in local storage.
+ * 
+ * @param token The refresh token to set. If null, it removes the token from local storage.
+ */
+export const setRefreshToken = (token: string | null) => {
+    if (token !== null) {
+        window.localStorage.setItem('refresh_token', token);
+    } else {
+        window.localStorage.removeItem('refresh_token');
+    }
+};
+
+/**
+ * Function to set both tokens from auth response.
+ * 
+ * @param authResponse The authentication response containing both tokens.
+ */
+export const setTokensFromResponse = (authResponse: AuthResponse) => {
+    setAuthToken(authResponse.accessToken);
+    setRefreshToken(authResponse.refreshToken);
 };
 
 /**
@@ -200,6 +261,79 @@ export const signupRequest = (data: SignupCredentials) => {
         url: `${URLS.AUTH_PATH}/signup`,
         data: data
     });
+};
+
+/**
+ * Function to make a refresh token request to the server.
+ * 
+ * @param refreshToken The refresh token to use for getting a new access token.
+ * @returns A promise that resolves to the response containing new tokens.
+ */
+export const refreshTokenRequest = (refreshToken: string) => {
+    return axios({
+        method: HTTP_METHODS.POST,
+        url: `${URLS.AUTH_PATH}/refresh`,
+        data: { refreshToken }
+    });
+};
+
+/**
+ * Function to make a logout request to the server.
+ * 
+ * @param refreshToken The refresh token to revoke.
+ * @returns A promise that resolves to the logout response.
+ */
+export const logoutRequest = (refreshToken: string) => {
+    return axios({
+        method: HTTP_METHODS.POST,
+        url: `${URLS.AUTH_PATH}/logout`,
+        data: { refreshToken }
+    });
+};
+
+/**
+ * Function to check if the access token will expire soon (within 5 minutes).
+ * 
+ * @returns True if the token will expire soon, false otherwise.
+ */
+export const isTokenExpiringSoon = () => {
+    const token = getAuthToken();
+    if (!token) return true;
+    
+    try {
+        const decoded: JwtPayload = jwtDecode(token);
+        const fiveMinutesFromNow = Date.now() + (5 * 60 * 1000);
+        return decoded.exp * 1000 < fiveMinutesFromNow;
+    } catch {
+        return true;
+    }
+};
+
+/**
+ * Function to refresh the access token if it's expiring soon.
+ * 
+ * @returns Promise that resolves to true if refresh was successful, false otherwise.
+ */
+export const refreshAccessTokenIfNeeded = async (): Promise<boolean> => {
+    if (!isTokenExpiringSoon()) {        
+        return true; // Token is still valid
+    }
+
+    const refreshToken = getRefreshToken();
+    if (!refreshToken) {
+        invalidateToken();
+        return false;
+    }
+
+    try {
+        const response = await refreshTokenRequest(refreshToken);
+        setTokensFromResponse(response.data);
+        
+        return true;
+    } catch {
+        invalidateToken();
+        return false;
+    }
 };
 
 /**

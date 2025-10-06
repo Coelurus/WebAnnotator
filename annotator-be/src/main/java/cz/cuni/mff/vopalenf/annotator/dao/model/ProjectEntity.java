@@ -62,14 +62,14 @@ public class ProjectEntity {
      * Information about how important it is to finish this project
      */
     @Enumerated(EnumType.STRING)
-    @Column(name = "priority", columnDefinition = "enum")
+    @Column(name = "priority")
     private PriorityEnum priority;
 
     /**
      * Progress of the project
      */
     @Enumerated(EnumType.STRING)
-    @Column(name = "progress", columnDefinition = "enum")
+    @Column(name = "progress")
     private ProgressEnum progress;
 
     /**

@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, Form, Table} from 'react-bootstrap';
+import {Button, Form, OverlayTrigger, Table, Tooltip} from 'react-bootstrap';
 import {Check, Pencil, Plus, Trash, X} from 'react-bootstrap-icons';
 import {fetchRoles, fetchTeams, fetchUsers} from '../../../persistence/requests/fetcher';
 import {getUserUsername} from '../../../security/auth';
@@ -215,22 +215,34 @@ export default function Users() {
                                 <td>{user.team ? user.team.name : '-'}</td>
                                 <td>{user.role}</td>
                                 <td>
-                                    <Button
-                                        variant="warning"
-                                        size="sm"
-                                        className="me-2"
-                                        onClick={() => handleUserEdit(user)}
+                                    <OverlayTrigger
+                                        placement="top"
+                                        overlay={<Tooltip id={`tooltip-edit-user-${user.id}`}>Edit User</Tooltip>}
                                     >
-                                        <Pencil/>
-                                    </Button>
-                                    <Button
-                                        variant="danger"
-                                        size="sm"
-                                        className="me-2"
-                                        onClick={() => handleUserDeleteShow(user.id, user.username)}
+                                        <Button
+                                            variant="warning"
+                                            size="sm"
+                                            className="me-2"
+                                            onClick={() => handleUserEdit(user)}
+                                        >
+                                            <Pencil/>
+                                        </Button>
+                                    </OverlayTrigger>
+
+                                    <OverlayTrigger
+                                        placement="top"
+                                        overlay={<Tooltip id={`tooltip-delete-user-${user.id}`}>Delete User</Tooltip>}
                                     >
-                                        <Trash/>
-                                    </Button>
+                                        <Button
+                                            variant="danger"
+                                            size="sm"
+                                            className="me-2"
+                                            onClick={() => handleUserDeleteShow(user.id, user.username)}
+                                        >
+                                            <Trash/>
+                                        </Button>
+                                    </OverlayTrigger>
+
                                 </td>
                             </>
                         )}

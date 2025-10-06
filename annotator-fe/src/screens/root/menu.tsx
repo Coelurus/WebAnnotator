@@ -1,3 +1,5 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import React from 'react';
 import Container from 'react-bootstrap/Container';
 import Navbar from 'react-bootstrap/Navbar';
 import Button from 'react-bootstrap/Button';
@@ -14,7 +16,7 @@ import {Toaster} from 'react-hot-toast';
  *
  * @returns JSX Element representing the home page layout.
  */
-const HomePage = () => {
+export default function Menu() {
     /**
      * Hook to get the navigate function for programmatic navigation.
      */
@@ -24,7 +26,7 @@ const HomePage = () => {
         <>
             <Navbar bg="white" expand="lg" className="shadow-sm">
                 <Container>
-                    <Navbar.Brand as={Link} to="/" className="fw-bold fs-4">
+                    <Navbar.Brand as={Link} to="/home" className="fw-bold fs-4">
                         Annotator
                     </Navbar.Brand>
                     <Navbar.Toggle aria-controls="navbar-nav"/>
@@ -63,23 +65,8 @@ const HomePage = () => {
             <Toaster position="top-right" reverseOrder={false}/>
 
             <Container className="d-flex flex-column align-items-center text-center mt-5">
-                <h1 className="fw-bold">Welcome to Annotator</h1>
-                <p className="text-muted">Annotate data from a capacitive sensor!</p>
-
-                {!isUserLoggedIn() && (
-                    <div className="mt-4 d-flex gap-3">
-                        <Button variant="primary" size="lg" onClick={() => navigate('/user/login')}>
-                            Login
-                        </Button>
-                        <Button variant="outline-primary" size="lg" onClick={() => navigate('/user/signup')}>
-                            Sign Up
-                        </Button>
-                    </div>
-                )}
                 <Outlet/>
             </Container>
         </>
     );
 };
-
-export default HomePage;

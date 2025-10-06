@@ -148,12 +148,12 @@ export default function AnnotatorContent({
    * @returns The style object for the image frame.
    */
   const selectedImageStyle = (index: number) => {
-    const frame = selectedFrames.find((frame) => frame.frameId === index);
+    const frame = selectedFrames.find((frame) => frame.frameId === index);   
 
     return {
       width: `${imageSize}px`,
       height: `${imageSize}px`,
-      borderColor: frame ? labels[frame.labelId]?.color : '',
+      borderColor: frame ? labels.find((label) => label.id === frame.labelId)?.color : 'white',
       borderWidth: '5px',
       borderStyle: 'solid'
     };
@@ -169,7 +169,7 @@ export default function AnnotatorContent({
   };
 
   return (
-    <div className="d-flex flex-wrap gap-1 image-grid" ref={gridRef}>
+    <div className="d-flex flex-wrap image-grid" ref={gridRef}>
       {imagePositions.map((position) => (
         <div 
         id={`image-frame-wrapper-${position}`} 

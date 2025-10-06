@@ -1,5 +1,5 @@
 import ErrorResponse from '../persistence/errors/error-response';
-import { invalidateToken, loginRequest, setAuthToken } from './auth';
+import { invalidateToken, loginRequest, setTokensFromResponse } from './auth';
 
 /**
  * Function to handle user login.
@@ -25,7 +25,7 @@ export const login = async (
     password: password
   })
     .then((response) => {
-      setAuthToken(response.data.token);
+      setTokensFromResponse(response.data);
       onSuccess();
     })
     .catch((error: ErrorResponse) => {

@@ -1,5 +1,5 @@
 import generateErrorToasts from '../screens/notifications/toast-util';
-import { invalidateToken, setAuthToken, signupRequest } from './auth';
+import { invalidateToken, setTokensFromResponse, signupRequest } from './auth';
 
 /**
  * Function to handle user signup.
@@ -31,7 +31,7 @@ export const signup = async (
     lastName: lastName
   })
     .then((response) => {
-      setAuthToken(response.data.token);
+      setTokensFromResponse(response.data);
       onSuccess();
     })
     .catch((error) => {

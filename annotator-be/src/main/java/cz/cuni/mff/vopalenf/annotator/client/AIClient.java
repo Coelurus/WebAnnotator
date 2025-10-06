@@ -2,6 +2,8 @@ package cz.cuni.mff.vopalenf.annotator.client;
 
 import cz.cuni.mff.vopalenf.annotator.api.model.LogData;
 import cz.cuni.mff.vopalenf.annotator.api.model.PredictionTriple;
+import cz.cuni.mff.vopalenf.annotator.api.model.ProjectExportAnnotated;
+import cz.cuni.mff.vopalenf.annotator.api.model.ProjectExportWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -46,21 +48,21 @@ public class AIClient {
      *
      * @param projectId
      *            The ID of the project associated with the log data.
-     * @param logDataList
-     *            The list of log data to be sent.
+     * @param annotatedDataInCsv
+     *            Data in csv containing data from sensor and label from app.
      * @return A list of PredictionTriple objects containing the predictions made by
      *         the AI service.
      */
-    public List<PredictionTriple> sendLogData(Long projectId, List<LogData> logDataList) {
+    public ProjectExportAnnotated sendLogData(Long projectId, ProjectExportWrapper annotatedDataInCsv) {
         String url = aiUrl + "/api/ai/" + projectId;
 
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setContentType(MediaType.TEXT_PLAIN);
 
-        HttpEntity<List<LogData>> requestEntity = new HttpEntity<>(logDataList, headers);
+        HttpEntity<String> requestEntity = new HttpEntity<>(annotatedDataInCsv.getCsvData(), headers);
 
-        ResponseEntity<List<PredictionTriple>> response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
-                new ParameterizedTypeReference<List<PredictionTriple>>() {
+        ResponseEntity<ProjectExportAnnotated> response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
+                new ParameterizedTypeReference<>() {
                 });
 
         return response.getBody();

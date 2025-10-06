@@ -45,7 +45,7 @@ export default function Project() {
   /**
    * Gap size between images in the annotator grid.
    */
-  const GAP_SIZE = 4;
+  const GAP_SIZE = 0;
   /**
    * Default number of images displayed per page in the annotator grid.
    */
@@ -107,24 +107,45 @@ export default function Project() {
     const updateImagesPerPage = () => {
       if (gridRef.current) {
         const gridWidth = gridRef.current.clientWidth;
+
         const gridHeight =
           (screenRef.current?.clientHeight ?? DEFAULT_SCREEN_HEIGHT) -
-          ((headerRef.current?.clientHeight ?? 0) + (footerRef.current?.clientHeight ?? 0));
+          (
+            (headerRef.current?.offsetHeight ?? 0) + (footerRef.current?.offsetHeight ?? 0)
+          );
+        
         const columns = Math.floor((gridWidth + GAP_SIZE) / (imageSize + GAP_SIZE));
-        const rows = Math.floor((gridHeight + GAP_SIZE) / (imageSize + GAP_SIZE));       
-
-        setImagesPerPage(columns * rows);
+        const rows = Math.floor((gridHeight + GAP_SIZE) / (imageSize + GAP_SIZE));
+        const newImagesPerPage = columns * rows;
+        
+        setImagesPerPage(newImagesPerPage);
       }
     };
 
     updateImagesPerPage();
-    window.addEventListener('resize', updateImagesPerPage);
+        window.addEventListener('resize', updateImagesPerPage);
+    
     const observer = new MutationObserver(updateImagesPerPage);
     if (headerRef.current) {
       observer.observe(headerRef.current, { attributes: true, childList: true, subtree: true });
     }
-    return () => window.removeEventListener('resize', updateImagesPerPage);
+    
+    // Cleanup function
+    return () => {
+      window.removeEventListener('resize', updateImagesPerPage);
+      observer.disconnect();
+    };
   }, [imageSize]);
+
+  // Effect to move user to max page if current page is out of bounds (mainly after image resize).
+  React.useEffect(() => {
+    if (frameCount > 0 && imagesPerPage > 0) {
+      const maxPage = Math.max(0, Math.ceil(frameCount / imagesPerPage) - 1);
+      if (pageNum > maxPage) {
+        setPageNum(maxPage);
+      }
+    }
+  }, [imagesPerPage, frameCount, pageNum]);
 
   // Effect to fetch the frame count and annotations when the project ID changes.
   React.useEffect(() => {

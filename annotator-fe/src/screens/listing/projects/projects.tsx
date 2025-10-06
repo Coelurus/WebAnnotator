@@ -19,6 +19,7 @@ import Button from 'react-bootstrap/esm/Button';
 import Form from 'react-bootstrap/esm/Form';
 import Modal from 'react-bootstrap/esm/Modal';
 import { isUserAdmin } from '../../../security/auth';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 /**
  * Interface to identify a project for deletion
@@ -184,22 +185,33 @@ export default function Projects() {
                     <>
                       <td>{project.team?.name ?? '-'}</td>
                       <td>
-                        <Button
-                          variant="warning"
-                          className="me-2"
-                          size="sm"
-                          onClick={() => handleProjectEdit(project)}
+                        <OverlayTrigger
+                          placement="top"
+                          overlay={<Tooltip id={`tooltip-edit-project-${project.id}`}>Edit Project</Tooltip>}
                         >
-                          <Pencil />
-                        </Button>
-                        <Button
-                          variant="danger"
-                          size="sm"
-                          className="me-2"
-                          onClick={() => handleProjectDelete(project.id, project.projectName)}
+                          <Button
+                            variant="warning"
+                            className="me-2"
+                            size="sm"
+                            onClick={() => handleProjectEdit(project)}
+                          >
+                            <Pencil />
+                          </Button>
+                        </OverlayTrigger>
+
+                        <OverlayTrigger
+                          placement="top"
+                          overlay={<Tooltip id={`tooltip-delete-project-${project.id}`}>Delete Project</Tooltip>}
                         >
-                          <Trash />
-                        </Button>
+                          <Button
+                            variant="danger"
+                            size="sm"
+                            className="me-2"
+                            onClick={() => handleProjectDelete(project.id, project.projectName)}
+                            >
+                            <Trash />
+                          </Button>
+                        </OverlayTrigger>
                       </td>
                     </>
                   )}

@@ -226,7 +226,7 @@ export default function Teams() {
                                 <td>
                                     <OverlayTrigger
                                         placement="top"
-                                        overlay={<Tooltip id={`tooltip-${team.id}`}>Add team member</Tooltip>}
+                                        overlay={<Tooltip id={`tooltip-add-team-member-${team.id}`}>Add team member</Tooltip>}
                                     >
                                         <Button
                                             variant="success"
@@ -240,7 +240,7 @@ export default function Teams() {
 
                                     <OverlayTrigger
                                         placement="top"
-                                        overlay={<Tooltip id={`tooltip-${team.id}`}>Edit team</Tooltip>}
+                                        overlay={<Tooltip id={`tooltip-edit-team-${team.id}`}>Edit team</Tooltip>}
                                     >
                                         <Button
                                             variant="warning"
@@ -254,7 +254,7 @@ export default function Teams() {
 
                                     <OverlayTrigger
                                         placement="top"
-                                        overlay={<Tooltip id={`tooltip-${team.id}`}>Delete team</Tooltip>}
+                                        overlay={<Tooltip id={`tooltip-delete-team-${team.id}`}>Delete team</Tooltip>}
                                     >
                                         <Button
                                             variant="danger"

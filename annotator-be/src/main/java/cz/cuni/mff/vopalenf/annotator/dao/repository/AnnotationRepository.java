@@ -15,7 +15,7 @@ public interface AnnotationRepository extends JpaRepository<AnnotationEntity, Lo
 
     Boolean existsByProjectIdAndFrameId(Long projectId, Long frameId);
 
-    AnnotationEntity findByProjectIdAndFrameId(Long projectId, Long frameId);
+    AnnotationEntity findFirstByProjectIdAndFrameId(Long projectId, Long frameId);
 
     @Transactional
     void deleteByProjectIdAndFrameIdAndLabelId(Long projectId, Long frameId, Long labelId);
