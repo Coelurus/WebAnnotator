@@ -447,7 +447,7 @@ public class ProjectService {
      */
     public ProjectExportWrapper exportProjectDataAsCsv(Long projectId) {
         Project project = getProject(projectId);
-        String csvFilename = project.getLogFileName() + "\\" + project.getLogFileName() + ".csv";
+        String csvFilename = storageManager.findCsvFileInDirectory(project.getLogFileName());
         
         StringBuilder csvBuilder = new StringBuilder();
 

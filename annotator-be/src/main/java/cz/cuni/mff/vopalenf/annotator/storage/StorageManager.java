@@ -40,4 +40,13 @@ public interface StorageManager {
      * @return InputStream for the file
      */
     InputStream loadAsStream(String filename);
+
+    /**
+     * Find the first CSV file in the specified directory.
+     *
+     * @param directoryName
+     *            Name of the directory to search in
+     * @return Relative path to the first CSV file found
+     */
+    String findCsvFileInDirectory(String directoryName);
 }

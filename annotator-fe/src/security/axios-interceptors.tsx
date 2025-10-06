@@ -65,10 +65,22 @@ export const setupAxiosInterceptors = () => {
         async (error) => {
             const originalRequest = error.config;
 
-            // If error is 401 and we haven't already tried to refresh
+            // If error is 401 and haven't already tried to refresh
             if (error.response?.status === 401 && !originalRequest._retry) {
                 // Skip refresh attempts for auth endpoints
                 if (originalRequest.url?.includes('/api/auth/')) {
+                    return Promise.reject(error);
+                }
+
+                // Check if this is a BAD_CREDENTIALS error
+                const errorData = error.response?.data;
+                const isAuthError = errorData?.errors?.[0]?.error === 'BAD_CREDENTIALS' || errorData?.error === 'TOKEN_INVALID';
+                
+                if (isAuthError) {
+                    console.warn('JWT authentication failed - backend may have restarted. Logging out user.');
+                    invalidateToken();
+                    processQueue(error, null);
+                    window.location.href = '/home';
                     return Promise.reject(error);
                 }
 
