@@ -142,7 +142,6 @@ export default function Project() {
     if (frameCount > 0 && imagesPerPage > 0) {
       const maxPage = Math.max(0, Math.ceil(frameCount / imagesPerPage) - 1);
       if (pageNum > maxPage) {
-        console.log(`Current page ${pageNum} is beyond max page ${maxPage}, moving to page ${maxPage}`);
         setPageNum(maxPage);
       }
     }

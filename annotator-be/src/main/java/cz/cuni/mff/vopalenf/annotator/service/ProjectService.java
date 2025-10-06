@@ -75,6 +75,7 @@ public class ProjectService {
     private static final String LABEL_HEADER_NAME = "label";
 
     private static final Logger logger = LoggerFactory.getLogger(ProjectService.class);
+
     private static final String PROJECT_NOT_FOUND_MSG = "PROJECT_NOT_FOUND";
     private static final Long DEFAULT_ID = 0L;
     private final ProjectRepository projectRepository;

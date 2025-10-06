@@ -25,8 +25,7 @@ spring:
 
   security:
     jwt:
-      secret-key: "secret"
-      # secret-key: ${JWT_SECRET}
+      secret-key: ${JWT_SECRET:}
 
   flyway:
     locations: classpath:db/migration/common
