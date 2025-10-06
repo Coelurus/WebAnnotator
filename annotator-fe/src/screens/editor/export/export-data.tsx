@@ -1,68 +1,29 @@
-import { request } from '../../../security/auth';
+import { getExportedData } from '../../../persistence/requests/fetcher';
 import toast from 'react-hot-toast';
 
 /**
- * Interface for exported log data
- */
-interface ExportedLogData {
-  time: number;
-  posX: number;
-  posY: number;
-  posZ: number;
-  label: string;
-}
-
-/**
  * Function to export the annotated project data as a CSV file.
- * It fetches the project data from the server and downloads it as a CSV file.
+ * Calls the backend API which returns ready-to-download CSV content.
  *
  * @param projectId The ID of the project to export data for.
  * @param projectName The name of the project for the filename.
  */
 export const exportData = async (projectId: number, projectName: string) => {
-  try {
-    const response = await request('GET', `/api/projects/${projectId}/export`);
-    const data = response.data;
-    
-    // Convert data to CSV format
-    const csvContent = convertToCSV(data);
-    
-    // Create and download the CSV file
-    downloadCSV(csvContent, `${projectName}_annotated_data.csv`);
-    
-    toast.success('Data exported successfully!');
-  } catch (error) {
-    console.error('Error exporting data:', error);
-    toast.error('Failed to export data. Please try again.');
-  }
-};
-
-/**
- * Convert the log data to CSV format
- * @param data Array of log data objects
- * @returns CSV string
- */
-const convertToCSV = (data: ExportedLogData[]): string => {
-  if (!data || data.length === 0) {
-    return 'time,posX,posY,posZ,label\n';
-  }
-  
-  const headers = ['time', 'posX', 'posY', 'posZ', 'label'];
-  const csvRows = [headers.join(',')];
-  
-  data.forEach((row) => {
-    const values = headers.map(header => {
-      const value = row[header as keyof ExportedLogData];
-      // Handle values that might contain commas or quotes
-      if (typeof value === 'string' && (value.includes(',') || value.includes('"'))) {
-        return `"${value.replace(/"/g, '""')}"`;
-      }
-      return value;
+  const requestPromise = getExportedData(projectId)
+    .then((csvContent) => {
+      downloadCSV(csvContent, `${projectName}_annotated_data.csv`);
+      return csvContent;
+    })
+    .catch((error) => {
+      console.error('Error exporting data:', error);
+      throw new Error('Failed to export data. Please try again.');
     });
-    csvRows.push(values.join(','));
+
+  return toast.promise(requestPromise, {
+    loading: 'Exporting, please wait...',
+    success: 'Data exported successfully!',
+    error: 'Failed to export data. Please try again.'
   });
-  
-  return csvRows.join('\n');
 };
 
 /**

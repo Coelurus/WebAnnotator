@@ -6,6 +6,7 @@ import cz.cuni.mff.vopalenf.annotator.api.model.LogData;
 import cz.cuni.mff.vopalenf.annotator.api.model.PredictionTriple;
 import cz.cuni.mff.vopalenf.annotator.api.model.Progress;
 import cz.cuni.mff.vopalenf.annotator.api.model.Project;
+import cz.cuni.mff.vopalenf.annotator.api.model.ProjectExportWrapper;
 import cz.cuni.mff.vopalenf.annotator.api.request.LabelRequest;
 import cz.cuni.mff.vopalenf.annotator.api.request.ProjectRequest;
 import cz.cuni.mff.vopalenf.annotator.api.model.Priority;
@@ -192,15 +193,23 @@ public class ProjectController {
 
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     @PostMapping("/projects/{projectId}/trainAI")
-    public ResponseEntity<List<PredictionTriple>> trainAI(@PathVariable Long projectId) {
-        return ResponseEntity.ok(projectService.trainAI(projectId));
+    public ResponseEntity<String> trainAI(@PathVariable Long projectId) {
+        return ResponseEntity.ok()
+                .header("Content-Type", "text/csv")
+                .header("Content-Disposition", "attachment; filename=\"ai_annotated_data.csv\"")
+                .body(projectService.trainAI(projectId).getCsvData());
     }
 
-    @Operation(summary = "Export project data", description = "Exports annotated project data as structured data for download.", responses = {
-            @ApiResponse(responseCode = "200", description = "Project data exported successfully")})
+    @Operation(summary = "Export project data", description = "Exports annotated project data as CSV file for download.", responses = {
+            @ApiResponse(responseCode = "200", description = "Project data exported successfully as CSV")})
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
     @GetMapping("/projects/{projectId}/export")
-    public ResponseEntity<List<LogData>> exportProjectData(@PathVariable Long projectId) {
-        return ResponseEntity.ok(projectService.exportProjectData(projectId));
+    public ResponseEntity<String> exportProjectData(@PathVariable Long projectId) {
+        ProjectExportWrapper project = projectService.exportProjectDataAsCsv(projectId);
+        
+        return ResponseEntity.ok()
+                .header("Content-Type", "text/csv")
+                .header("Content-Disposition", "attachment; filename=\"project_" + project.getProjectName() + "_data.csv\"")
+                .body(project.getCsvData());
     }
 }

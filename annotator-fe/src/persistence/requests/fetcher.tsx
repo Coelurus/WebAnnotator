@@ -172,3 +172,14 @@ export async function getImageUrlRequest(project: Project, position: number) {
   const imageUrl = URL.createObjectURL(blob);
   return imageUrl;
 }
+
+
+export async function getExportedData(projectId: number) {
+    const response = await request(HTTP_METHODS.GET, `/api/projects/${projectId}/export`);
+    return response.data;
+}
+
+export async function getAIAnnotatedResult(projectId: number) {
+    const response = await request(HTTP_METHODS.POST, `/api/projects/${projectId}/trainAI`);
+    return response.data;
+}

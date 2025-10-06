@@ -69,10 +69,6 @@ public class FileSystemService {
 
         String logFileName = projectEntity.getLogFileName();
         Path pathToFS = Path.of(fileSystemPath);
-        logger.info("Fetching image files for project with id: {} from FS: {} looking for log file: {}",
-                projectId,
-                pathToFS,
-                logFileName);
 
         File projectDir = Arrays.stream(Objects.requireNonNull(pathToFS.toFile().listFiles()))
                 .filter(file -> file.getName().equals(logFileName)).findFirst()
