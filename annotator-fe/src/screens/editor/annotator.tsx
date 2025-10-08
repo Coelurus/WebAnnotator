@@ -212,6 +212,11 @@ export default function Project() {
       higherIndex = endIndex;
     }
 
+    // Check if annotation ends on the last frame of the current page
+    const currentPageStartFrame = pageNum * imagesPerPage + 1;
+    const currentPageEndFrame = Math.min(currentPageStartFrame + imagesPerPage - 1, frameCount);
+    const shouldAutoNavigate = higherIndex === currentPageEndFrame && (pageNum + 1) * imagesPerPage < frameCount;
+
     // If the user pressed the right mouse button, erase annotations in the selected range.
     if (pressedButton === RIGHT_BUTTON) {
       postEraseAnnotations(project.id, lowerIndex, higherIndex);
@@ -232,6 +237,11 @@ export default function Project() {
         }
       }
       setSelectedFrames((selectedFrames) => [...selectedFrames, ...framesToAdd]);
+    }
+
+    // Auto-navigate to next page if annotation ends on the last frame of current page
+    if (shouldAutoNavigate) {
+      setPageNum(pageNum + 1);
     }
 
     setStartIndex(null);
