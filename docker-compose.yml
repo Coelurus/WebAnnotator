@@ -23,8 +23,8 @@ services:
       - "8088:8088"
     restart: always
     volumes:
-      - ./logs:/logs
-      - ./file-system:/file-system
+      - backend_logs:/logs
+      - backend_files:/file-system
     environment:
       AI_URL: http://aimock:8081
       FILE_SYSTEM_PATH: /opt/app/file-system
@@ -88,3 +88,5 @@ services:
 
 volumes:
   postgres_data:
+  backend_logs:
+  backend_files:
