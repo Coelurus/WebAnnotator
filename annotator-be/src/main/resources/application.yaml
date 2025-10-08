@@ -37,6 +37,7 @@ logging:
       springframework: INFO
       hibernate:
         sql: INFO
+    cz.cuni.mff.vopalenf.annotator: DEBUG
 
 
 management:

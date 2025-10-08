@@ -171,8 +171,12 @@ export default function Project() {
    * @param frameId ID of the frame where the mouse button was pressed.
    */
   const handleMouseDown = (event: React.MouseEvent, frameId: number) => {
-    setPressedButton(event.nativeEvent.button);
-    setStartIndex(frameId);
+    if (currentLabel === undefined) {
+      toast.error('Label not chosen');
+    } else {
+      setPressedButton(event.nativeEvent.button);
+      setStartIndex(frameId);
+    }
   };
 
   /**
