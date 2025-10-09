@@ -67,8 +67,6 @@ export default function AnnotatorHeader({
   project,
   headerRef
 }: AnnotatorHeaderProps) {
-  // Default color option for new labels
-  const DEFAULT_COLOR_OPTION = '#563d7c';
   
   // Luminance calculation constants for contrast color determination
   const LUMINANCE_WEIGHTS = {
@@ -76,12 +74,21 @@ export default function AnnotatorHeader({
     GREEN: 0.587,
     BLUE: 0.114
   } as const;
+  
+  /**
+   * Generates a random hex color for new labels
+   */
+  const generateRandomColor = () => {
+    const getRandomHex = () => Math.floor(Math.random() * 256).toString(16).padStart(2, '0');
+    return `#${getRandomHex()}${getRandomHex()}${getRandomHex()}`;
+  };
+
   // Contrast threshold for determining text color
   const CONTRAST_THRESHOLD = 0.5;
   // Maximum value for RGB color channels
   const RGB_MAX = 255;
   // State to manage inputting and creating a new label
-  const [newLabel, setNewLabel] = React.useState<LabelRequest>({ color: DEFAULT_COLOR_OPTION });
+  const [newLabel, setNewLabel] = React.useState<LabelRequest>({ color: generateRandomColor() });
   // State to manage the visibility of settings bar
   const [showSettings, setShowSettings] = React.useState(false);
   // State to manage the visibility of info modal
@@ -120,14 +127,6 @@ export default function AnnotatorHeader({
     
     // Return black for light colors, white for dark colors
     return luminance > CONTRAST_THRESHOLD ? '#000000' : '#FFFFFF';
-  };
-
-  /**
-   * Generates a random hex color for new labels
-   */
-  const generateRandomColor = () => {
-    const getRandomHex = () => Math.floor(Math.random() * 256).toString(16).padStart(2, '0');
-    return `#${getRandomHex()}${getRandomHex()}${getRandomHex()}`;
   };
 
   /**
@@ -245,7 +244,7 @@ export default function AnnotatorHeader({
         setLabels([...labels, mapLabel(createdLabel)]);
 
         setCurrentLabel(mapLabel(createdLabel));
-        setNewLabel({});
+        setNewLabel({ color: generateRandomColor() });
       });
     }
   };
@@ -365,7 +364,7 @@ export default function AnnotatorHeader({
               title="Choose color for your label"
               onChange={handleLabelInputFieldChange}
               name="color"
-              value={newLabel.color ?? DEFAULT_COLOR_OPTION}
+              value={newLabel.color ?? generateRandomColor()}
               className="me-2"
             />
             <Button variant="primary" onClick={handleAddLabel}>
