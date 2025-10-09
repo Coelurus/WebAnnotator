@@ -1,6 +1,7 @@
 .*
 !.gitignore
 !.github
+!.gitattributes
 !annotator-web/.gitignore
 !annotator-fe/.gitignore
 !annotator-web/.mvn
