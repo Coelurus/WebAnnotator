@@ -93,6 +93,8 @@ export default function AnnotatorHeader({
   const [showSettings, setShowSettings] = React.useState(false);
   // State to manage the visibility of info modal
   const [showInfoModal, setShowInfoModal] = React.useState(false);
+  // State to track the previously selected label for Q shortcut toggle
+  const [lastUsedLabel, setLastUsedLabel] = React.useState<Label | undefined>(undefined);
   // Ref for the label select dropdown
   const labelSelectRef = React.useRef<HTMLSelectElement>(null);
   // Ref for the new label input field
@@ -107,6 +109,7 @@ export default function AnnotatorHeader({
     ESCAPE: 'escape',
     NEW_LABEL: 'n',
     HELP: 'h',
+    TOGGLE_LAST_LABEL: 'q',
     CTRL_TRAIN_AI: 'ctrl+a',
     CTRL_EXPORT_DATA: 'ctrl+e',
   } as const;
@@ -127,6 +130,27 @@ export default function AnnotatorHeader({
     
     // Return black for light colors, white for dark colors
     return luminance > CONTRAST_THRESHOLD ? '#000000' : '#FFFFFF';
+  };
+
+  /**
+   * Toggles between current label and last used label
+   */
+  const toggleLastLabel = () => {
+    // Do nothing if no current label or no last used label
+    if (!currentLabel || !lastUsedLabel) {
+      return;
+    }
+    
+    // Do nothing if there's only one label total
+    if (labels.length < 2) {
+      return;
+    }
+    
+    // Switch current and last used labels
+    const oldCurrent = {...currentLabel};
+    const oldLastUsed = {...lastUsedLabel};
+    setCurrentLabel(oldLastUsed);
+    setLastUsedLabel(oldCurrent);
   };
 
   /**
@@ -159,9 +183,10 @@ export default function AnnotatorHeader({
       // Use setTimeout to ensure the input field is rendered after settings panel opens
       setTimeout(() => newLabelInputRef.current?.focus(), 0);
     },
+    [KEYS.TOGGLE_LAST_LABEL]: () => toggleLastLabel(),
     [KEYS.CTRL_TRAIN_AI]: () => trainAI(project.id, labels),
     [KEYS.CTRL_EXPORT_DATA]: () => exportData(project.id, project.projectName),
-  }), [showSettings, showInfoModal, project.id, project.projectName, labels]);
+  }), [showSettings, showInfoModal, project.id, project.projectName, labels, toggleLastLabel]);
 
   /**
    * Effect to handle keyboard shortcuts
@@ -223,6 +248,10 @@ export default function AnnotatorHeader({
     const selectedLabelName = event.target.selectedOptions[0].getAttribute('data-label-name');
     const selectedLabelColor = event.target.selectedOptions[0].getAttribute('data-label-color');
     if (selectedLabelName && selectedLabelColor) {
+      // Store current label as last used before changing
+      if (currentLabel) {
+        setLastUsedLabel(currentLabel);
+      }
       setCurrentLabel({
         id: selectedLabelId,
         label: selectedLabelName,
@@ -243,6 +272,10 @@ export default function AnnotatorHeader({
         if (!createdLabel) return;
         setLabels([...labels, mapLabel(createdLabel)]);
 
+        // Store current label as last used before changing to new label
+        if (currentLabel) {
+          setLastUsedLabel(currentLabel);
+        }
         setCurrentLabel(mapLabel(createdLabel));
         setNewLabel({ color: generateRandomColor() });
       });
@@ -402,6 +435,7 @@ export default function AnnotatorHeader({
               <ul>
                 <li><strong>Apply labels:</strong> Left-click a frame and drag to another. All annotations in the selected range will be annotated with selected label.</li>
                 <li><strong>Erase labels:</strong> Right-click a frame and drag to another. Results into erasing all annotations in the selected range.</li>
+                <li><strong>Auto page flip:</strong> When last frame on a page is contained in the selection (either annotating or erasing) it is automatically switched to the next page.</li>
               </ul>
 
               <h5 className="mt-4">When finished</h5>
@@ -426,6 +460,7 @@ export default function AnnotatorHeader({
                   <li><kbd>S</kbd> - Toggle Settings</li>
                   <li><kbd>L</kbd> - Focus Label dropdown</li>
                   <li><kbd>N</kbd> - New label (random color)</li>
+                  <li><kbd>Q</kbd> - Toggle between current and last used label</li>
                   <li><kbd>ESC</kbd> - Unfocus/Close settings</li>
                   <li><kbd>H</kbd> - Open this help window</li>
                 </ul>
