@@ -12,6 +12,7 @@ import AnnotatorFooter from './annotator-footer';
 import AnnotatorContent from './annotator-content';
 import { postAddAnnotations, postEraseAnnotations } from '../../persistence/requests/poster';
 import toast, { Toaster } from 'react-hot-toast';
+import { BUTTONS } from '../../config/path';
 
 /**
  * Loader function to fetch the project data based on the project ID from the URL parameters.
@@ -30,17 +31,7 @@ export const loader: LoaderFunction<ProjectType> = async ({ params }) => {
  * @returns The main component for the annotator screen, which includes header, content, and footer.
  */
 export default function Project() {
-  /**
-   * Constants for left mouse button identifier.
-   */
-  const LEFT_BUTTON = 0;
-  /**
-   * Constants for right mouse button identifier.
-   */
-  const RIGHT_BUTTON = 2;
-  /**
-   * Default size for images in the annotator grid.
-   */
+ 
   const DEFAULT_IMAGE_SIZE = 50;
   /**
    * Gap size between images in the annotator grid.
@@ -218,7 +209,7 @@ export default function Project() {
     const shouldAutoNavigate = higherIndex === currentPageEndFrame && (pageNum + 1) * imagesPerPage < frameCount;
 
     // If the user pressed the right mouse button, erase annotations in the selected range.
-    if (pressedButton === RIGHT_BUTTON) {
+    if (pressedButton === BUTTONS.RIGHT_BUTTON) {
       postEraseAnnotations(project.id, lowerIndex, higherIndex);
       const withoutErased = selectedFrames.filter(
         (annotation) => annotation.frameId < lowerIndex || annotation.frameId > higherIndex
@@ -227,7 +218,7 @@ export default function Project() {
     }
 
     // If the user pressed the left mouse button, add annotations in the selected range.
-    if (currentLabel && pressedButton === LEFT_BUTTON) {
+    if (currentLabel && pressedButton === BUTTONS.LEFT_BUTTON) {
       postAddAnnotations(project.id, lowerIndex, higherIndex, currentLabel?.id ?? 0);
 
       const framesToAdd: Annotation[] = [];
@@ -290,6 +281,10 @@ export default function Project() {
           project={project}
           handleMouseDown={handleMouseDown}
           handleMouseOver={handleMouseOver}
+          startIndex={startIndex}
+          endIndex={endIndex}
+          pressedButton={pressedButton}
+          currentLabelColor={currentLabel?.color}
         />
       </div>
 

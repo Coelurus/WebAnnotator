@@ -1,6 +1,7 @@
 import React from 'react';
 import { Annotation, Label, Project } from '../../persistence/model/data';
 import { getImageUrlRequest } from '../../persistence/requests/fetcher';
+import { BUTTONS } from '../../config/path';
 
 /**
  * Interface for the properties of the AnnotatorContent component.
@@ -55,6 +56,22 @@ export interface AnnotatorContentProps {
    * @param frameId The ID of the frame being hovered over.
    */
   handleMouseOver: (frameId: number) => void;
+  /**
+   * Start index of the current selection.
+   */
+  startIndex: number | null;
+  /**
+   * End index of the current selection.
+   */
+  endIndex: number | null;
+  /**
+   * Currently pressed mouse button (if any).
+   */
+  pressedButton: number | null;
+  /**
+   * Color of the currently selected label.
+   */
+  currentLabelColor?: string;
 }
 
 /**
@@ -75,7 +92,11 @@ export default function AnnotatorContent({
   selectedFrames,
   project,
   handleMouseDown,
-  handleMouseOver
+  handleMouseOver,
+  startIndex,
+  endIndex,
+  pressedButton,
+  currentLabelColor,
 }: AnnotatorContentProps) {
 
   // State to manage array of image currently displayed in the grid
@@ -147,15 +168,32 @@ export default function AnnotatorContent({
    * @param index The index of the image frame.
    * @returns The style object for the image frame.
    */
-  const selectedImageStyle = (index: number) => {
-    const frame = selectedFrames.find((frame) => frame.frameId === index);   
+  const imageStyle = (position: number) => {
+    const permanentFrame = selectedFrames.find((frame) => frame.frameId === position);
+    const isInCurrentSelection = startIndex !== null && endIndex !== null &&
+      position >= Math.min(startIndex, endIndex) && position <= Math.max(startIndex, endIndex);
+    const currentFrameColor = labels.find((label) => label.id === permanentFrame?.labelId)?.color || 'white';
+
+    let borderColor = 'white';
+    let borderStyle = 'solid';
+
+    if (permanentFrame && isInCurrentSelection && pressedButton === BUTTONS.RIGHT_BUTTON) {
+      borderColor = currentFrameColor;
+      borderStyle = 'dashed';
+    }
+    else if (permanentFrame) {
+      borderColor = currentFrameColor;
+    } else if (isInCurrentSelection && pressedButton === BUTTONS.LEFT_BUTTON) {
+      borderColor = currentLabelColor || 'gray';
+      borderStyle = 'dashed';
+    }
 
     return {
       width: `${imageSize}px`,
       height: `${imageSize}px`,
-      borderColor: frame ? labels.find((label) => label.id === frame.labelId)?.color : 'white',
+      borderColor,
       borderWidth: '5px',
-      borderStyle: 'solid'
+      borderStyle
     };
   };
 
@@ -198,7 +236,7 @@ export default function AnnotatorContent({
               objectFit: 'cover',
               cursor: 'pointer',
               border: '5px solid rgba(0, 0, 0, 0)',
-              ...selectedImageStyle(position)
+              ...imageStyle(position)
             }}
             src={imageSources.get(position)}
             onMouseDown={(event) => handleMouseDown(event, position)}

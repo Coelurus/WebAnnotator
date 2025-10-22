@@ -59,3 +59,17 @@ export const HTTP_METHODS = {
      */
     DELETE: 'DELETE',
 };
+
+/**
+ * BUTTONS object contains mouse button identifiers.
+ */
+export const BUTTONS = {
+    /**
+     * Constants for left mouse button identifier.
+     */
+    LEFT_BUTTON: 0,
+    /**
+     * Constants for right mouse button identifier.
+     */
+    RIGHT_BUTTON: 2,
+}
