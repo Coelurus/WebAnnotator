@@ -68,7 +68,6 @@ public class ProjectService {
 
     private static final LabelEntity NO_GESTURE = LabelEntity.builder().label("NO_GESTURE").build();
     private static final String NO_GESTURE_LABEL = "NO_GESTURE";
-    private static final List<String> COLUMNS_TO_IGNORE_CONTAINS = List.of("image");
     private static final String SEPARATOR_REGEX = "[,;]";
     private static final String SEPARATOR = ",";
     private static final String NEWLINE = "\n";
@@ -461,20 +460,11 @@ public class ProjectService {
                         csvBuilder.toString()
                 ); // Return empty if no data
             }
-            List<String> headers = Arrays.asList(headerLine.split(SEPARATOR_REGEX));
-            List<Integer> columnsToIgnore = new ArrayList<>();
-            Integer columnsCount = 0;
-            for (int i = 0; i < headers.size(); i++) {
-                int finalI = i;
-                if (COLUMNS_TO_IGNORE_CONTAINS
-                        .stream()
-                        .anyMatch(keyword -> headers.get(finalI).toLowerCase().contains(keyword.toLowerCase()))
-                ) {
-                    columnsToIgnore.add(i);
-                } else {
-                    csvBuilder.append(headers.get(i)).append(SEPARATOR);
-                    columnsCount++;
-                }
+            String[] headers = headerLine.split(SEPARATOR_REGEX);
+            int columnsCount = 0;
+            for (String header : headers) {
+                csvBuilder.append(header).append(SEPARATOR);
+                columnsCount++;
             }
             csvBuilder.append(LABEL_HEADER_NAME).append(NEWLINE);
             columnsCount++; // For label column
@@ -490,7 +480,7 @@ public class ProjectService {
                 }
                 
                 String[] parts = line.split(SEPARATOR_REGEX);
-                if (parts.length - columnsToIgnore.size() < columnsCount - 1) {
+                if (parts.length + 1< columnsCount) { // +1 for label column
                     frameIndex++;
                     continue;
                 }
@@ -498,6 +488,7 @@ public class ProjectService {
                 String label;
                 AnnotationEntity annotationEntity = annotationRepository.findFirstByProjectIdAndFrameId(projectId, frameIndex);
                 if (annotationEntity != null) {
+                    // TODO: Make this faster by batch request
                     label = labelRepository.findById(annotationEntity.getLabelId()).orElse(NO_GESTURE).getLabel();
                 } else {
                     label = NO_GESTURE_LABEL;
@@ -505,9 +496,6 @@ public class ProjectService {
 
                 String escapedLabel = escapeCSVField(label);
                 for (int i = 0; i < columnsCount - 1; i++) {
-                    if (columnsToIgnore.contains(i)) {
-                        continue;
-                    }
                     csvBuilder.append(parts[i]).append(SEPARATOR);
                 }
                 csvBuilder.append(escapedLabel).append(NEWLINE);
