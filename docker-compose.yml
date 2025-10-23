@@ -1,6 +1,6 @@
 services:
-  aimock:
-    build: ./aimock
+  ai-server:
+    build: ./ai-server
     ports:
       - "8081:8081"
     restart: always
@@ -26,7 +26,7 @@ services:
       - backend_logs:/logs
       - backend_files:/file-system
     environment:
-      AI_URL: http://aimock:8081
+      AI_URL: http://ai-server:8081
       FILE_SYSTEM_PATH: /opt/app/file-system
       ARCHIVE_EXTENSION: .zip
       IMAGE_EXTENSION: .webp

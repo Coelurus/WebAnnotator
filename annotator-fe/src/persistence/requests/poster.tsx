@@ -154,3 +154,14 @@ export function addTeamMember(userId: number, teamId: number): Promise<void> {
         error: 'Error adding member to team'
     });
 }
+/**
+ * Send annotated data to the AI model for processing.
+ *
+ * @param projectId ID of the project on which to train the AI model.
+ * @returns A promise that resolves to the AIModelUpdateResponse from the server.
+ */
+
+export async function getAIAnnotatedResult(projectId: number) {
+    const response = await request(HTTP_METHODS.POST, `/api/projects/${projectId}/trainAI`);
+    return response.data;
+}

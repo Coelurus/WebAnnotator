@@ -192,3 +192,21 @@ export interface Progress {
    */
   name: string;
 }
+
+/**
+ * AIModelUpdateResponse interface represents the response from AI model training.
+ */
+export interface AIModelUpdateResponse {
+  /**
+   * Status message from the AI service.
+   */
+  status: string;
+  /**
+   * Accuracy of the trained model.
+   */
+  accuracy: number;
+  /**
+   * Number of projects used in training.
+   */
+  projects: number;
+}

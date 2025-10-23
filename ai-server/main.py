@@ -8,17 +8,11 @@ from sklearn.preprocessing import StandardScaler
 import joblib
 from pathlib import Path
 from utils import extract_features
-import os
 import logging
-from pythonjsonlogger import jsonlogger
 
-# Configure JSON logging
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-logHandler = logging.StreamHandler()
-formatter = jsonlogger.JsonFormatter()
-logHandler.setFormatter(formatter)
-logger.addHandler(logHandler)
+# Configure logging
+logging.basicConfig(level=logging.INFO, format='{"timestamp": "%(asctime)s", "level": "%(levelname)s", "message": "%(message)s"}')
+logger = logging.getLogger(__name__)
 
 app = FastAPI(title="Gesture AI Server")
 

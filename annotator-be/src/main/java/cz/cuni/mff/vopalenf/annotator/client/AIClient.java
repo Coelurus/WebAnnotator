@@ -1,5 +1,6 @@
 package cz.cuni.mff.vopalenf.annotator.client;
 
+import cz.cuni.mff.vopalenf.annotator.api.model.AIModelUpdateResponse;
 import cz.cuni.mff.vopalenf.annotator.api.model.LogData;
 import cz.cuni.mff.vopalenf.annotator.api.model.PredictionTriple;
 import cz.cuni.mff.vopalenf.annotator.api.model.ProjectExportAnnotated;
@@ -50,10 +51,9 @@ public class AIClient {
      *            The ID of the project associated with the log data.
      * @param annotatedDataInCsv
      *            Data in csv containing data from sensor and label from app.
-     * @return A list of PredictionTriple objects containing the predictions made by
-     *         the AI service.
+     * @return An AIModelUpdateResponse object containing the status, accuracy, and number of projects.
      */
-    public ProjectExportAnnotated sendLogData(Long projectId, ProjectExportWrapper annotatedDataInCsv) {
+    public AIModelUpdateResponse sendLogData(Long projectId, ProjectExportWrapper annotatedDataInCsv) {
         String url = aiUrl + "/api/ai/" + projectId;
 
         HttpHeaders headers = new HttpHeaders();
@@ -61,7 +61,7 @@ public class AIClient {
 
         HttpEntity<String> requestEntity = new HttpEntity<>(annotatedDataInCsv.getCsvData(), headers);
 
-        ResponseEntity<ProjectExportAnnotated> response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
+        ResponseEntity<AIModelUpdateResponse> response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
                 new ParameterizedTypeReference<>() {
                 });
 

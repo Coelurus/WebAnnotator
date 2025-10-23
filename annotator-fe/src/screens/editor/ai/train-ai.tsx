@@ -1,5 +1,5 @@
-import { Label, PredictionTriple } from '../../../persistence/model/data';
-import { getAIAnnotatedResult } from '../../../persistence/requests/fetcher';
+import { AIModelUpdateResponse } from '../../../persistence/model/data';
+import { getAIAnnotatedResult } from '../../../persistence/requests/poster';
 import toast from 'react-hot-toast';
 
 function normalizeColor(color: string): string {
@@ -18,32 +18,11 @@ function normalizeColor(color: string): string {
  * It sends a POST request to the server and updates the UI based on the response.
  *
  * @param projectId The ID of the project to train the AI model for.
- * @param labels The list of labels used for training.
  */
-export const trainAI = async (projectId: number, labels: Label[]) => {
+export const trainAI = async (projectId: number) => {
   const requestPromise = getAIAnnotatedResult(projectId)
-    .then((data: PredictionTriple[]) => {
-      
-      data.forEach((element) => {
-        
-        const imageFrameElement = document.getElementById(`image-frame-indicator-${element.frameId}`);
-        
-        if (imageFrameElement) {          
-          
-          const color = labels.filter((label) => label.label == element.label)[0]?.color ?? '#333741';            
-          const imageElement = document.getElementById(`image-frame-${element.frameId}`)
-          
-          if (imageElement !== null && getComputedStyle(imageElement).borderColor === "rgb(33, 37, 41)") {
-            // Default color
-          } else if (imageElement !== null && getComputedStyle(imageElement).borderColor === normalizeColor(color)) {
-            imageFrameElement.textContent = '✓';
-          } else {
-            imageFrameElement.textContent = '✗';
-          }
-          imageFrameElement.style.color = color;
-        }
-      });
-
+    .then((data: AIModelUpdateResponse) => {
+      console.log('AI Training Result:', data);
       return data;
     })
     .catch((error) => {
@@ -53,7 +32,7 @@ export const trainAI = async (projectId: number, labels: Label[]) => {
 
   return toast.promise(requestPromise, {
     loading: 'Training AI, please wait...',
-    success: 'Training completed successfully!',
+    success: (data: AIModelUpdateResponse) => `Training completed: ${data.status} (Accuracy: ${(data.accuracy * 100).toFixed(2)}%, Projects: ${data.projects})`,
     error: 'Training failed'
   });
 };

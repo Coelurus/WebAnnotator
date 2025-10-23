@@ -184,7 +184,7 @@ export default function AnnotatorHeader({
       setTimeout(() => newLabelInputRef.current?.focus(), 0);
     },
     [KEYS.TOGGLE_LAST_LABEL]: () => toggleLastLabel(),
-    [KEYS.CTRL_TRAIN_AI]: () => trainAI(project.id, labels),
+    [KEYS.CTRL_TRAIN_AI]: () => trainAI(project.id),
     [KEYS.CTRL_EXPORT_DATA]: () => exportData(project.id, project.projectName),
   }), [showSettings, showInfoModal, project.id, project.projectName, labels, toggleLastLabel]);
 
@@ -406,7 +406,7 @@ export default function AnnotatorHeader({
           </div>
 
           <div className="mt-3 d-flex gap-2">
-            <Button variant="success" onClick={() => trainAI(project.id, labels)}>
+            <Button variant="success" onClick={() => trainAI(project.id)}>
               Train AI
             </Button>
             <Button variant="primary" onClick={() => exportData(project.id, project.projectName)}>

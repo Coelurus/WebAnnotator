@@ -174,12 +174,14 @@ export async function getImageUrlRequest(project: Project, position: number) {
 }
 
 
+/**
+ * Fetch exported data for a specific project.
+ * 
+ * @param projectId ID of the project to export data from.
+ * @returns A promise that resolves to the exported data or an error message.
+ */
 export async function getExportedData(projectId: number) {
     const response = await request(HTTP_METHODS.GET, `/api/projects/${projectId}/export`);
     return response.data;
 }
 
-export async function getAIAnnotatedResult(projectId: number) {
-    const response = await request(HTTP_METHODS.POST, `/api/projects/${projectId}/trainAI`);
-    return response.data;
-}
