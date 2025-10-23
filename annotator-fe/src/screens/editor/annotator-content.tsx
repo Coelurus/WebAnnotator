@@ -1,5 +1,5 @@
 import React from 'react';
-import { Annotation, Label, Project } from '../../persistence/model/data';
+import { Annotation, Label, PredictionSegment, Project } from '../../persistence/model/data';
 import { getImageUrlRequest } from '../../persistence/requests/fetcher';
 import { BUTTONS } from '../../config/path';
 
@@ -39,6 +39,10 @@ export interface AnnotatorContentProps {
    * List of currently selected frames by the user.
    */
   selectedFrames: Annotation[];
+  /**
+   * List of predicted segments from AI.
+   */
+  predictedSegments: PredictionSegment[];
   /**
    * Current project being annotated.
    */
@@ -90,6 +94,7 @@ export default function AnnotatorContent({
   imageSize,
   labels,
   selectedFrames,
+  predictedSegments,
   project,
   handleMouseDown,
   handleMouseOver,
@@ -206,6 +211,42 @@ export default function AnnotatorContent({
     e.preventDefault();
   };
 
+  /**
+   * Function to get the indicator content for a frame position.
+   * 
+   * @param position The frame position.
+   * @returns The JSX element for the indicator.
+   */
+  const getIndicator = (position: number) => {
+    // Only show indicators if predictions have been made
+    if (predictedSegments.length === 0) {
+      return null;
+    }
+
+    const segment = predictedSegments.find(seg => position >= seg.start && position <= seg.end);
+    // Frames with predictions
+    if (segment) {
+      const predictedLabel = labels.find(l => l.label === segment.gesture);
+      if (predictedLabel) {
+        const existingAnnotation = selectedFrames.find(frame => frame.frameId === position);
+        if (existingAnnotation) {
+          const existingLabel = labels.find(l => l.id === existingAnnotation.labelId);
+          if (existingLabel && existingLabel.label === segment.gesture) {
+            return <span style={{ color: predictedLabel.color }}>✓</span>;
+          } else {
+            return <span style={{ color: predictedLabel.color }}>✗</span>;
+          }
+        } else {
+          return <span style={{ color: predictedLabel.color }}>?</span>;
+        }
+      }
+    } else {
+      // No prediction for this frame
+      return <span style={{ color: 'black' }}>?</span>;
+    }
+    return null;
+  };
+
   return (
     <div className="d-flex flex-wrap image-grid" ref={gridRef}>
       {imagePositions.map((position) => (
@@ -227,7 +268,9 @@ export default function AnnotatorContent({
               fontSize: '2rem',
               pointerEvents: 'none',
             }}
-          ></div>
+          >
+            {getIndicator(position)}
+          </div>
           <img
             id={`image-frame-${position}`}
             key={position}

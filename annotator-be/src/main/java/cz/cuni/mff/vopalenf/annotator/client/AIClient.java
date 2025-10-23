@@ -2,6 +2,7 @@ package cz.cuni.mff.vopalenf.annotator.client;
 
 import cz.cuni.mff.vopalenf.annotator.api.model.AIModelUpdateResponse;
 import cz.cuni.mff.vopalenf.annotator.api.model.LogData;
+import cz.cuni.mff.vopalenf.annotator.api.model.PredictionResponse;
 import cz.cuni.mff.vopalenf.annotator.api.model.PredictionTriple;
 import cz.cuni.mff.vopalenf.annotator.api.model.ProjectExportAnnotated;
 import cz.cuni.mff.vopalenf.annotator.api.model.ProjectExportWrapper;
@@ -62,6 +63,30 @@ public class AIClient {
         HttpEntity<String> requestEntity = new HttpEntity<>(annotatedDataInCsv.getCsvData(), headers);
 
         ResponseEntity<AIModelUpdateResponse> response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
+                new ParameterizedTypeReference<>() {
+                });
+
+        return response.getBody();
+    }
+
+    /**
+     * Sends raw sensor data to the AI service for prediction.
+     *
+     * @param projectId
+     *            The ID of the project associated with the data.
+     * @param rawCsvData
+     *            Raw CSV data containing sensor readings without labels.
+     * @return A PredictionResponse object containing the predicted segments.
+     */
+    public PredictionResponse sendPredictData(Long projectId, String rawCsvData) {
+        String url = aiUrl + "/api/ai/" + projectId + "/predict";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.TEXT_PLAIN);
+
+        HttpEntity<String> requestEntity = new HttpEntity<>(rawCsvData, headers);
+
+        ResponseEntity<PredictionResponse> response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
                 new ParameterizedTypeReference<>() {
                 });
 

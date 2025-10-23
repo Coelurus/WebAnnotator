@@ -6,7 +6,7 @@ import {
   fetchLabels,
   fetchProject
 } from '../../persistence/requests/fetcher';
-import { Annotation, Label, Project as ProjectType } from '../../persistence/model/data';
+import { Annotation, Label, PredictionSegment, Project as ProjectType } from '../../persistence/model/data';
 import AnnotatorHeader from './annotator-header';
 import AnnotatorFooter from './annotator-footer';
 import AnnotatorContent from './annotator-content';
@@ -56,6 +56,8 @@ export default function Project() {
   const [endIndex, setEndIndex] = React.useState<number | null>(null);
   // State to manage the selected frames for annotation
   const [selectedFrames, setSelectedFrames] = React.useState<Annotation[]>([]);
+  // State to manage the predicted segments
+  const [predictedSegments, setPredictedSegments] = React.useState<PredictionSegment[]>([]);
   // State to manage the number of images displayed per page
   const [imagesPerPage, setImagesPerPage] = React.useState<number>(DEFAULT_IMAGE_PER_PAGE);
   // State to manage the list of labels available for annotation
@@ -239,6 +241,15 @@ export default function Project() {
     setEndIndex(null);
   };
 
+  /**
+   * Handles the prediction results by storing the predicted segments for display.
+   * 
+   * @param segments The predicted segments from AI.
+   */
+  const handlePredict = (segments: PredictionSegment[]) => {
+    setPredictedSegments(segments);
+  };
+
   return (
     <div
       ref={screenRef}
@@ -265,6 +276,7 @@ export default function Project() {
           labels={labels}
           setLabels={setLabels}
           project={project}
+          onPredict={handlePredict}
         />
       </div>
 
@@ -278,6 +290,7 @@ export default function Project() {
           imageSize={imageSize}
           labels={labels}
           selectedFrames={selectedFrames}
+          predictedSegments={predictedSegments}
           project={project}
           handleMouseDown={handleMouseDown}
           handleMouseOver={handleMouseOver}

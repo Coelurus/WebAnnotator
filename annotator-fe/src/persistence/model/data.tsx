@@ -210,3 +210,31 @@ export interface AIModelUpdateResponse {
    */
   projects: number;
 }
+
+/**
+ * PredictionSegment interface represents a segment of predicted gesture.
+ */
+export interface PredictionSegment {
+  /**
+   * Start frame index of the segment.
+   */
+  start: number;
+  /**
+   * End frame index of the segment.
+   */
+  end: number;
+  /**
+   * Predicted gesture name.
+   */
+  gesture: string;
+}
+
+/**
+ * PredictionResponse interface represents the response from AI prediction.
+ */
+export interface PredictionResponse {
+  /**
+   * List of predicted segments.
+   */
+  segments: PredictionSegment[];
+}

@@ -7,6 +7,7 @@ import cz.cuni.mff.vopalenf.annotator.api.model.PredictionTriple;
 import cz.cuni.mff.vopalenf.annotator.api.model.Progress;
 import cz.cuni.mff.vopalenf.annotator.api.model.Project;
 import cz.cuni.mff.vopalenf.annotator.api.model.AIModelUpdateResponse;
+import cz.cuni.mff.vopalenf.annotator.api.model.PredictionResponse;
 import cz.cuni.mff.vopalenf.annotator.api.model.ProjectExportWrapper;
 import cz.cuni.mff.vopalenf.annotator.api.model.User;
 import cz.cuni.mff.vopalenf.annotator.api.request.LabelRequest;
@@ -433,6 +434,21 @@ public class ProjectService {
      */
     public AIModelUpdateResponse trainAI(Long projectId) {
         return aiClient.sendLogData(projectId, exportProjectDataAsCsv(projectId));
+    }
+
+    /**
+     * Predict gestures for a project using AI
+     *
+     * @param projectId
+     *            ID of the project to predict gestures for
+     * @return PredictionResponse with predicted segments
+     */
+    public PredictionResponse predictAI(Long projectId) {
+        Project project = getProject(projectId);
+        String csvFilename = storageManager.findCsvFileInDirectory(project.getLogFileName());
+        byte[] csvBytes = storageManager.load(csvFilename);
+        String rawCsvData = new String(csvBytes, StandardCharsets.UTF_8);
+        return aiClient.sendPredictData(projectId, rawCsvData);
     }
 
     /**

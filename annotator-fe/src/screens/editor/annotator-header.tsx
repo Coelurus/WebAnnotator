@@ -1,6 +1,7 @@
 import React from 'react';
-import { Label, Project } from '../../persistence/model/data';
+import { Label, Project, PredictionSegment } from '../../persistence/model/data';
 import { trainAI } from './ai/train-ai';
+import { predictAI } from './ai/predict-ai';
 import { exportData } from './export/export-data';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
@@ -46,6 +47,10 @@ export interface AnnotatorHeaderProps {
    */
   project: Project;
   /**
+   * Callback for handling prediction results.
+   */
+  onPredict?: (segments: PredictionSegment[]) => void;
+  /**
    * Reference to the header element for accessing its size.
    */
   headerRef: React.RefObject<HTMLDivElement>;
@@ -65,6 +70,7 @@ export default function AnnotatorHeader({
   labels,
   setLabels,
   project,
+  onPredict,
   headerRef
 }: AnnotatorHeaderProps) {
   
@@ -106,12 +112,13 @@ export default function AnnotatorHeader({
   const KEYS = {
     TOGGLE_SETTINGS: 's',
     FOCUS_LABEL_SELECT: 'l',
-    ESCAPE: 'escape',
+    CLOSE: 'escape',
     NEW_LABEL: 'n',
     HELP: 'h',
     TOGGLE_LAST_LABEL: 'q',
-    CTRL_TRAIN_AI: 'ctrl+a',
-    CTRL_EXPORT_DATA: 'ctrl+e',
+    TRAIN_AI: 'ctrl+a',
+    EXPORT_DATA: 'ctrl+e',
+    PREDICT: 'ctrl+p',
   } as const;
 
   /**
@@ -159,7 +166,7 @@ export default function AnnotatorHeader({
   const keyboardShortcuts = React.useMemo(() => ({
     [KEYS.TOGGLE_SETTINGS]: () => setShowSettings(!showSettings),
     [KEYS.FOCUS_LABEL_SELECT]: () => labelSelectRef.current?.focus(),
-    [KEYS.ESCAPE]: () => {
+    [KEYS.CLOSE]: () => {
       // If help modal is open, close it first
       if (showInfoModal) {
         setShowInfoModal(false);
@@ -184,9 +191,10 @@ export default function AnnotatorHeader({
       setTimeout(() => newLabelInputRef.current?.focus(), 0);
     },
     [KEYS.TOGGLE_LAST_LABEL]: () => toggleLastLabel(),
-    [KEYS.CTRL_TRAIN_AI]: () => trainAI(project.id),
-    [KEYS.CTRL_EXPORT_DATA]: () => exportData(project.id, project.projectName),
-  }), [showSettings, showInfoModal, project.id, project.projectName, labels, toggleLastLabel]);
+    [KEYS.TRAIN_AI]: () => trainAI(project.id),
+    [KEYS.EXPORT_DATA]: () => exportData(project.id, project.projectName),
+    [KEYS.PREDICT]: () => predictAI(project.id, (data) => onPredict?.(data.segments)),
+  }), [showSettings, showInfoModal, project.id, project.projectName, labels, toggleLastLabel, onPredict]);
 
   /**
    * Effect to handle keyboard shortcuts
@@ -209,7 +217,7 @@ export default function AnnotatorHeader({
       // Handle regular shortcuts only if not typing in an input field
       if (event.target instanceof Element &&
           (!['INPUT', 'TEXTAREA', 'SELECT'].includes(event.target.tagName) ||
-          key === KEYS.ESCAPE)
+          key === KEYS.CLOSE)
         ) {
         
         const shortcutAction = keyboardShortcuts[key as keyof typeof keyboardShortcuts];
@@ -409,6 +417,9 @@ export default function AnnotatorHeader({
             <Button variant="success" onClick={() => trainAI(project.id)}>
               Train AI
             </Button>
+            <Button variant="info" onClick={() => predictAI(project.id, (data) => onPredict?.(data.segments))}>
+              Predict
+            </Button>
             <Button variant="primary" onClick={() => exportData(project.id, project.projectName)}>
               Export Data
             </Button>
@@ -471,6 +482,7 @@ export default function AnnotatorHeader({
                 <ul className="list-unstyled">
                   <li><kbd>Ctrl+A</kbd> - Train AI</li>
                   <li><kbd>Ctrl+E</kbd> - Export Data</li>
+                  <li><kbd>Ctrl+P</kbd> - Predict</li>
                 </ul>
               </div>
             </div>

@@ -8,6 +8,7 @@ import cz.cuni.mff.vopalenf.annotator.api.model.Progress;
 import cz.cuni.mff.vopalenf.annotator.api.model.Project;
 import cz.cuni.mff.vopalenf.annotator.api.model.ProjectExportWrapper;
 import cz.cuni.mff.vopalenf.annotator.api.model.AIModelUpdateResponse;
+import cz.cuni.mff.vopalenf.annotator.api.model.PredictionResponse;
 import cz.cuni.mff.vopalenf.annotator.api.request.LabelRequest;
 import cz.cuni.mff.vopalenf.annotator.api.request.ProjectRequest;
 import cz.cuni.mff.vopalenf.annotator.api.model.Priority;
@@ -198,6 +199,14 @@ public class ProjectController {
     @PostMapping("/projects/{projectId}/trainAI")
     public ResponseEntity<AIModelUpdateResponse> trainAI(@PathVariable Long projectId) {
         return ResponseEntity.ok(projectService.trainAI(projectId));
+    }
+
+    @Operation(summary = "Predict gestures for a project", description = "Sends raw sensor data to the AI service for gesture prediction and returns the predicted segments.", responses = {
+            @ApiResponse(responseCode = "200", description = "AI prediction completed successfully", content = @Content(schema = @Schema(implementation = PredictionResponse.class))),})
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USER')")
+    @PostMapping("/projects/{projectId}/predict")
+    public ResponseEntity<PredictionResponse> predictAI(@PathVariable Long projectId) {
+        return ResponseEntity.ok(projectService.predictAI(projectId));
     }
 
     @Operation(summary = "Export project data", description = "Exports annotated project data as CSV file for download.", responses = {

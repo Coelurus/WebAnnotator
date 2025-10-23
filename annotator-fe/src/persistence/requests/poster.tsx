@@ -165,3 +165,15 @@ export async function getAIAnnotatedResult(projectId: number) {
     const response = await request(HTTP_METHODS.POST, `/api/projects/${projectId}/trainAI`);
     return response.data;
 }
+
+/**
+ * Makes a POST request to predict gestures for a project using AI.
+ * Shows error toasts if the request fails.
+ * 
+ * @param projectId ID of the project to predict gestures for.
+ * @returns A promise that resolves to the PredictionResponse from the server.
+ */
+export async function getAIPrediction(projectId: number) {
+    const response = await request(HTTP_METHODS.POST, `/api/projects/${projectId}/predict`);
+    return response.data;
+}
